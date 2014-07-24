@@ -1,0 +1,12 @@
+deploy/node_modules/
+deploy/js/compiled/
+target/
+pom.xml
+pom.xml.asc
+*jar
+.lein-deps-sum
+.lein-repl-history
+.lein-plugins/
+.lein-failures
+Thumbs.db
+.lein-git-deps/
