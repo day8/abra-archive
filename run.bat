@@ -1,1 +1,1 @@
-call c:\atom-shell\atom.exe deploy
+call c:\atom-shell\atom.exe run

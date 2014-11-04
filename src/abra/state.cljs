@@ -7,7 +7,8 @@
 (def app-state (reagent/atom {}))
 
 (def default-state
-  {})
+  {:debugging?  false
+   })
 
 
 (defn initialise []

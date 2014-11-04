@@ -2,41 +2,37 @@
   :description "A ClojureScript debugging tool"
   :url ""
 
-  :dependencies     [[org.clojure/clojure "1.6.0"] ;; 1.5.1
-                     [org.clojure/clojurescript "0.0-2268" :exclusions [org.apache.ant/ant]] ;; 2173
-                     [cljs-ajax "0.2.4"]
-                     [reagent "0.4.2"]]
+  :dependencies [[org.clojure/clojure "1.6.0"]
+                 [org.clojure/clojurescript "0.0-2280"]
+                 [cljs-ajax "0.2.4"]
+                 [reagent "0.4.2"]]
 
-  :plugins [[lein-cljsbuild "1.0.3"]]
+  :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]
+            [com.cemerick/clojurescript.test "0.3.1"]]
 
 
   :cljsbuild {
               :builds [{:id "main"
-                        :source-paths ["src/atom_main"]
+                        :source-paths ["src/main"]
                         :compiler {
-                                   :output-to  "deploy/js/compiled/main.js"
-                                   :output-dir "deploy/js/compiled/main"
+                                   :output-to  "run/js/compiled/main.js"
+                                   :source-map "run/js/compiled/main.js.map"
+                                   :output-dir "run/js/compiled/main"
                                    :optimizations :simple
                                    :pretty-print true}}
 
                        {:id "abra"
-                        :source-paths ["src/abra"]    ;; ".lein-git-deps/reagent-components/src"
+                        :source-paths ["src/abra"]
                         :compiler {
-                                   :output-to  "deploy/js/compiled/abra.js"
-                                   :source-map "deploy/js/compiled/abra.js.map"
-                                   :output-dir "deploy/js/compiled/abra"
+                                   :output-to  "run/js/compiled/abra.js"
+                                   :source-map "run/js/compiled/abra.js.map"
+                                   :output-dir "run/js/compiled/abra"
                                    :optimizations :none
-                                   :pretty-print true}}
-
-                       #_{:id "test"
-                          :source-paths ["src/mwireader" "test"]
-                          :compiler {
-                                     :output-to "testable.js"
-                                     :output-dir "out_test"
-                                     :optimizations :whitespace  ;; do not use 'none' or 'whitespace' - you will get a warning 'Node.js can be only used with simple/advanced optimizations, not with none/whitespace.'
-                                     :pretty-print true
-                                     :source-map "testable_map.js"
-                                     }}]})
+                                   :pretty-print true}}]}
 
 
-;; XXX Correct .gitignore
+  :source-paths ["src" "test"]
+  :test-paths ["test"]
+
+  :aliases {"auto-test" ["do" "clean," "cljsbuild" "auto" "test"]}
+  )

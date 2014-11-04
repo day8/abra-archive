@@ -23,24 +23,24 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 
-var http = require('http');
-var bl = require('bl');
-var url = require('url');
+var http      = require('http');
+var bl        = require('bl');
+var url       = require('url');
 var WebSocket = require('ws');
-var colors = require('colors');
+var colors    = require('colors');
 
 
 defaultConfig = {
-    listen: 9223,      // our server listens on this posrt
+    listen: 9223,      // our server listens on this port
     port: 9222,        // Chrome VM is listening on this port
     debug: false
 };
 
-function stop-crmux-server(server) {
+function stop_crmux_server(server) {
     server.close();
 }
 
-function start-crmux-server(config) {
+function start_crmux_server(config) {
   config = config || defaultConfig;
 
   var lastId = 0;
@@ -201,7 +201,7 @@ function start-crmux-server(config) {
 
 
 module.exports = {
-  stop-crmux-server: stop-crmux-server
-  start-crmux-server: start-crmux-server
+  stop_crmux_server: stop_crmux_server,
+  start_crmux_server: start_crmux_server
 }
 
