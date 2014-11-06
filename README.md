@@ -5,7 +5,7 @@ Abra2
 Terminology
 --------
 
-The terminology usied in the Atom Shell documentation can be confusing. When talking about "where code lives" 
+The terminology used in the Atom Shell documentation can be confusing. When talking about "where code lives" 
 they talk about "browser" and "client".  What they means by "browser" is the nodejs context. And "client" is the 
 HTML world - chrome. 
 
@@ -19,7 +19,7 @@ First, the "node" code:
 lein cljsbuild auto main
 ```
 
-Second, the "brwoser" code:
+Second, the "client" code:
 ```
 lein cljsbuild auto abra
 ```

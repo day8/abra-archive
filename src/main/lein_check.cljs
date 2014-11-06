@@ -29,7 +29,7 @@
 ;; a render client might ask for lein status on this channel
 (.on ipc "send-lein-status"
      (fn [event arg]
-       (.send (.-sender event) "lein-status-is" XXXX ))
+       (.send (.-sender event) "lein-status-is" XXXX )))
 
 (defn callback
   [error stdout stderr]
