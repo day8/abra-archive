@@ -88,20 +88,48 @@
    (analyzer/analyze 
    {:ns {:name \"%s\" :requires %s} :locals %s} '%s)))))")
 
+(defn- position   
+  "Takes a vector 'v' and an 'item' within 'v'.  Returns the zero-based index of 'item' in 'v'.
+  Returns nil if item not found."
+  [v item]
+  (let [index-fn (fn [index i] (when (= i item) index))]
+    (first (keep-indexed index-fn v))))
+
+(defn- find-as [form]
+  (if (coll? form) 
+    (if (vector? form)
+      (if (some #{:as} form)
+        (let [namespace-name (first form)
+              as-index (inc (position form :as))
+              as-form (nth form as-index)]
+          {`'~as-form `'~namespace-name})
+        {})
+      (into {} (for [f form]
+                 (find-as f))))
+  {}))
+
+(defn- find-refer [form]
+  (if (coll? form) 
+    (if (vector? form)
+      (if (some #{:refer} form)
+        (let [namespace-name (first form)
+              refer-index (inc (position form :refer))
+              refer-form (nth form refer-index)]
+          (into {} (for [s refer-form]
+                     {`'~s {:name `'~(symbol namespace-name s)}})))
+        {})
+      (into {} (for [f form]
+                 (find-refer f))))
+    {}))
+
 (defn- process-namespace
   "Looks at a namespace command and strips out :refer and :as in the
   require statements so that the symbols can be added to the 
   locals  and :ns :requires dictionaries"
   [namespace-str]
-  (let [as-seq (re-seq #"([\.\w]+) :as (.*)\]" namespace-str)
-        as-map (into {} (for [[_ full-name short-name] as-seq]
-                          [`'~(symbol short-name) `'~(symbol full-name)]))
-        refer-seq (re-seq #"([\.\w]+) :refer \[(.*)\]\]" namespace-str)
-        refer-map (into {} (for [[_ prefix symbols] refer-seq]
-                             (for [s 
-                                   (.split symbols ", ")]
-                               [`'~(symbol s) 
-                                {:name `'~(symbol prefix s)}])))]
+  (let [namespace-forms (reader/read-string namespace-str)
+        as-map (find-as namespace-forms)
+        refer-map (find-refer namespace-forms)]
     [as-map refer-map]))
 
 (defn start-lein-repl

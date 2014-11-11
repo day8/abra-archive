@@ -5,11 +5,14 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2280"]
                  [cljs-ajax "0.2.4"]
-                 [reagent "0.4.2"]]
+                 [reagent "0.4.2"]
+                 [re-com "0.1.6"]]
   
   :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]
             [lein-git-deps "0.0.1-SNAPSHOT"]
             [com.cemerick/clojurescript.test "0.3.1"]]
+  
+  :profiles {:dev {:plugins [[com.cemerick/clojurescript.test "0.3.1"]]}}
   
   :git-dependencies [["https://github.com/gilbertw1/cljs-asynchronize.git"]]
   
@@ -34,7 +37,10 @@
                                    :pretty-print true}}
                        
                        {:id "test-node" 
-                        :source-paths [".lein-git-deps/cljs-asynchronize/src" "src/main/backend" "test"]
+                        :source-paths ["src/main/backend" "test" ".lein-git-deps/cljs-asynchronize/src"]
+                        :notify-command ["node" "run/test/bin/runner-node.js" 
+                                            "run/js/compiled/test"
+                                            "run/js/compiled/test_node.js"]
                         :compiler {:output-to "run/js/compiled/test_node.js"
                                    :output-dir "run/js/compiled/test"
                                    :target :nodejs
@@ -48,5 +54,4 @@
   :source-paths ["src" "test"]
   :test-paths ["test"]
   
-  :aliases {"auto-test" ["do" "clean," "cljsbuild" "auto" "test-node"]}
-  )
+  :aliases {"auto-test" ["do" "clean," "cljsbuild" "auto" "test-node"]})

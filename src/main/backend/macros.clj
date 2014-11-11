@@ -1,4 +1,4 @@
-(ns abra.backend.macros)
+(ns main.backend.macros)
 
 (defn- throw-err [form]
   `(let [e# ~form] 

@@ -1,23 +1,64 @@
 (ns abra.core-test
   (:require-macros [cemerick.cljs.test :refer (is deftest testing done)]
                    [cljs.core.async.macros :refer [go]]
-                   [abra.backend.macros :refer [<?]])
+                   [main.backend.macros :refer [<?]])
   (:require [cemerick.cljs.test :as test]
             [abra.backend.nrepl :as nrepl]
             [cljs.core.async :refer [<!, chan, put!]]))
 
 (deftest test-tests
-  (testing "helper functions"
-    (is (= (nrepl/process-namespace "
-                                    (ns abra.backend.nrepl
-                                    (:require-macros [cljs.core.async.macros :refer [go]])  
-                                    (:require [cljs.reader :as reader]
-                                    [goog.string.format]
-                                    [cljs.core.async :refer [<!, >!]]))") 
+  (testing "process-namespace"
+    (is (= (nrepl/process-namespace 
+             "(ns abra.backend.nrepl
+             (:require-macros [cljs.core.async.macros :refer [go]])  
+             (:require [cljs.reader :as reader]
+             [goog.string.format]
+             [cljs.core.async :refer [<!, >!]]))") 
            [{'(quote reader) '(quote cljs.reader)} 
             {'(quote go) {:name '(quote cljs.core.async.macros/go)}, 
              '(quote <!) {:name '(quote cljs.core.async/<!)}, 
-             '(quote >!) {:name '(quote cljs.core.async/>!)}}]))))
+             '(quote >!) {:name '(quote cljs.core.async/>!)}}]))
+    (is (= (nrepl/process-namespace 
+             "(:require-macros [cljs.core.async.macros :refer [go go-loop]])") 
+           [{} 
+            {'(quote go) {:name '(quote cljs.core.async.macros/go)}, 
+             '(quote go-loop) {:name '(quote cljs.core.async.macros/go-loop)}}]))
+    (is (= (nrepl/process-namespace 
+             "[cljs.core.async :as async :refer [<!, >!]]") 
+           [{'(quote async) '(quote cljs.core.async)} 
+            {'(quote <!) {:name '(quote cljs.core.async/<!)}, 
+             '(quote >!) {:name '(quote cljs.core.async/>!)}}]))
+    (is (= (nrepl/process-namespace 
+             "[jamesmacaulay.async-tools.core :as tools]))") 
+           [{'(quote tools) '(quote jamesmacaulay.async-tools.core)} 
+            {}]))
+    (is (= (nrepl/process-namespace 
+             "[jamesmacaulay.async-tools.core :as tools?]))") 
+           [{'(quote tools?) '(quote jamesmacaulay.async-tools.core)} 
+            {}]))
+    (is (= (nrepl/process-namespace 
+             "(ns jamesmacaulay.zelkova.signal
+             (:refer-clojure :exclude [merge count])
+             (:require [cljs.core :as core]
+             [clojure.zip :as zip]
+             [cljs.core.async :as async :refer [chan,<! >!]]
+             [cljs.core.async.impl.protocols :as impl]
+             [cljs.core.async.impl.channels :as channels]
+             [jamesmacaulay.async-tools.core :as tools]
+             [alandipert.kahn :as kahn])
+             (:require-macros [cljs.core.async.macros :refer [go go-loop]]))") 
+           [{'(quote core) '(quote cljs.core), 
+             '(quote zip) '(quote clojure.zip), 
+             '(quote async) '(quote cljs.core.async), 
+             '(quote impl) '(quote cljs.core.async.impl.protocols), 
+             '(quote channels) '(quote cljs.core.async.impl.channels), 
+             '(quote tools) '(quote jamesmacaulay.async-tools.core), 
+             '(quote kahn) '(quote alandipert.kahn)} 
+            {'(quote chan) {:name '(quote cljs.core.async/chan)}, 
+             '(quote <!) {:name '(quote cljs.core.async/<!)}, 
+             '(quote >!) {:name '(quote cljs.core.async/>!)}, 
+             '(quote go) {:name '(quote cljs.core.async.macros/go)}, 
+             '(quote go-loop) {:name '(quote cljs.core.async.macros/go-loop)}}]))))
 
 (deftest ^:async test-nrepl-startup-shutdown
   (testing "Test nrpel start up and shutdown and connection"
