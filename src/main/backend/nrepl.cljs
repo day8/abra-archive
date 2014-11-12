@@ -1,6 +1,6 @@
 ;;;; Node backend calls that must be separate from the 
 ;;;; UI calls as they must be tested on the node runner
-(ns abra.backend.nrepl
+(ns main.backend.nrepl
   (:require-macros [cljs.core.async.macros :refer [go]]
                      [cljs-asynchronize.macros :refer [asynchronize]])  
   (:require [cljs.reader :as reader]

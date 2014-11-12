@@ -3,7 +3,7 @@
                    [cljs.core.async.macros :refer [go]]
                    [main.backend.macros :refer [<?]])
   (:require [cemerick.cljs.test :as test]
-            [abra.backend.nrepl :as nrepl]
+            [main.backend.nrepl :as nrepl]
             [cljs.core.async :refer [<!, chan, put!]]))
 
 (deftest test-tests

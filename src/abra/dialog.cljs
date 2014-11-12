@@ -22,11 +22,13 @@
 ;;
 ;;
 (defn open
-  [{:keys [properties] :as options}]
-  (.showOpenDialog dialog
-                   (clj->js {:title "Mike"
-                             :properties ["openDirectory"]
-                             :filters [{ :name "Project Files" :extensions ["clj"] }]})))
+  ([options] (open options nil))
+  ([{:keys [properties, title, filters] 
+      :or {properties []
+           title "Open File"
+           filters []}
+      :as options} callback]
+  (.showOpenDialog dialog (clj->js options) callback)))
 
 
 ;; showSaveDialog

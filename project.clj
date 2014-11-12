@@ -2,8 +2,9 @@
   :description "A ClojureScript debugging tool"
   :url ""
   
+  
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2280"]
+                 [org.clojure/clojurescript "0.0-2277"]
                  [cljs-ajax "0.2.4"]
                  [reagent "0.4.2"]
                  [re-com "0.1.6"]]
@@ -25,7 +26,8 @@
                                    :source-map "run/js/compiled/main.js.map"
                                    :output-dir "run/js/compiled/main"
                                    :optimizations :simple
-                                   :pretty-print true}}
+                                   :pretty-print true
+                                   :closure-warnings {:check-useless-code :off}}}
                        
                        {:id "abra"
                         :source-paths ["src/abra"]
@@ -38,9 +40,9 @@
                        
                        {:id "test-node" 
                         :source-paths ["src/main/backend" "test" ".lein-git-deps/cljs-asynchronize/src"]
-                        :notify-command ["node" "run/test/bin/runner-node.js" 
-                                            "run/js/compiled/test"
-                                            "run/js/compiled/test_node.js"]
+                        ; :notify-command ["node" "run/test/bin/runner-node.js" 
+                        ;                     "run/js/compiled/test"
+                        ;                     "run/js/compiled/test_node.js"]
                         :compiler {:output-to "run/js/compiled/test_node.js"
                                    :output-dir "run/js/compiled/test"
                                    :target :nodejs

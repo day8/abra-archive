@@ -14,3 +14,6 @@ pom.xml.asc
 .lein-plugins/
 .lein-failures
 .lein-git-deps/
+checkouts
+atom-shell
+NULL

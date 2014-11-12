@@ -8,6 +8,8 @@
 
 (def default-state
   {:debugging?  false
+   :project-dir "."
+   :nrepl-state false
    })
 
 
