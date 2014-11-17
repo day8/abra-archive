@@ -32,9 +32,9 @@
 
 ;; a render client might ask for lein to start a repl
 (.on ipc "start-lein-repl"
-       (fn [event arg]
+       (fn [event project-path]
          (go
-           (let [port (<? (nrepl/start-lein-repl))]
+           (let [port (<? (nrepl/start-lein-repl {:project-path project-path}))]
              (.send (.-sender event) "lein-repl-status" (clj->js (:nrepl @nrepl/state)))))))
 
 (defn callback

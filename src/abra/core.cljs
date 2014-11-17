@@ -96,7 +96,7 @@
   "Start the lein repl and open the debugger view"
   []
   (swap! state/app-state assoc :debugging? true)
-  (.send ipc "start-lein-repl"))
+  (.send ipc "start-lein-repl" (:project-dir @state/app-state)))
 
 (defn details-view
   []

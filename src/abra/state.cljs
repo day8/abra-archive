@@ -10,6 +10,7 @@
   {:debugging?  false
    :project-dir "."
    :nrepl-state false
+   :debug-url "http://www.day8.com.au"
    })
 
 
