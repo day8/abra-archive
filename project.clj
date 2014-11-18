@@ -46,6 +46,7 @@
                         :compiler {:output-to "run/js/compiled/test_node.js"
                                    :output-dir "run/js/compiled/test"
                                    :target :nodejs
+                                   :hashbang false
                                    :optimizations :none 
                                    :pretty-print true}}]
               
