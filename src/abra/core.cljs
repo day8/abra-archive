@@ -42,17 +42,51 @@
                           "running"
                           "stopped")])
 
+(defn field-label
+  [text]
+  [label 
+   :label text
+   :style {:font-variant "small-caps"}]
+  )
 (defn debug-view
   []
-  [:div
-   [page-header "Start Debugging"]
-   [nrepl-state-text]
-   [:div "Debug-View"]
-   [:input.btn.btn-success
-    {:type "button"
-     :value "Detail"
-     ;; :disabled (if (stadebugging? @state/app-state) "disabled" "")
-     :on-click  #(swap! state/app-state assoc :debugging? false)}]])
+  [v-box
+   :width "100%"
+   :children [
+              [page-header "Start Debugging"]
+              [nrepl-state-text]
+              [v-box 
+               :gap "20px"
+               :children [[button
+                           :label "STOP"
+                           :on-click  #(swap! state/app-state assoc :debugging? false)
+                           :class    "btn-danger"]
+                          [h-box
+                           :justify :start
+                           :gap "20px"
+                           :children [[v-box
+                                       :children [[field-label "namespace"]
+                                                  [input-text]]]
+                                      [v-box
+                                       :children [[field-label "locals"]
+                                                  [input-text]]]]]
+                          [h-box
+                           :gap "5px"
+                           :children [[v-box
+                                       :children [[field-label "clojurescript"]
+                                                  [input-text]]]
+                                      [v-box 
+                                       :children [[gap
+                                                   :size "20px"]
+                                                  [button
+                                                   :label "Translate"
+                                                   :class "btn-primary"]]]
+                                      [v-box
+                                       :children [[field-label "javascript"]
+                                                  [input-text]]]
+                                      [v-box
+                                       :children [[field-label "javascript result"]
+                                                  [input-text]]]]]]]]])
 
 (defn page-header
   [header]
@@ -98,6 +132,12 @@
   (swap! state/app-state assoc :debugging? true)
   (.send ipc "start-lein-repl" (:project-dir @state/app-state)))
 
+(defn stop-debugging 
+  "Stop the lein repl and close the debugger view"
+  []
+  (swap! state/app-state assoc :debugging? false)
+  (.send ipc "stop-lein-repl"))
+
 (defn details-view
   []
   [:div
@@ -122,10 +162,9 @@
 
 (defn main-page
   []
-  [:div
-   (if (:debugging? @state/app-state)
-     [debug-view]
-     [details-view])])
+  (if (:debugging? @state/app-state)
+    [debug-view]
+    [details-view]))
 
 
 (defn start

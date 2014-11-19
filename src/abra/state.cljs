@@ -7,7 +7,7 @@
 (def app-state (reagent/atom {}))
 
 (def default-state
-  {:debugging?  false
+  {:debugging?  true
    :project-dir "."
    :nrepl-state false
    :debug-url "http://www.day8.com.au"

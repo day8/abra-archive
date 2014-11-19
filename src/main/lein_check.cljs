@@ -10,7 +10,7 @@
 
 (ns main.lein-check
   (:require-macros [cljs.core.async.macros :refer [go]]
-            [main.backend.macros :refer [<?]])
+                   [main.backend.macros :refer [<?]])
   (:require [main.backend.nrepl :as nrepl]))
 ;;   (:require [main.core :as core]))
 
@@ -32,10 +32,18 @@
 
 ;; a render client might ask for lein to start a repl
 (.on ipc "start-lein-repl"
-       (fn [event project-path]
+     (fn [event project-path]
+       (when (not (:nrepl @nrepl/state))
          (go
            (let [port (<? (nrepl/start-lein-repl {:project-path project-path}))]
-             (.send (.-sender event) "lein-repl-status" (clj->js (:nrepl @nrepl/state)))))))
+             (.send (.-sender event) "lein-repl-status" (clj->js (:nrepl @nrepl/state))))))))
+
+;; a render client might ask for lein to stop a repl
+(.on ipc "stop-lein-repl"
+     (fn [event]
+       (go
+         (let [result (<? (nrepl/stop-lein-repl))]
+           (.send (.-sender event) "lein-repl-status" (clj->js (:nrepl @nrepl/state)))))))
 
 (defn callback
   [error stdout stderr]
