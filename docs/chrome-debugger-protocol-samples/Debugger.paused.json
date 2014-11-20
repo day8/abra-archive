@@ -1,0 +1,885 @@
+{
+    "method": "Debugger.paused",
+    "reason": "other",
+    "hitBreakpoints": [
+        "file:///D:/misc/gist/out/gist/core.js:48:97"
+    ],
+    "params": {
+        "callFrames": [
+            {
+                "callFrameId": "{\"ordinal\":0,\"injectedScriptId\":20}",
+                "functionName": "undo",
+                "location": {
+                    "scriptId": "1065",
+                    "lineNumber": 48,
+                    "columnNumber": 97
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":84}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":85}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":86}",
+                    "className": "Window",
+                    "description": "Window"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":1,\"injectedScriptId\":20}",
+                "functionName": "",
+                "location": {
+                    "scriptId": "1065",
+                    "lineNumber": 114,
+                    "columnNumber": 309
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":87}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":88}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":89}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "function",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":90}",
+                    "className": "Object",
+                    "description": "function (){return gist.core.undo.call(null);\r\n}"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":2,\"injectedScriptId\":20}",
+                "functionName": "cljs.core.apply.apply__2",
+                "location": {
+                    "scriptId": "1052",
+                    "lineNumber": 7751,
+                    "columnNumber": 10
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":91}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":92}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":93}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":94}",
+                    "className": "Window",
+                    "description": "Window"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":3,\"injectedScriptId\":20}",
+                "functionName": "cljs.core.apply.apply",
+                "location": {
+                    "scriptId": "1052",
+                    "lineNumber": 7821,
+                    "columnNumber": 16
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":95}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":96}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":97}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":98}",
+                    "className": "Window",
+                    "description": "Window"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":4,\"injectedScriptId\":20}",
+                "functionName": "reagent.impl.template.to_js_val.G__5559__delegate",
+                "location": {
+                    "scriptId": "1063",
+                    "lineNumber": 40,
+                    "columnNumber": 63
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":99}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":100}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":101}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":102}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":103}",
+                    "className": "Window",
+                    "description": "Window"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":5,\"injectedScriptId\":20}",
+                "functionName": "reagent.impl.template.to_js_val.G__5559",
+                "location": {
+                    "scriptId": "1063",
+                    "lineNumber": 45,
+                    "columnNumber": 25
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":104}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":105}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":106}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":107}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":108}",
+                    "className": "Window",
+                    "description": "Window"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":6,\"injectedScriptId\":20}",
+                "functionName": "executeDispatch",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 2991,
+                    "columnNumber": 20
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":109}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":110}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":111}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":112}",
+                    "className": "Object",
+                    "description": "Object"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":7,\"injectedScriptId\":20}",
+                "functionName": "SimpleEventPlugin.executeDispatch",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 12917,
+                    "columnNumber": 39
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":113}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":114}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":115}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "undefined"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":8,\"injectedScriptId\":20}",
+                "functionName": "forEachEventDispatch",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 2979,
+                    "columnNumber": 4
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":116}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":117}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":118}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "undefined"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":9,\"injectedScriptId\":20}",
+                "functionName": "executeDispatchesInOrder",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 3000,
+                    "columnNumber": 2
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":119}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":120}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":121}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":122}",
+                    "className": "Object",
+                    "description": "Object"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":10,\"injectedScriptId\":20}",
+                "functionName": "executeDispatchesAndRelease",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 2351,
+                    "columnNumber": 21
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":123}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":124}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":125}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "undefined"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":11,\"injectedScriptId\":20}",
+                "functionName": "forEachAccumulated",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 14782,
+                    "columnNumber": 7
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":126}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":127}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "undefined"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":12,\"injectedScriptId\":20}",
+                "functionName": "EventPluginHub.processEventQueue",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 2568,
+                    "columnNumber": 4
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":128}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":129}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":130}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":131}",
+                    "className": "Object",
+                    "description": "Object"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":13,\"injectedScriptId\":20}",
+                "functionName": "runEventQueueInBatch",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 8986,
+                    "columnNumber": 17
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":132}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":133}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":134}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "value": null,
+                    "subtype": "null"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":14,\"injectedScriptId\":20}",
+                "functionName": "Mixin.perform",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 13860,
+                    "columnNumber": 19
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":135}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":136}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":137}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":138}",
+                    "className": "ReactDefaultBatchingStrategyTransaction",
+                    "description": "ReactDefaultBatchingStrategyTransaction"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":15,\"injectedScriptId\":20}",
+                "functionName": "ReactDefaultBatchingStrategy.batchedUpdates",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 8009,
+                    "columnNumber": 18
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":139}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":140}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":141}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":142}",
+                    "className": "Object",
+                    "description": "Object"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":16,\"injectedScriptId\":20}",
+                "functionName": "batchedUpdates",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 12253,
+                    "columnNumber": 19
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":143}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":144}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":145}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":146}",
+                    "className": "Object",
+                    "description": "Object"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":17,\"injectedScriptId\":20}",
+                "functionName": "ReactEventEmitterMixin.handleTopLevel",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 9013,
+                    "columnNumber": 17
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":147}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":148}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":149}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":150}",
+                    "className": "Object",
+                    "description": "Object"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":18,\"injectedScriptId\":20}",
+                "functionName": "handleTopLevelImpl",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 9100,
+                    "columnNumber": 22
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":151}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":152}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":153}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "undefined"
+                }
+            },
+            {
+                "callFrameId": "{\"ordinal\":19,\"injectedScriptId\":20}",
+                "functionName": "ReactEventTopLevelCallback.createTopLevelCallback",
+                "location": {
+                    "scriptId": "1040",
+                    "lineNumber": 9159,
+                    "columnNumber": 8
+                },
+                "scopeChain": [
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":154}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "local"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":155}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":156}",
+                            "className": "Object",
+                            "description": "Object"
+                        },
+                        "type": "closure"
+                    },
+                    {
+                        "object": {
+                            "type": "object",
+                            "objectId": "{\"injectedScriptId\":20,\"id\":157}",
+                            "className": "Window",
+                            "description": "Window"
+                        },
+                        "type": "global"
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":158}",
+                    "subtype": "node",
+                    "className": "HTMLDocument",
+                    "description": "#document"
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,289 @@
+{
+    "result": {
+        "result": [
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "G__5141",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "seq__5128",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "vec__5133",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "count__5130",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "G__5145",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":159}",
+                    "className": "cljs.core.LazySeq",
+                    "description": "cljs.core.LazySeq"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "tx_data",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "vec__5132",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "G__5144",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "G__5139",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "i__5131",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "seq__5128__$1",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":160}",
+                    "className": "datascript.DB",
+                    "description": "datascript.DB"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "before",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":161}",
+                    "className": "datascript.TxReport",
+                    "description": "datascript.TxReport"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "prev",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "G__5137",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "G__5134",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "temp__4092__auto__",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "G__5138",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "object",
+                    "objectId": "{\"injectedScriptId\":20,\"id\":162}",
+                    "className": "datascript.DB",
+                    "description": "datascript.DB"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "after",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "chunk__5129",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "l",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "G__5140",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "G__5143",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "k",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "G__5142",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "G__5136",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "c__4191__auto__",
+                "isOwn": true
+            },
+            {
+                "value": {
+                    "type": "undefined"
+                },
+                "writable": true,
+                "enumerable": true,
+                "configurable": true,
+                "name": "G__5135",
+                "isOwn": true
+            }
+        ]
+    },
+    "id": 52
+}

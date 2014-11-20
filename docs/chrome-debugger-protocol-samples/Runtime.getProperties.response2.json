@@ -1,0 +1,93 @@
+{
+	"result": {
+		"result": [
+			{
+				"value": {
+					"type": "object",
+					"value": null,
+					"subtype": "null"
+				},
+				"writable": true,
+				"enumerable": true,
+				"configurable": true,
+				"name": "meta",
+				"isOwn": true
+			},
+			{
+				"value": {
+					"type": "function",
+					"objectId": "{\"injectedScriptId\":20,\"id\":173}",
+					"className": "Object",
+					"description": "function (){var temp__4092__auto__ = cljs.core.seq.call(null,coll);if(temp__4092__auto__)\r\n{var s = temp__4092__auto__;if(cljs.core.chunked_seq_QMARK_.call(null,s))\r\n{var c = cljs.core.chunk_first.call(null,s);var size = cljs.core.count.call(null,c);var b = cljs.core.chunk_buffer.call(null,size);var n__4291__auto___5363 = size;var i_5364 = 0;while(true){\r\nif((i_5364 < n__4291__auto___5363))\r\n{cljs.core.chunk_append.call(null,b,f.call(null,cljs.core._nth.call(null,c,i_5364)));\r\n{\r\nvar G__5365 = (i_5364 + 1);\r\ni_5364 = G__5365;\r\ncontinue;\r\n}\r\n} else\r\n{}\r\nbreak;\r\n}\r\nreturn cljs.core.chunk_cons.call(null,cljs.core.chunk.call(null,b),map.call(null,f,cljs.core.chunk_rest.call(null,s)));\r\n} else\r\n{return cljs.core.cons.call(null,f.call(null,cljs.core.first.call(null,s)),map.call(null,f,cljs.core.rest.call(null,s)));\r\n}\r\n} else\r\n{return null;\r\n}\r\n}"
+				},
+				"writable": true,
+				"enumerable": true,
+				"configurable": true,
+				"name": "fn",
+				"isOwn": true
+			},
+			{
+				"value": {
+					"type": "object",
+					"value": null,
+					"subtype": "null"
+				},
+				"writable": true,
+				"enumerable": true,
+				"configurable": true,
+				"name": "s",
+				"isOwn": true
+			},
+			{
+				"value": {
+					"type": "object",
+					"value": null,
+					"subtype": "null"
+				},
+				"writable": true,
+				"enumerable": true,
+				"configurable": true,
+				"name": "__hash",
+				"isOwn": true
+			},
+			{
+				"value": {
+					"type": "number",
+					"value": 0,
+					"description": "0"
+				},
+				"writable": true,
+				"enumerable": true,
+				"configurable": true,
+				"name": "cljs$lang$protocol_mask$partition1$",
+				"isOwn": true
+			},
+			{
+				"value": {
+					"type": "number",
+					"value": 32374988,
+					"description": "32374988"
+				},
+				"writable": true,
+				"enumerable": true,
+				"configurable": true,
+				"name": "cljs$lang$protocol_mask$partition0$",
+				"isOwn": true
+			},
+			{
+				"name": "__proto__",
+				"value": {
+					"type": "object",
+					"objectId": "{\"injectedScriptId\":20,\"id\":174}",
+					"className": "Object",
+					"description": "Object"
+				},
+				"writable": true,
+				"configurable": true,
+				"enumerable": false,
+				"isOwn": true
+			}
+		]
+	},
+	"id": 64
+}
