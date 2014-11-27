@@ -11,7 +11,10 @@
    :project-dir "."
    :nrepl-state false
    :debug-url "http://www.day8.com.au"
-   })
+   :namespace-string ""
+   :locals-string ""
+   :clojurescript-string ""
+   :javascript-string ""})
 
 
 (defn initialise []

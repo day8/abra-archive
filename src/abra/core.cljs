@@ -2,7 +2,9 @@
   (:require [abra.state :as state]
             [reagent.core :as reagent]
             [abra.dialog :as dialog]
-            [re-com.core  :refer [input-text button hyperlink label spinner progress-bar checkbox radio-button title slider]]
+            [re-com.core  :refer [input-text text-area button hyperlink label 
+                                  spinner progress-bar checkbox radio-button 
+                                  title slider]]
             [re-com.box   :refer [h-box v-box box gap line]]))
 
 ;; redirects any println to console.log
@@ -66,15 +68,31 @@
                            :gap "20px"
                            :children [[v-box
                                        :children [[field-label "namespace"]
-                                                  [input-text]]]
+                                                  [text-area
+                                                   :model (:namespace-string @state/app-state)
+                                                   :on-change #(swap! state/app-state
+                                                                      assoc :namespace-string
+                                                                      %)
+                                                   ]]]
                                       [v-box
                                        :children [[field-label "locals"]
-                                                  [input-text]]]]]
+                                                  [text-area
+                                                   :model (:locals-string @state/app-state)
+                                                   :on-change #(swap! state/app-state
+                                                                      assoc :locals-string
+                                                                      %)
+                                                   ]]]]]
                           [h-box
                            :gap "5px"
                            :children [[v-box
                                        :children [[field-label "clojurescript"]
-                                                  [input-text]]]
+                                                  [text-area
+                                                   :model (:clojurescript-string
+                                                            @state/app-state)                                                   :on-change 
+                                                   ; :on-change #(swap! state/app-state
+                                                   ;                    assoc :clojurescript-string
+                                                   ;                    %)
+                                                   ]]]
                                       [v-box 
                                        :children [[gap
                                                    :size "20px"]
@@ -83,10 +101,10 @@
                                                    :class "btn-primary"]]]
                                       [v-box
                                        :children [[field-label "javascript"]
-                                                  [input-text]]]
+                                                  [text-area]]]
                                       [v-box
                                        :children [[field-label "javascript result"]
-                                                  [input-text]]]]]]]]])
+                                                  [text-area]]]]]]]]])
 
 (defn page-header
   [header]
@@ -100,7 +118,8 @@
   []
   [h-box 
    :children [[:div "Root directory   "]
-              [v-box :children [[input-text :model (:project-dir @state/app-state)]
+              [v-box :children [[input-text 
+                                 :model (:project-dir @state/app-state)]
                                 [:div "This directory is the root of your clojurescript project"]]]
               [:input.btn.btn-success
                {:type "button"
@@ -112,14 +131,16 @@
                                            :defaultPath  "c:\\"
                                            :filters [{:name "Project Files" :extensions ["clj"]}]}
                                           (fn [[project-dir]] 
-                                            (swap! state/app-state assoc-in [:project-dir] project-dir))))}]]])
+                                            (swap! state/app-state assoc :project-dir project-dir))))}]]])
 
 (defn debug-url
   []
   [h-box 
    :children [[:div "Debug URL   "]
               [v-box 
-               :children [[input-text :model (:project-dir @state/app-state)]
+               :children [[input-text 
+                           :model (:debug-url @state/app-state)
+                           :on-change #(swap! state/app-state assoc :debug-url %)]
                           [:div "You want to debug an HTML page right? 
                                 Via which URL should it be loaded? 
                                 Probably something like:"]
