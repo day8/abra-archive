@@ -27,6 +27,10 @@
 (.on ipc "lein-repl-status" (fn [arg]
                               (reset! lein-repl-status (js->clj arg))))    ;;
 
+(.on ipc "translated-javascript" (fn [arg]
+                                   (swap! state/app-state assoc :javascript-string arg)
+                                   (.send ipc "get-lein-repl-status")))    ;;
+
 (defn tell-user-about-lein-problems
   []
   [:div "It doesn't look as if you have lein installed on this machine"])
@@ -72,36 +76,35 @@
                                                    :model (:namespace-string @state/app-state)
                                                    :on-change #(swap! state/app-state
                                                                       assoc :namespace-string
-                                                                      %)
-                                                   ]]]
+                                                                      %)]]]
                                       [v-box
                                        :children [[field-label "locals"]
                                                   [text-area
                                                    :model (:locals-string @state/app-state)
                                                    :on-change #(swap! state/app-state
                                                                       assoc :locals-string
-                                                                      %)
-                                                   ]]]]]
+                                                                      %)]]]]]
                           [h-box
                            :gap "5px"
                            :children [[v-box
                                        :children [[field-label "clojurescript"]
                                                   [text-area
                                                    :model (:clojurescript-string
-                                                            @state/app-state)                                                   :on-change 
-                                                   ; :on-change #(swap! state/app-state
-                                                   ;                    assoc :clojurescript-string
-                                                   ;                    %)
-                                                   ]]]
+                                                            @state/app-state)
+                                                   :on-change #(swap! state/app-state
+                                                                      assoc :clojurescript-string
+                                                                      %)]]]
                                       [v-box 
                                        :children [[gap
                                                    :size "20px"]
                                                   [button
                                                    :label "Translate"
-                                                   :class "btn-primary"]]]
+                                                   :class "btn-primary"
+                                                   :on-click #(translate)]]]
                                       [v-box
                                        :children [[field-label "javascript"]
-                                                  [text-area]]]
+                                                  [text-area
+                                                   :model (:javascript-string @state/app-state)]]]
                                       [v-box
                                        :children [[field-label "javascript result"]
                                                   [text-area]]]]]]]]])
@@ -178,8 +181,11 @@
      ;; :disabled (if (stadebugging? @state/app-state) "disabled" "")
      :on-click  #(dialog/message {:type "info" :message "Didn't work" :buttons ["Cancel" "Ok"]})}]])
 
+(defn translate 
+  "translates the clojurescript on this page"
+  []
+  (.send ipc "translate-clojurescript" (:clojurescript-string @state/app-state)))
 ;;
-
 
 (defn main-page
   []

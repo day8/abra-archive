@@ -35,15 +35,24 @@
      (fn [event project-path]
        (when (not (:nrepl @nrepl/state))
          (go
-           (let [port (<? (nrepl/start-lein-repl {:project-path project-path}))]
-             (.send (.-sender event) "lein-repl-status" (clj->js (:nrepl @nrepl/state))))))))
+           (let [port (<? (nrepl/start-lein-repl 
+                            {:project-path project-path}))]
+             (.send (.-sender event) "lein-repl-status" 
+                    (clj->js (:nrepl @nrepl/state))))))))
 
 ;; a render client might ask for lein to stop a repl
 (.on ipc "stop-lein-repl"
      (fn [event]
        (go
          (let [result (<? (nrepl/stop-lein-repl))]
-           (.send (.-sender event) "lein-repl-status" (clj->js (:nrepl @nrepl/state)))))))
+           (.send (.-sender event) "lein-repl-status" 
+                  (clj->js (:nrepl @nrepl/state)))))))
+
+(.on ipc "translate-clojurescript"
+     (fn [event statement]
+       (go
+         (let [result (<? (nrepl/cljs->js statement))]
+           (.send (.-sender event) "translated-javascript" result)))))
 
 (defn callback
   [error stdout stderr]

@@ -202,7 +202,7 @@
    (if (:nrepl @state)
      (local-eval statement)
      (go (let [port (<! (start-lein-repl options))]
-           (local-eval statement))))))
+           (<! (local-eval statement)))))))
 
 (defn cljs->js 
   "Asynchronously converts clojurescript into javascript using a repl,

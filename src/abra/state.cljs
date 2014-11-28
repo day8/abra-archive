@@ -7,13 +7,13 @@
 (def app-state (reagent/atom {}))
 
 (def default-state
-  {:debugging?  true
+  {:debugging?  false
    :project-dir "."
    :nrepl-state false
    :debug-url "http://www.day8.com.au"
    :namespace-string ""
    :locals-string ""
-   :clojurescript-string ""
+   :clojurescript-string "(+ 2 3)"
    :javascript-string ""})
 
 
