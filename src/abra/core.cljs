@@ -2,7 +2,7 @@
   (:require [abra.state :as state]
             [reagent.core :as reagent]
             [abra.dialog :as dialog]
-            [re-com.core  :refer [input-text text-area button hyperlink label 
+            [re-com.core  :refer [input-text input-textarea button hyperlink label 
                                   spinner progress-bar checkbox radio-button 
                                   title slider]]
             [re-com.box   :refer [h-box v-box box gap line]]))
@@ -72,14 +72,14 @@
                            :gap "20px"
                            :children [[v-box
                                        :children [[field-label "namespace"]
-                                                  [text-area
+                                                  [input-textarea
                                                    :model (:namespace-string @state/app-state)
                                                    :on-change #(swap! state/app-state
                                                                       assoc :namespace-string
                                                                       %)]]]
                                       [v-box
                                        :children [[field-label "locals"]
-                                                  [text-area
+                                                  [input-textarea
                                                    :model (:locals-string @state/app-state)
                                                    :on-change #(swap! state/app-state
                                                                       assoc :locals-string
@@ -88,7 +88,7 @@
                            :gap "5px"
                            :children [[v-box
                                        :children [[field-label "clojurescript"]
-                                                  [text-area
+                                                  [input-textarea
                                                    :model (:clojurescript-string
                                                             @state/app-state)
                                                    :on-change #(swap! state/app-state
@@ -100,14 +100,15 @@
                                                   [button
                                                    :label "Translate"
                                                    :class "btn-primary"
-                                                   :on-click #(translate)]]]
+                                                   :on-click #(translate)
+                                                   :disabled? (not @lein-repl-status)]]]
                                       [v-box
                                        :children [[field-label "javascript"]
-                                                  [text-area
+                                                  [input-textarea
                                                    :model (:javascript-string @state/app-state)]]]
                                       [v-box
                                        :children [[field-label "javascript result"]
-                                                  [text-area]]]]]]]]])
+                                                  [input-textarea]]]]]]]]])
 
 (defn page-header
   [header]
