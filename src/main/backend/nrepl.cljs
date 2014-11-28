@@ -234,8 +234,8 @@
                              (reader/read-string name)))
            locals (into {} (for [name locals]
                              [`'~name {:name `'~name}]))
-           [as-map refer_map] (process-namespace namespace-str)
-           locals (merge locals refer_map)
+           [as-map refer-map] (process-namespace namespace-str)
+           locals (merge locals refer-map)
            eval-str (gstring/format convert-cljs-str namespace
                                          as-map locals statement)
            repl-str (str private-namespace-str eval-str)

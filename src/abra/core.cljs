@@ -185,7 +185,10 @@
 (defn translate 
   "translates the clojurescript on this page"
   []
-  (.send ipc "translate-clojurescript" (:clojurescript-string @state/app-state)))
+  (let [locals (.split (:locals-string @state/app-state) #"\s")]
+  (.send ipc "translate-clojurescript" (:clojurescript-string @state/app-state) 
+         (:namespace-string @state/app-state) 
+         locals)))
 ;;
 
 (defn main-page
