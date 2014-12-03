@@ -49,9 +49,10 @@
                   (clj->js (:nrepl @nrepl/state)))))))
 
 (.on ipc "translate-clojurescript"
-     (fn [event statement]
+     (fn [event statement namespace-string locals]
        (go
-         (let [result (<? (nrepl/cljs->js statement))]
+         (let [result (<? (nrepl/cljs->js statement 
+                                          :namespace-str namespace-string :locals locals))]
            (.send (.-sender event) "translated-javascript" result)))))
 
 (defn callback

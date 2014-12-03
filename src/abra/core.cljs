@@ -2,7 +2,7 @@
   (:require [abra.state :as state]
             [reagent.core :as reagent]
             [abra.dialog :as dialog]
-            [re-com.core  :refer [input-text text-area button hyperlink label 
+            [re-com.core  :refer [input-text input-textarea button hyperlink label 
                                   spinner progress-bar checkbox radio-button 
                                   title slider]]
             [re-com.box   :refer [h-box v-box box gap line]]))
@@ -65,21 +65,23 @@
                :gap "20px"
                :children [[button
                            :label "STOP"
-                           :on-click  #(swap! state/app-state assoc :debugging? false)
+                           :on-click  #(stop-debugging)
                            :class    "btn-danger"]
                           [h-box
                            :justify :start
                            :gap "20px"
                            :children [[v-box
                                        :children [[field-label "namespace"]
-                                                  [text-area
+                                                  [input-textarea
                                                    :model (:namespace-string @state/app-state)
                                                    :on-change #(swap! state/app-state
                                                                       assoc :namespace-string
-                                                                      %)]]]
+                                                                      %)
+                                                   :rows 12
+                                                   :width "550px"]]]
                                       [v-box
                                        :children [[field-label "locals"]
-                                                  [text-area
+                                                  [input-textarea
                                                    :model (:locals-string @state/app-state)
                                                    :on-change #(swap! state/app-state
                                                                       assoc :locals-string
@@ -88,7 +90,7 @@
                            :gap "5px"
                            :children [[v-box
                                        :children [[field-label "clojurescript"]
-                                                  [text-area
+                                                  [input-textarea
                                                    :model (:clojurescript-string
                                                             @state/app-state)
                                                    :on-change #(swap! state/app-state
@@ -100,14 +102,20 @@
                                                   [button
                                                    :label "Translate"
                                                    :class "btn-primary"
-                                                   :on-click #(translate)]]]
+                                                   :on-click #(translate)
+                                                   :disabled? (not @lein-repl-status)]]]
                                       [v-box
                                        :children [[field-label "javascript"]
-                                                  [text-area
+                                                  [input-textarea
                                                    :model (:javascript-string @state/app-state)]]]
                                       [v-box
                                        :children [[field-label "javascript result"]
-                                                  [text-area]]]]]]]]])
+                                                  [input-textarea
+                                                   :model (str "cljs.core.prn_str.call(null,"
+                                                               (clojure.string/join 
+                                                                 (drop-last 2 
+                                                                            (:javascript-string @state/app-state)))
+                                                               ");")]]]]]]]]])
 
 (defn page-header
   [header]
@@ -150,6 +158,7 @@
                           [:ul [:li "file:///path/to/my/project/folder/index.html"]
                            [:li "http://localhost:3449/index.html  (if you are running figwheel or and external server)"]]]]]])
 
+(.send ipc "start-lein-repl" (:project-dir @state/app-state))
 (defn start-debugging 
   "Start the lein repl and open the debugger view"
   []
@@ -160,7 +169,8 @@
   "Stop the lein repl and close the debugger view"
   []
   (swap! state/app-state assoc :debugging? false)
-  (.send ipc "stop-lein-repl"))
+  (when @lein-repl-status
+    (.send ipc "stop-lein-repl")))
 
 (defn details-view
   []
@@ -184,7 +194,10 @@
 (defn translate 
   "translates the clojurescript on this page"
   []
-  (.send ipc "translate-clojurescript" (:clojurescript-string @state/app-state)))
+  (let [locals (.split (:locals-string @state/app-state) #"\s")]
+    (.send ipc "translate-clojurescript" (:clojurescript-string @state/app-state) 
+           (:namespace-string @state/app-state) 
+           locals)))
 ;;
 
 (defn main-page
