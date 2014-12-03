@@ -122,6 +122,12 @@
                  (find-refer f))))
     {}))
 
+(defn- find-namespace
+  "finds the namespace from a ns command"
+  [namespace-str]
+  (last 
+    (.match namespace-str #"ns ([\w\.\+\-\?\!]*)")))
+
 (defn- process-namespace
   "Looks at a namespace command and strips out :refer and :as in the
   require statements so that the symbols can be added to the 
@@ -130,7 +136,8 @@
   (let [namespace-forms (reader/read-string namespace-str)
         as-map (find-as namespace-forms)
         refer-map (find-refer namespace-forms)]
-    [as-map refer-map]))
+    {:as-map as-map 
+     :refer-map refer-map}))
 
 (defn start-lein-repl
   "Asynchronously starts a lein repl so that clojure code can be 
@@ -226,7 +233,7 @@
   ([statement & {:keys [project-path port namespace locals
                         namespace-str]
                :or {project-path "." port 7888
-                    namespace "" locals []
+                    namespace nil locals []
                     namespace-str ""}
                :as options}]
    (go 
@@ -234,8 +241,9 @@
                              (reader/read-string name)))
            locals (into {} (for [name locals]
                              [`'~name {:name `'~name}]))
-           [as-map refer-map] (process-namespace namespace-str)
+           {:keys [as-map refer-map]} (process-namespace namespace-str)
            locals (merge locals refer-map)
+           namespace (or namespace (find-namespace namespace-str))
            eval-str (gstring/format convert-cljs-str namespace
                                          as-map locals statement)
            repl-str (str private-namespace-str eval-str)
