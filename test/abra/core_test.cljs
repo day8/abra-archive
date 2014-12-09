@@ -89,13 +89,13 @@
                                         :namespace "test.core"
                                         :namespace-str "(ns ignore.me [goog.string :as gstring])"))]
             (is (= "5" result))
-            (is (= "((2) + (3));\n" js-result))
-            (is (= "(test.core.x + (3));\n" namespace-result))
-            (is (= "cljs.core.map.call(null,(2),(3));\n" core-result))
-            (is (= "(x + (3));\n" locals-result))
-            (is (= "goog.string.format(x,(3));\n" require-as-result))
-            (is (= "goog.string.format(test.core.x,(3));\n" require-as-result-namespace))
-            (is (= "goog.string.format(test.core.x,(3));\n" require-as-result-namespace2)))
+            (is (= "((2) + (3));" js-result))
+            (is (= "(test.core.x + (3));" namespace-result))
+            (is (= "cljs.core.map.call(null,(2),(3));" core-result))
+            (is (= "(x + (3));" locals-result))
+            (is (= "goog.string.format(x,(3));" require-as-result))
+            (is (= "goog.string.format(test.core.x,(3));" require-as-result-namespace))
+            (is (= "goog.string.format(test.core.x,(3));" require-as-result-namespace2)))
           (is (thrown? js/Error (<? (nrepl/eval "(+2 3)"))))
           (let [end-res (<? (nrepl/stop-lein-repl))
                 port-closed (<? (nrepl/port-open? open-port))]
