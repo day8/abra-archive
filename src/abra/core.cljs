@@ -113,8 +113,8 @@
                                                   [input-textarea
                                                    :model (str "cljs.core.prn_str.call(null,"
                                                                (clojure.string/join 
-                                                                 (drop-last 2 
-                                                                            (:javascript-string @state/app-state)))
+                                                                 (drop-last 
+                                                                   (:javascript-string @state/app-state)))
                                                                ");")]]]]]]]]])
 
 (defn page-header

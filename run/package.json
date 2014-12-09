@@ -6,7 +6,7 @@
 		"ws": "~0.4.31",
 		"bl": "~0.4.2",
 		"colors": "~0.6.2",
-		"nrepl-client": "~0.2.1",
+		"nrepl-client": "git+https://github.com/stumitchell/node-nrepl-client.git",
 		"nrepl.js": "~0.0.1",
 		"portscanner": "~1.0.0"
 	}

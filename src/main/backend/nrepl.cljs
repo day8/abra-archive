@@ -162,7 +162,7 @@
                            node-server 
                            (js-obj "port" port 
                                    "projectPath" project-path
-                                   "startTimeout" 30000) 
+                                   "startTimeout" 60000) 
                            ...))
        (swap! state assoc :nrepl true)
        (swap! state assoc :port port)
@@ -245,7 +245,8 @@
            locals (merge locals refer-map)
            namespace (or namespace (find-namespace namespace-str))
            eval-str (gstring/format convert-cljs-str namespace
-                                         as-map locals statement)
+                                    as-map locals statement)
            repl-str (str private-namespace-str eval-str)
-           result (<! (eval repl-str options))]
-       (reader/read-string result)))))
+           result (<! (eval repl-str options))
+           evaled-result (reader/read-string result)]
+       (last (.match evaled-result #"(.*;)"))))))
