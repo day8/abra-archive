@@ -158,11 +158,13 @@
                           [:ul [:li "file:///path/to/my/project/folder/index.html"]
                            [:li "http://localhost:3449/index.html  (if you are running figwheel or and external server)"]]]]]])
 
-(.send ipc "start-lein-repl" (:project-dir @state/app-state))
+#_(.send ipc "start-lein-repl" (:project-dir @state/app-state))
 (defn start-debugging 
   "Start the lein repl and open the debugger view"
   []
   (swap! state/app-state assoc :debugging? true)
+  (.log js/console (str "hi" (prn-str (:debug-url @state/app-state))))
+  (.send ipc "open-url" (:debug-url @state/app-state))
   (.send ipc "start-lein-repl" (:project-dir @state/app-state)))
 
 (defn stop-debugging 

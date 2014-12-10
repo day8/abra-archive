@@ -1,10 +1,10 @@
 (ns main.core
- (:require [main.lein-check :as lein-check]
-           [main.backend.nrepl :as nrepl]))
+  (:require [main.lein-check :as lein-check]
+            [main.backend.nrepl :as nrepl]))
 
 "I am the initial js file which atom executes.
- I run in the, so called, browser context (nodejs)
- I bootstrap the application and kick off the GUI (Browser Window)."
+I run in the, so called, browser context (nodejs)
+I bootstrap the application and kick off the GUI (Browser Window)."
 
 ;; redirects any println to console.log
 (enable-console-print!)
@@ -22,8 +22,9 @@
 ;; TODO: how do we detect failure ???  The port may already be in use
 (-> app .-commandLine (.appendSwitch "remote-debugging-port" "9222"))
 
-;; store the window object, otherwise it will be garbage collected and closed
+;; store the window objects, otherwise it will be garbage collected and closed
 (def main-window (atom nil))
+(def debug-window (atom nil))
 
 
 (def abra-html
@@ -35,12 +36,21 @@
 
 (defn init-browser
   []
-	(reset! main-window (browser-window. #js {:width 800 :height 600}))
-	(.loadUrl @main-window abra-html)
-  (.toggleDevTools @main-window)             ;;  TODO: condition this on a developer environment variable
-	(.on @main-window "closed" #(reset! main-window nil)))
+  (reset! main-window (browser-window. #js {:width 800 :height 600}))
+  (.loadUrl @main-window abra-html)
+  #_(.toggleDevTools @main-window)             ;;  TODO: condition this on a developer environment variable
+  (.on @main-window "closed" #(reset! main-window nil)))
 
 
 (.start crash-reporter)
 (.on app "window-all-closed" #(when-not (= js/process.platform "darwin") (.quit app)))
 (.on app "ready" #(init-browser))
+
+;; a render client might ask for a url to be opened
+(.on ipc "open-url"
+     (fn [event, debug-url]
+       (.log js/console debug-url)
+       (reset! debug-window (browser-window. #js {:width 800 :height 600}))
+       (.loadUrl @debug-window debug-url)
+       (.toggleDevTools @debug-window)             ;;  TODO: condition this on a developer environment variable
+       (.on @debug-window "closed" #(reset! main-window nil))))
