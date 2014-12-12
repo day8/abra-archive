@@ -11,6 +11,7 @@
    :project-dir "."
    :nrepl-state false
    :debug-url "http://www.day8.com.au"
+   :debug-host "http://localhost:9223"
    :namespace-string "(ns abra.core
   (:require [abra.state :as state]
             [reagent.core :as reagent]
@@ -21,7 +22,8 @@
             [re-com.box   :refer [h-box v-box box gap line]]))"
    :locals-string "x\ny\nz"
    :clojurescript-string "(+ x state/y input-text)"
-   :javascript-string ""})
+   :javascript-string ""
+   :debug-crmux-url nil})
 
 
 (defn initialise []

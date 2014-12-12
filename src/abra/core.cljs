@@ -5,7 +5,8 @@
             [re-com.core  :refer [input-text input-textarea button hyperlink label 
                                   spinner progress-bar checkbox radio-button 
                                   title slider]]
-            [re-com.box   :refer [h-box v-box box gap line]]))
+            [re-com.box   :refer [h-box v-box box gap line]]
+            [abra.crmux-handlers :as crmux-handlers]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
@@ -115,7 +116,17 @@
                                                                (clojure.string/join 
                                                                  (drop-last 
                                                                    (:javascript-string @state/app-state)))
-                                                               ");")]]]]]]]]])
+                                                               ");")]]]]]
+                          [abra-debug-panel]]]]])
+
+(defn abra-debug-panel []
+  [h-box 
+   :style {:class "debug-panel-body"}
+   :children [
+              [:iframe.debug-iframe {:src (or 
+                                            (:debug-crmux-url @state/app-state)
+                                            (str (:debug-host @state/app-state)
+                                                 (:debug-port @state/app-state)))}]]])
 
 (defn page-header
   [header]
@@ -162,10 +173,12 @@
 (defn start-debugging 
   "Start the lein repl and open the debugger view"
   []
-  (swap! state/app-state assoc :debugging? true)
-  (.log js/console (str "hi" (prn-str (:debug-url @state/app-state))))
-  (.send ipc "open-url" (:debug-url @state/app-state))
-  (.send ipc "start-lein-repl" (:project-dir @state/app-state)))
+  (let [url (:debug-url @state/app-state)
+        debug-host (:debug-host @state/app-state)]
+    (swap! state/app-state assoc :debugging? true)
+    (.send ipc "open-url" url)
+    (.send ipc "start-lein-repl" (:project-dir @state/app-state))
+    (crmux-handlers/get-debug-window-info debug-host url)))
 
 (defn stop-debugging 
   "Stop the lein repl and close the debugger view"
