@@ -21,9 +21,10 @@
                                   title slider]]
             [re-com.box   :refer [h-box v-box box gap line]]))"
    :locals-string "x\ny\nz"
-   :clojurescript-string "(+ x state/y input-text)"
+   :clojurescript-string "(+ 2 3)"
    :javascript-string ""
-   :debug-crmux-url nil})
+   :debug-crmux-url nil
+   :debug-crmux-websocket nil})
 
 
 (defn initialise []

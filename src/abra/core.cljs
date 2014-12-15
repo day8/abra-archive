@@ -1,4 +1,5 @@
 (ns abra.core
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [abra.state :as state]
             [reagent.core :as reagent]
             [abra.dialog :as dialog]
@@ -6,7 +7,8 @@
                                   spinner progress-bar checkbox radio-button 
                                   title slider]]
             [re-com.box   :refer [h-box v-box box gap line]]
-            [abra.crmux-handlers :as crmux-handlers]))
+            [abra.crmux-handlers :as crmux-handlers]
+            [cljs.core.async :refer [<!]]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
@@ -28,9 +30,15 @@
 (.on ipc "lein-repl-status" (fn [arg]
                               (reset! lein-repl-status (js->clj arg))))    ;;
 
-(.on ipc "translated-javascript" (fn [arg]
-                                   (swap! state/app-state assoc :javascript-string arg)
-                                   (.send ipc "get-lein-repl-status")))    ;;
+(.on ipc "translated-javascript" (fn [js-expression]
+                                   (go (let [js-print-string (str "cljs.core.prn_str.call(null,"
+                                                                  (clojure.string/join 
+                                                                    (drop-last js-expression)) ");")
+                                             js-results (prn-str (<! 
+                                                                  (crmux-handlers/ws-evaluate js-print-string)))]
+                                         (swap! state/app-state assoc :javascript-string js-expression)
+                                         (swap! state/app-state assoc :js-print-string js-results)
+                                         (.send ipc "get-lein-repl-status")))))    ;;
 
 (defn tell-user-about-lein-problems
   []
@@ -112,11 +120,7 @@
                                       [v-box
                                        :children [[field-label "javascript result"]
                                                   [input-textarea
-                                                   :model (str "cljs.core.prn_str.call(null,"
-                                                               (clojure.string/join 
-                                                                 (drop-last 
-                                                                   (:javascript-string @state/app-state)))
-                                                               ");")]]]]]
+                                                   :model (:js-print-string @state/app-state)]]]]]
                           [abra-debug-panel]]]]])
 
 (defn abra-debug-panel []
