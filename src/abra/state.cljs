@@ -7,10 +7,11 @@
 (def app-state (reagent/atom {}))
 
 (def default-state
-  {:debugging?  true
+  {:debugging?  false
    :project-dir "."
    :nrepl-state false
    :debug-url "http://www.day8.com.au"
+   :debug-host "http://localhost:9223"
    :namespace-string "(ns abra.core
   (:require [abra.state :as state]
             [reagent.core :as reagent]
@@ -20,8 +21,10 @@
                                   title slider]]
             [re-com.box   :refer [h-box v-box box gap line]]))"
    :locals-string "x\ny\nz"
-   :clojurescript-string "(+ x state/y input-text)"
-   :javascript-string ""})
+   :clojurescript-string "(+ 2 3)"
+   :javascript-string ""
+   :debug-crmux-url nil
+   :debug-crmux-websocket nil})
 
 
 (defn initialise []

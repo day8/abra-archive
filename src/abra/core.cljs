@@ -1,11 +1,14 @@
 (ns abra.core
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [abra.state :as state]
             [reagent.core :as reagent]
             [abra.dialog :as dialog]
             [re-com.core  :refer [input-text input-textarea button hyperlink label 
                                   spinner progress-bar checkbox radio-button 
                                   title slider]]
-            [re-com.box   :refer [h-box v-box box gap line]]))
+            [re-com.box   :refer [h-box v-box box gap line]]
+            [abra.crmux-handlers :as crmux-handlers]
+            [cljs.core.async :refer [<!]]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
@@ -27,9 +30,15 @@
 (.on ipc "lein-repl-status" (fn [arg]
                               (reset! lein-repl-status (js->clj arg))))    ;;
 
-(.on ipc "translated-javascript" (fn [arg]
-                                   (swap! state/app-state assoc :javascript-string arg)
-                                   (.send ipc "get-lein-repl-status")))    ;;
+(.on ipc "translated-javascript" (fn [js-expression]
+                                   (go (let [js-print-string (str "cljs.core.prn_str.call(null,"
+                                                                  (clojure.string/join 
+                                                                    (drop-last js-expression)) ");")
+                                             js-results (prn-str (<! 
+                                                                  (crmux-handlers/ws-evaluate js-print-string)))]
+                                         (swap! state/app-state assoc :javascript-string js-expression)
+                                         (swap! state/app-state assoc :js-print-string js-results)
+                                         (.send ipc "get-lein-repl-status")))))    ;;
 
 (defn tell-user-about-lein-problems
   []
@@ -111,11 +120,17 @@
                                       [v-box
                                        :children [[field-label "javascript result"]
                                                   [input-textarea
-                                                   :model (str "cljs.core.prn_str.call(null,"
-                                                               (clojure.string/join 
-                                                                 (drop-last 
-                                                                   (:javascript-string @state/app-state)))
-                                                               ");")]]]]]]]]])
+                                                   :model (:js-print-string @state/app-state)]]]]]
+                          [abra-debug-panel]]]]])
+
+(defn abra-debug-panel []
+  [h-box 
+   :style {:class "debug-panel-body"}
+   :children [
+              [:iframe.debug-iframe {:src (or 
+                                            (:debug-crmux-url @state/app-state)
+                                            (str (:debug-host @state/app-state)
+                                                 (:debug-port @state/app-state)))}]]])
 
 (defn page-header
   [header]
@@ -158,12 +173,16 @@
                           [:ul [:li "file:///path/to/my/project/folder/index.html"]
                            [:li "http://localhost:3449/index.html  (if you are running figwheel or and external server)"]]]]]])
 
-(.send ipc "start-lein-repl" (:project-dir @state/app-state))
+#_(.send ipc "start-lein-repl" (:project-dir @state/app-state))
 (defn start-debugging 
   "Start the lein repl and open the debugger view"
   []
-  (swap! state/app-state assoc :debugging? true)
-  (.send ipc "start-lein-repl" (:project-dir @state/app-state)))
+  (let [url (:debug-url @state/app-state)
+        debug-host (:debug-host @state/app-state)]
+    (swap! state/app-state assoc :debugging? true)
+    (.send ipc "open-url" url)
+    (.send ipc "start-lein-repl" (:project-dir @state/app-state))
+    (crmux-handlers/get-debug-window-info debug-host url)))
 
 (defn stop-debugging 
   "Stop the lein repl and close the debugger view"
