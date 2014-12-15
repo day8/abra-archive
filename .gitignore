@@ -1,5 +1,6 @@
 .idea
 *.iml
+*~
 Thumbs.db
 run/node_modules/
 run/js/compiled/
