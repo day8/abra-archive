@@ -1,7 +1,7 @@
 (ns abra.dialog)
 
 
-;;-- Access To Atom's Dialogs ---------------------------------------------------------------------
+;;-- Access To Atom's Dialogs -------------------------------------------------
 ;;
 ;; For reference see:  https://github.com/atom/atom-shell/blob/master/docs/api/dialog.md
 ;;

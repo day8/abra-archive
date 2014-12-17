@@ -7,7 +7,8 @@
                  [org.clojure/clojurescript "0.0-2277"]
                  [cljs-ajax "0.2.4"]
                  [reagent "0.4.2"]
-                 [re-com "0.1.6"]]
+                 [re-com "0.1.6"]
+                 [re-frame "0.1.0"]]
   
   :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]
             [lein-git-deps "0.0.1-SNAPSHOT"]
@@ -57,4 +58,6 @@
   :source-paths ["src" "test"]
   :test-paths ["test"]
   
-  :aliases {"auto-test" ["do" "clean," "cljsbuild" "auto" "test-node"]})
+  :aliases {"auto-test" ["do" "clean," "cljsbuild" "auto" "test-node"]}
+  
+  :clean-targets ["run/js/compiled"])
