@@ -16,8 +16,6 @@
   []
   (.getCurrentWindow remote))
 
-
-
 ;; showOpenDialog
 ;;
 ;;

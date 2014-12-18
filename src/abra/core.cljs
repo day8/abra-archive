@@ -7,7 +7,6 @@
                                   spinner progress-bar checkbox 
                                   radio-button title slider]]
             [re-com.box   :refer [h-box v-box box gap line]]
-            [abra.crmux-handlers :as crmux-handlers]
             [cljs.core.async :refer [<!]]
             [re-frame.handlers :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -28,12 +27,7 @@
 
 (.on ipc "translated-javascript" 
      (fn [js-expression]
-       (let [js-print-string (str "cljs.core.prn_str.call(null,"
-                                  (clojure.string/join 
-                                    (drop-last js-expression)) ");")]
-         (dispatch [:crmux_handlers.ws-evaluate js-print-string])
-         (dispatch [:javascript-string js-expression])
-         (.send ipc "get-lein-repl-status")))) 
+       (dispatch [:translated-javascript js-expression]))) 
 
 ;;------------------------------------------------------------------------------
 

@@ -89,7 +89,8 @@
    {:ns {:name \"%s\" :requires %s} :locals %s} '%s)))))")
 
 (defn- position   
-  "Takes a vector 'v' and an 'item' within 'v'.  Returns the zero-based index of 'item' in 'v'.
+  "Takes a vector 'v' and an 'item' within 'v'.  
+  Returns the zero-based index of 'item' in 'v'.
   Returns nil if item not found."
   [v item]
   (let [index-fn (fn [index i] (when (= i item) index))]

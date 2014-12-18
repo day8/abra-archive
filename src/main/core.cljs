@@ -58,8 +58,13 @@ I bootstrap the application and kick off the GUI (Browser Window)."
 ;; a render client might ask for a url to be opened
 (.on ipc "open-url"
      (fn [event, debug-url]
-       (.log js/console debug-url)
+       (print "Opening " debug-url)
        (reset! debug-window (browser-window. #js {:width 800 :height 600}))
        (.loadUrl @debug-window debug-url)
        #_(.toggleDevTools @debug-window)
        (.on @debug-window "closed" #(reset! main-window nil))))
+
+(.on ipc "close-url"
+     (fn [event]
+       (print "Closing the debug window")
+       (.close @debug-window)))

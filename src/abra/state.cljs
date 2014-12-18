@@ -43,8 +43,7 @@
     (reaction 
       (or 
         (:debug-crmux-url @db)
-        (str (:debug-host @db)
-             (:debug-port @db))))))
+        (:debug-host @db)))))
 
 (reg-sub-key :debugging? false)
 

@@ -1,4 +1,4 @@
-(ns abra.crmux-handlers
+(ns abra.crmux.handlers
   (:require [clojure.string :as string]
             [ajax.core :refer [GET]]
             [goog]
@@ -61,4 +61,3 @@
     
     (print "About to GET " json-url)
     (GET json-url opts)))
-

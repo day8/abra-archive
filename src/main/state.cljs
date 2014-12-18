@@ -6,8 +6,7 @@
 (def app-state (atom {}))
 
 (def default-state
-  {:debug-port "9222"
-   :debug-host "http://localhost:"})
+  {:debug-port "9222"})
 
 
 (defn initialise []

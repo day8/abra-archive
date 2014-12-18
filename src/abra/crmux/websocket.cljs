@@ -113,12 +113,10 @@
 
 (defn ws-evaluate 
   "evaluate javasript on the websocket and pop the result onto the database"
-  [db [_ expression]]
+  [db expression]
   (let [msg-id (goog/getUid expression)
         message (clj->js {"method" "Runtime.evaluate" "id" msg-id "params" 
                           {"expression" expression "returnByValue" true}})
         result (js-result-filter msg-id)]
     (ws-send db message)
     (go (swap! db assoc :js-print-string (<! result)))))
-
-(register :crmux_handlers.ws-evaluate ws-evaluate)

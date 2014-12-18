@@ -1,7 +1,8 @@
 (ns abra.handlers
   (:require [re-frame.handlers :refer [register]]
             [re-frame.subs :refer [subscribe]]
-            [abra.crmux-handlers :as crmux-handlers]))
+            [abra.crmux.handlers :as crmux-handlers]
+            [abra.crmux.websocket :as crmux-websocket]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
@@ -27,6 +28,7 @@
   [db _]
   (when (:lein-repl-status @db)
     (.send ipc "stop-lein-repl"))
+  (.send ipc "close-url")
   (swap! db assoc :debugging? false))
 
 (register 
@@ -47,3 +49,13 @@
 (register 
   :translate
   translate)
+
+(register 
+  :translated-javascript
+  (fn [db [_ js-expression]]          
+    (let [js-print-string (str "cljs.core.prn_str.call(null,"
+                               (clojure.string/join 
+                                 (drop-last js-expression)) ");")]
+      (crmux-websocket/ws-evaluate db js-print-string)
+      (swap! db assoc :javascript-string js-expression)
+      (.send ipc "get-lein-repl-status"))))
