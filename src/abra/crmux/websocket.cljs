@@ -4,6 +4,9 @@
             [cljs.reader :as reader]
             [re-frame.handlers :refer [register dispatch]]))
 
+;; redirects any println to console.log
+(enable-console-print!)
+
 ;; -- Notification Handlers -----------------------------------------------------------------------
 ;;
 ;; JSON messages flow down the websocket from the debugger (VM).
@@ -30,6 +33,12 @@
   [message]
   (print "Result from javasript debugger: " message)
   (put! js-result-in message))
+
+(defmethod handler :Debugger.paused
+  [message]
+  (let [call-frames (get-in message [:params :callFrames])]
+    (print "debugger.paused " message)
+    (dispatch [:call-frames call-frames])))
 
 (defmethod handler :default
   [message]

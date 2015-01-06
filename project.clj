@@ -47,7 +47,15 @@
                                    :target :nodejs
                                    :hashbang false
                                    :optimizations :none 
-                                   :pretty-print true}}]
+                                   :pretty-print true}}
+                        
+                        {:id "test-page"
+                         :source-paths ["src/test-page"]
+                         :compiler {:output-to "test-page/js/test-page.js"
+                                    :source-map "test-page/js/test-page.js.map"
+                                    :output-dir "test-page/js"
+                                    :optimizations :none
+                                    :pretty-print true}}]
               
               :test-commands {"node-tests" ["node" "run/test/bin/runner-node.js" 
                                             "run/js/compiled/test"

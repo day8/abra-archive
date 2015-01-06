@@ -47,7 +47,7 @@
 
 (reg-sub-key :debugging? false)
 
-(reg-sub-key :debug-url "http://www.day8.com.au")
+(reg-sub-key :debug-url "file:///home/stu/dev/Abra2/test-page/index.html")
 
 (reg-sub-key :project-dir ".")
 
