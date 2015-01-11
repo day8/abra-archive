@@ -28,25 +28,23 @@ This does the following:
 {probably add more explanation here}     
 
 
-Building
---------
+Building with figwheel
+----------------------
 
-There's two js to be built. 
+We are using figwheel to help development.
 
-First, the "node" code:
-```
-lein cljsbuild auto main
-```
+As only the ui build needs figwheel we have a Procfile that will start the auto
+compilation for the main (browser) ui (client) and test-page build
 
-Second, the "client" code:
-```
-lein cljsbuild auto abra
-```
-
-or both together
+Use [honcho](https://github.com/nickstenning/honcho) if you have python already
+on your system use pip to install honcho
 
 ```
-lein cljsbuild auto
+$pip install honcho
+```
+Then in the root directory
+```
+$honcho start
 ```
 
 Running

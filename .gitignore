@@ -1,6 +1,7 @@
 .idea
 *.iml
 *~
+*-init.clj
 Thumbs.db
 run/node_modules/
 run/js/compiled/

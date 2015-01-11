@@ -35,16 +35,21 @@ I bootstrap the application and kick off the GUI (Browser Window)."
 (def debug-window (atom nil))
 
 
-(def abra-html
-  (let [html (str js/__dirname "/../../abra.html")]   ;; __dirname is that of the main.js
-    (if (.existsSync fs html)
-      (str "file:///" html)
-      (.log js/console (str "HTML file not found: " html)))))
+
+(def abra-html "http://localhost:3449/abra.html") ;;figwheel
+;; (def abra-html
+;;  (let [html (str js/__dirname "/../../abra.html")]   ;; __dirname is that of the main.js
+;;    (if (.existsSync fs html)
+;;      (str "file:///" html)
+;;      (.log js/console (str "HTML file not found: " html)))))
 
 
 (defn init-browser
   []
-  (reset! main-window (browser-window. #js {:width 800 :height 600}))
+  ;; websecurity is removed for figwheel
+  (reset! main-window (browser-window. 
+                        #js {:width 800 :height 600 
+                             :web-preferences #js {:web-security false}}))
   (.loadUrl @main-window abra-html)
   (.start_crmux_server crmux)
   #_(.toggleDevTools @main-window)             ;;  TODO: condition this on a developer environment variable

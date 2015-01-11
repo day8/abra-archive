@@ -3,17 +3,31 @@
             [reagent.core :as reagent]
             [abra.dialog :as dialog]
             [re-com.core  :refer [input-text input-textarea 
-                                  button hyperlink label 
-                                  spinner progress-bar checkbox 
-                                  radio-button title slider]]
+                                  label title]]
+            [re-com.buttons :refer [button]]
             [re-com.box   :refer [h-box v-box box gap line]]
             [cljs.core.async :refer [<!]]
             [re-frame.handlers :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
-            [abra.handlers]))
+            [abra.handlers]
+            [figwheel.client :as fw]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
+
+(fw/start {
+           ;; configure a websocket url if yor are using your own server
+           :websocket-url "ws://localhost:3449/figwheel-ws"
+           
+           ;; optional callback
+           :on-jsload (fn [] 
+                        (println (reagent/force-update-all)))
+           
+           ;; when the compiler emits warnings figwheel
+           ;; blocks the loading of files.
+           ;; To disable this behavior:
+           :load-warninged-code true
+           })
 
 (def ipc (js/require "ipc"))
 
@@ -38,7 +52,8 @@
 (defn page-header
   [header]
   [h-box :children [[h-box :size "80%"
-                     :children [[:h3 header]]]
+                     :children [[title 
+                                 :label header]]]
                     [v-box :children [[:div nil "Abra"]
                                       [:div (str "Atom Shell Version: " 
                                                  atom-shell-version)]]]]])
@@ -210,5 +225,5 @@
 (defn start
   []
   (dispatch [:initialise])
-  (dispatch [:start-debugging])
-  (reagent/render-component [main-page] (get-element-by-id "app")))
+  #_(dispatch [:start-debugging])
+  (reagent/render [main-page] (get-element-by-id "app")))

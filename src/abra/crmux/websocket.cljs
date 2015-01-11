@@ -117,7 +117,7 @@
 (defn ws-send
   "sends a message to the websocket" 
   [db message]
-  (let [ws (:debug-crmux-websocket @db)]
+  (when-let [ws (:debug-crmux-websocket @db)]
     (.send ws (.stringify js/JSON message))))   ;; XXX turn it into str
 
 (defn ws-evaluate 
