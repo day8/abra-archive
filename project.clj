@@ -13,9 +13,24 @@
                  [figwheel "0.2.1-SNAPSHOT"]
                  [ring/ring-core "1.3.1"]]
   
+  :node-dependencies [[ws "~0.4.31"]
+                      [bl "~0.4.2"]
+                      [colors "~0.6.2"]
+                      [nrepl-client "git+https://github.com/stumitchell/node-nrepl-client.git"]
+                      [nrepl.js "~0.0.1"]
+                      [portscanner "~1.0.0"]
+                      [atom-shell "1.2.1"]]  
+  
   :plugins [[lein-cljsbuild "1.0.3"]
             [com.cemerick/clojurescript.test "0.3.1"]
-            [lein-figwheel "0.2.1-SNAPSHOT"]]
+            [lein-figwheel "0.2.1-SNAPSHOT"]
+            [lein-npm "0.5.0"]]
+  
+  :npm-root "run"
+  
+  :main "start-atom.js"
+  
+  :nodejs {:main "js/compiled/main.js"} 
   
   :profiles {:dev {:plugins [[com.cemerick/clojurescript.test "0.3.1"]]}}
   
