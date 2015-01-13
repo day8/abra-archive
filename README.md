@@ -50,9 +50,8 @@ $honcho start
 Running
 --------
 
-Look in the `run.bat`
 ```
-atom run
+$lein npm run start
 ```
 
 Dependencies
@@ -128,23 +127,11 @@ Now we can download the Abra repository, which will create an Abra folder in the
 
     git clone https://github.com/Day8/Abra2.git
 
-Now we need to load some node.js modules so go the the folder containing package.json:
-
-Then install the modules. It tries to compile the ws module (Web Sockets) but this fails if you don't have the expected c/c++ compilers 
-but the module has a graceful fallback and will still work for us:
-
-	$cd run
-    $npm install
-
-
-Now ask Leiningen to load the ClojureScript dependencies from clojars.com (specified in project.clj):
+Now ask Leiningen to load the ClojureScript dependencies from clojars.com, and npm
+dependencies (specified in project.clj):
 
     lein deps
 
-And load our UI library directly from GitHub (again specified in project.clj). This is where we need no prompting for username 
-and password, otherwise it will just hang. You should be able to Ctrl+C or Ctrl+Break out if you do get stuck:
-
-    lein git-deps
 
 Now all the source files are installed. Let's build the app:
 
@@ -154,15 +141,12 @@ Everything involved in the build is placed in the `run\js\compiled` folder.
 
 Now it's ready to run (assuming atom-shell is somewhere on your path):
 
-    atom run
+    lein npm run start
 
-Under Windows you can type `run` as a shortcut for the above.
+If you want to automatically recompile each source file as it is saved, 
+and use figwheel use this command:
 
-If you want to automatically recompile each source file as it is saved, use this command:
-
-    lein cljsbuild auto
-
-Under Windows you can type `build-auto` as a shortcut for the above.
+    honcho start
 
 If ever the app is not working properly and you suspect some of the build files are in some way, broken, you can clear ALL build files 
 from the `Abra\deploy\core\lib\out` folder with the following\command:
