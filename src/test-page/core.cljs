@@ -10,6 +10,6 @@
   "count every second"
   [counter]
   (print "counter at " counter)
-  (js/setTimeout #(one-second-count (inc counter)) 1000))
+  (js/setTimeout #(one-second-count (inc counter)) 10000))
 
 (one-second-count 1)

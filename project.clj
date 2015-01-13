@@ -28,10 +28,11 @@
   
   :npm-root "run"
   
-  :main "start-atom.js"
+  ;;:main "start-atom.js"
   
-  :nodejs {:main "js/compiled/main.js"} 
-  
+  :nodejs {:main "js/compiled/main.js"
+           :scripts {:start "node start-atom.js"}} 
+ 
   :profiles {:dev {:plugins [[com.cemerick/clojurescript.test "0.3.1"]]}}
   
   :jvm-opts         ["-Xmx1g" "-XX:+UseConcMarkSweepGC"] ;; cljsbuild eats memory
