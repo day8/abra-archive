@@ -1,11 +1,13 @@
 (ns abra.core
   (:require [abra.state :as state]
             [reagent.core :as reagent]
+            [reagent.ratom :as ratom]
             [abra.dialog :as dialog]
-            [re-com.core  :refer [input-text input-textarea 
-                                  label title]]
+            [re-com.core :refer [input-text input-textarea 
+                                 label title]]
             [re-com.buttons :refer [button]]
             [re-com.box   :refer [h-box v-box box gap line]]
+            [re-com.tabs :refer [vertical-bar-tabs]]
             [cljs.core.async :refer [<!]]
             [re-frame.handlers :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -83,7 +85,9 @@
 (defn namespace-locals
   []
   (let [namespace-string (subscribe [:namespace-string])
-        locals-string (subscribe [:locals-string])]
+        locals-string (subscribe [:locals-string])
+        call-frames (subscribe [:call-frames])
+        call-frame-id (ratom/atom 0)]
     (fn
       []
       [h-box
@@ -101,7 +105,13 @@
                               [input-textarea
                                :model @locals-string
                                :on-change #(dispatch 
-                                             [:locals-string %])]]]]])))
+                                             [:locals-string %])]]]
+                  [v-box
+                   :children [[field-label "call-frames"]
+                              [vertical-bar-tabs
+                               :model @call-frame-id
+                               :tabs @call-frames
+                               :on-change #(reset! call-frame-id %)]]]]])))
 
 (defn clojurescript-input-output
   []

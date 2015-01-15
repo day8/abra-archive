@@ -71,3 +71,6 @@
 (reg-sub-key :js-print-string "")
 
 (reg-sub-key :lein-repl-status false)
+
+(reg-sub-key :call-frames [{:id 0 :label ""}])
+

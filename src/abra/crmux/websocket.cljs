@@ -2,7 +2,8 @@
   (:require-macros [cljs.core.async.macros :refer [go-loop, go]])
   (:require [cljs.core.async :refer [put!, chan, <!, >!, mult, tap, untap]]
             [cljs.reader :as reader]
-            [re-frame.handlers :refer [register dispatch]]))
+            [re-frame.handlers :refer [register dispatch]]
+            [re-frame.db :refer [app-db]]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
@@ -31,14 +32,38 @@
 (defmethod handler :result
   ;; "grab a result and put it in a channel"
   [message]
-  (print "Result from javasript debugger: " message)
+  (print "Result from javascript debugger: " message)
   (put! js-result-in message))
+
+(defn get-object 
+  [scope]
+  (let [{{object-id :objectId} :object} scope]
+    object-id))
 
 (defmethod handler :Debugger.paused
   [message]
-  (let [call-frames (get-in message [:params :callFrames])]
-    (print "debugger.paused " message)
-    (dispatch [:call-frames call-frames])))
+  (go 
+    (let [{{call-frames :callFrames} :params} message
+          call-frame-id (map :callFrameId call-frames)
+          call-frame-names (map :functionName call-frames)
+          call-frames-for-selection (vec (map #(hash-map :id %1 
+                                                         :label (if (empty? %2)
+                                                                  "Anonymous"
+                                                                  %2)) 
+                                              (range) call-frame-names))
+          scope-chains (map :scopeChain call-frames)
+          objects (map get-object (first scope-chains))
+          properties-chan (map #(ws-getProperties app-db %) objects)]
+      (print "debugger.paused " message)
+      (print "call-frame-id" call-frame-id)
+      (print "call-frame-names" call-frame-names (count call-frame-names))
+      (print "scope-chains" scope-chains)
+      (print "objects" objects)
+      ;;(print "properties" (<! (first properties-chan)))
+      (print "call-frames-for-selection" call-frames-for-selection)
+      (dispatch [:call-frames call-frames-for-selection])
+      #_(print (for [properties properties-chan i (range)]
+                 {:id i :variables properties})))))
 
 (defmethod handler :default
   [message]
@@ -55,13 +80,13 @@
     (go-loop []
              (let [message (<! js-result)
                    message-id (:id message)
-                   result-str (-> message :result :result :value)
+                   result (-> message :result :result)
                    error-str (-> message :result :exceptionDetails :text)]
                (if (= msg-id message-id)
                  (do 
                    (untap js-result-mult js-result)
-                   (if (some? result-str)
-                     (reader/read-string result-str)
+                   (if (some? result)
+                     result
                      error-str))
                  (recur))))))
 
@@ -95,7 +120,7 @@
   (print (str "ws error:" error)))
 
 (defn on-ws-close
-  "remove the handle in the db (shoudl it attempt to reconnect?)"
+  "remove the handle in the db (should it attempt to reconnect?)"
   [db]
   (swap! db assoc :debug-crmux-websocket nil))
 
@@ -113,7 +138,7 @@
         (aset new-ws "onmessage" on-ws-message)
         (aset new-ws "onerror" on-ws-error)
         (aset new-ws "onclose" #(on-ws-error db))))))
-  
+
 (defn ws-send
   "sends a message to the websocket" 
   [db message]
@@ -128,4 +153,18 @@
                           {"expression" expression "returnByValue" true}})
         result (js-result-filter msg-id)]
     (ws-send db message)
-    (go (swap! db assoc :js-print-string (<! result)))))
+    (go (swap! db assoc :js-print-string 
+               (reader/read-string (:value (<! result)))))))
+
+
+(defn ws-getProperties 
+  "get the properties from the websocket"
+  [db object-id]
+  (let [msg-id  (goog/getUid object-id)
+        message (clj->js {"method" "Runtime.getProperties" "id" msg-id "params" 
+                          {"objectId" object-id 
+                           "ownProperties" false 
+                           "accessorPropertiesOnly" false}})
+        result  (js-result-filter msg-id)]
+    (ws-send db message)
+    result))
