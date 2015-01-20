@@ -181,7 +181,7 @@
     (ws-send db message)
     (go 
       (let [result (<! result)
-            [{local-name :name}] result]
+            local-names (map :name result)]
         #_(print "ws-getProperties" call-frame-id local-name)
-        (when local-name 
-          (dispatch [:add-scoped-local call-frame-id local-name]))))))
+        (doseq [l local-names] 
+          (dispatch [:add-scoped-local call-frame-id l]))))))

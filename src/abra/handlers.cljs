@@ -41,7 +41,7 @@
   (let [clojurescript-string (:clojurescript-string @db)
         namespace-string (:namespace-string @db)
         call-frame-id (:call-frame-id @db)
-        locals (clj->js (get (:scoped-locals @db) 0))]
+        locals (clj->js (get-in @db [:scoped-locals call-frame-id]))]
     (.send ipc "translate-clojurescript" 
            clojurescript-string 
            namespace-string 
