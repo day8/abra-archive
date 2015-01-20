@@ -51,7 +51,7 @@
 
 (reg-sub-key :project-dir ".")
 
-(reg-sub-key :clojurescript-string "(+ 2 3)")
+(reg-sub-key :clojurescript-string "(+ counter 3)")
 
 (reg-sub-key :javascript-string "")
 
@@ -72,5 +72,8 @@
 
 (reg-sub-key :lein-repl-status false)
 
+(reg-sub-key :call-frame-id 0)
+
 (reg-sub-key :call-frames [{:id 0 :label ""}])
 
+(reg-sub-key :scoped-locals {0 [] 1 []})

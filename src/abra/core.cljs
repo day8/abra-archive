@@ -17,7 +17,7 @@
 ;; redirects any println to console.log
 (enable-console-print!)
 
-(fw/start {
+#_(fw/start {
            ;; configure a websocket url if yor are using your own server
            :websocket-url "ws://localhost:3449/figwheel-ws"
            
@@ -85,9 +85,9 @@
 (defn namespace-locals
   []
   (let [namespace-string (subscribe [:namespace-string])
-        locals-string (subscribe [:locals-string])
+        locals (subscribe [:scoped-locals])
         call-frames (subscribe [:call-frames])
-        call-frame-id (ratom/atom 0)]
+        call-frame-id (subscribe [:call-frame-id])]
     (fn
       []
       [h-box
@@ -103,15 +103,14 @@
                   [v-box
                    :children [[field-label "locals"]
                               [input-textarea
-                               :model @locals-string
-                               :on-change #(dispatch 
-                                             [:locals-string %])]]]
+                               :model (reduce #(str %1 "\n" %2) 
+                                              (get @locals @call-frame-id))]]]
                   [v-box
                    :children [[field-label "call-frames"]
                               [vertical-bar-tabs
                                :model @call-frame-id
                                :tabs @call-frames
-                               :on-change #(reset! call-frame-id %)]]]]])))
+                               :on-change #(dispatch [:call-frame-id %])]]]]])))
 
 (defn clojurescript-input-output
   []
@@ -235,5 +234,5 @@
 (defn start
   []
   (dispatch [:initialise])
-  #_(dispatch [:start-debugging])
+  (dispatch [:start-debugging])
   (reagent/render [main-page] (get-element-by-id "app")))

@@ -4,7 +4,7 @@
   
   
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2665"]
+                 [org.clojure/clojurescript "0.0-2277"]
                  [cljs-ajax "0.2.4"]
                  [reagent "0.5.0-alpha"]
                  [re-com "0.1.6"]

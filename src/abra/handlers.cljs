@@ -40,7 +40,8 @@
   [db _]
   (let [clojurescript-string (:clojurescript-string @db)
         namespace-string (:namespace-string @db)
-        locals (.split (:locals-string @db) #"\s")]
+        call-frame-id (:call-frame-id @db)
+        locals (clj->js (get (:scoped-locals @db) 0))]
     (.send ipc "translate-clojurescript" 
            clojurescript-string 
            namespace-string 
@@ -59,3 +60,19 @@
       (crmux-websocket/ws-evaluate db js-print-string)
       (swap! db assoc :javascript-string js-expression)
       (.send ipc "get-lein-repl-status"))))
+
+;; clear the scoped-locals dictionary
+(defn clear-scoped-locals [db [_]]
+  (swap! db assoc :scoped-locals {}))
+
+(register 
+  :clear-scoped-locals
+  clear-scoped-locals)
+
+;; add a scoped local to the db
+(register 
+  :add-scoped-local
+  (fn [db [_ scope-id local-name]]
+    (let [locals (get (:scoped-locals @db) scope-id [])]
+      (swap! db assoc-in [:scoped-locals scope-id] 
+             (conj locals local-name)))))

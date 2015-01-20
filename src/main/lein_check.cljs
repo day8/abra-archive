@@ -15,6 +15,8 @@
   (:require [main.backend.nrepl :as nrepl]))
 ;;   (:require [main.core :as core]))
 
+(enable-console-print!)
+
 (def ipc           (js/require "ipc"))
 (def child-process (js/require "child_process"))
 

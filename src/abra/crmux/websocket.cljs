@@ -1,6 +1,6 @@
 (ns abra.crmux.websocket
   (:require-macros [cljs.core.async.macros :refer [go-loop, go]])
-  (:require [cljs.core.async :refer [put!, chan, <!, >!, mult, tap, untap]]
+  (:require [cljs.core.async :refer [put!, chan, <!, >!, mult, pub, sub]]
             [cljs.reader :as reader]
             [re-frame.handlers :refer [register dispatch]]
             [re-frame.db :refer [app-db]]))
@@ -32,63 +32,68 @@
 (defmethod handler :result
   ;; "grab a result and put it in a channel"
   [message]
-  (print "Result from javascript debugger: " message)
+  #_(print "Result from javascript debugger: " message, js-result-in)
   (put! js-result-in message))
 
 (defn get-object 
   [scope]
-  (let [{{object-id :objectId} :object} scope]
-    object-id))
+  (let [{{object-id :objectId class-name :className} :object} scope]
+    (when (= class-name "Object")
+      object-id)))
 
 (defmethod handler :Debugger.paused
   [message]
-  (go 
-    (let [{{call-frames :callFrames} :params} message
-          call-frame-id (map :callFrameId call-frames)
-          call-frame-names (map :functionName call-frames)
-          call-frames-for-selection (vec (map #(hash-map :id %1 
-                                                         :label (if (empty? %2)
-                                                                  "Anonymous"
-                                                                  %2)) 
-                                              (range) call-frame-names))
-          scope-chains (map :scopeChain call-frames)
-          objects (map get-object (first scope-chains))
-          properties-chan (map #(ws-getProperties app-db %) objects)]
-      (print "debugger.paused " message)
-      (print "call-frame-id" call-frame-id)
-      (print "call-frame-names" call-frame-names (count call-frame-names))
-      (print "scope-chains" scope-chains)
-      (print "objects" objects)
-      ;;(print "properties" (<! (first properties-chan)))
-      (print "call-frames-for-selection" call-frames-for-selection)
-      (dispatch [:call-frames call-frames-for-selection])
-      #_(print (for [properties properties-chan i (range)]
-                 {:id i :variables properties})))))
+  (let [{{call-frames :callFrames} :params} message
+        call-frames-for-selection (vec (map #(hash-map 
+                                               :id %1 
+                                               :label 
+                                               (if (empty? (:functionName %2))
+                                                 "Anonymous"
+                                                 (:functionName %2))
+                                               :call-frame-id (:callFrameId %2)) 
+                                            (range) call-frames))
+        scope-chains (map :scopeChain call-frames)
+        scope-objects (map #(hash-map :id %1 :objects %2) 
+                           (range) 
+                           (for [scope scope-chains]
+                             (filter some? (map get-object scope))))]
+    ;;(print "debugger.paused " message)
+    ;;(print "call-frame-id" call-frame-id)
+    (print "call-frames" call-frames)
+    ;;(print "scope-chains" scope-chains)
+    ;;(print "call-frames-for-selection" call-frames-for-selection)
+    (print "scope-objects" scope-objects)
+    (dispatch [:call-frames call-frames-for-selection])
+    ;; clear the scoped-locals in the db
+    (dispatch [:clear-scoped-locals])
+    ;; add the locals for each call frame to the db
+    (doseq [{:keys [id objects]} scope-objects]
+      (print objects)
+      (doseq [o objects] 
+        (ws-getProperties app-db o id)))
+    ))
 
 (defmethod handler :default
   [message]
   #_(print (str "ignoring " (:method message))))
 
 ;; use a mult so that we can have multiple suscribers to the chan
-(def js-result-mult (mult js-result-in))
+(def js-result-pub (pub js-result-in :id))
 
 (defn js-result-filter 
   "I watch the js-result channel and return when I find a message that matches 
   msg-id"
   [msg-id]
-  (let [js-result (tap js-result-mult (chan))]
-    (go-loop []
-             (let [message (<! js-result)
-                   message-id (:id message)
-                   result (-> message :result :result)
-                   error-str (-> message :result :exceptionDetails :text)]
-               (if (= msg-id message-id)
-                 (do 
-                   (untap js-result-mult js-result)
-                   (if (some? result)
-                     result
-                     error-str))
-                 (recur))))))
+  (let [js-result (sub js-result-pub msg-id (chan))]
+    (go
+      (let [message (<! js-result)
+            message-id (:id message)
+            result (-> message :result :result)
+            error-str (-> message :result :exceptionDetails :text)] 
+        #_(print "js-result-filter" result, error-str)
+        (if (some? result)
+          result
+          error-str)))))
 
 ;; -- Web Socket ----------------------------------------------------------------------------------
 ;;
@@ -149,17 +154,24 @@
   "evaluate javasript on the websocket and pop the result onto the database"
   [db expression]
   (let [msg-id (goog/getUid expression)
-        message (clj->js {"method" "Runtime.evaluate" "id" msg-id "params" 
-                          {"expression" expression "returnByValue" true}})
+        call-frame-id (:call-frame-id @db)
+        call-frames (:call-frames @db)
+        call-frame (first (filter #(= call-frame-id (:id %)) call-frames))
+        call-frame-debugger-id (:call-frame-id call-frame)
+        message (clj->js {"method" "Debugger.evaluateOnCallFrame" "id" msg-id "params" 
+                          {"expression" expression "returnByValue" true
+                           "callFrameId" call-frame-debugger-id}})
         result (js-result-filter msg-id)]
     (ws-send db message)
-    (go (swap! db assoc :js-print-string 
-               (reader/read-string (:value (<! result)))))))
+    (go (let [result (<! result)
+              value (:value result)]
+          (swap! db assoc :js-print-string 
+                 (reader/read-string value))))))
 
 
 (defn ws-getProperties 
   "get the properties from the websocket"
-  [db object-id]
+  [db object-id call-frame-id]
   (let [msg-id  (goog/getUid object-id)
         message (clj->js {"method" "Runtime.getProperties" "id" msg-id "params" 
                           {"objectId" object-id 
@@ -167,4 +179,9 @@
                            "accessorPropertiesOnly" false}})
         result  (js-result-filter msg-id)]
     (ws-send db message)
-    result))
+    (go 
+      (let [result (<! result)
+            [{local-name :name}] result]
+        #_(print "ws-getProperties" call-frame-id local-name)
+        (when local-name 
+          (dispatch [:add-scoped-local call-frame-id local-name]))))))
