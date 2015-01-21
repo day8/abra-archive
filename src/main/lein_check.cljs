@@ -46,8 +46,13 @@
 (.on ipc "translate-clojurescript"
      (fn [event statement namespace-string locals]
        (go
-         (let [result (<? (nrepl/cljs->js 
-                            statement 
-                            :namespace-str namespace-string 
-                            :locals locals))]
-           (.send (.-sender event) "translated-javascript" result)))))
+         (try 
+           (let [result (<? (nrepl/cljs->js 
+                              statement 
+                              :namespace-str namespace-string 
+                              :locals locals))]
+             (.send (.-sender event) "translated-javascript" nil result))
+           (catch js/Error e
+             (.send (.-sender event) "translated-javascript" 
+                    "clojurescript error" nil) 
+             e)))))

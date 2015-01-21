@@ -48,7 +48,7 @@
                                                :id %1 
                                                :label 
                                                (if (empty? (:functionName %2))
-                                                 "Anonymous"
+                                                 "(anonymous function)"
                                                  (:functionName %2))
                                                :call-frame-id (:callFrameId %2)) 
                                             (range) call-frames))
@@ -64,14 +64,20 @@
     ;;(print "call-frames-for-selection" call-frames-for-selection)
     (print "scope-objects" scope-objects)
     (dispatch [:call-frames call-frames-for-selection])
+    (dispatch [:call-frame-id 0])
     ;; clear the scoped-locals in the db
     (dispatch [:clear-scoped-locals])
     ;; add the locals for each call frame to the db
     (doseq [{:keys [id objects]} scope-objects]
-      (print objects)
       (doseq [o objects] 
-        (ws-getProperties app-db o id)))
-    ))
+        (ws-getProperties app-db o id)))))
+
+(defmethod handler :Debugger.resumed
+  ;; "called when the debugger resumes and you are no longer in a call frame"
+  [message]
+  (dispatch [:clear-scoped-locals])
+  (dispatch [:clear-call-frames])
+  (dispatch [:call-frame-id nil]))
 
 (defmethod handler :default
   [message]
@@ -151,22 +157,27 @@
     (.send ws (.stringify js/JSON message))))   ;; XXX turn it into str
 
 (defn ws-evaluate 
-  "evaluate javasript on the websocket and pop the result onto the database"
+  "evaluate javascript on the websocket and pop the result onto the database"
   [db expression]
   (let [msg-id (goog/getUid expression)
         call-frame-id (:call-frame-id @db)
         call-frames (:call-frames @db)
         call-frame (first (filter #(= call-frame-id (:id %)) call-frames))
         call-frame-debugger-id (:call-frame-id call-frame)
-        message (clj->js {"method" "Debugger.evaluateOnCallFrame" "id" msg-id "params" 
+        debugger-method (if call-frame-debugger-id 
+                          "Debugger.evaluateOnCallFrame"
+                          "Runtime.evaluate")
+        message (clj->js {"method" debugger-method "id" msg-id "params" 
                           {"expression" expression "returnByValue" true
                            "callFrameId" call-frame-debugger-id}})
         result (js-result-filter msg-id)]
     (ws-send db message)
     (go (let [result (<! result)
-              value (:value result)]
-          (swap! db assoc :js-print-string 
-                 (reader/read-string value))))))
+              value (:value result)
+              value (if value
+                      value
+                      (:description result))]
+          (swap! db assoc :js-print-string value)))))
 
 
 (defn ws-getProperties 

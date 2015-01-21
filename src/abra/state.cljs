@@ -55,16 +55,7 @@
 
 (reg-sub-key :javascript-string "")
 
-(reg-sub-key :namespace-string "(ns abra.core
-                               (:require [abra.state :as state]
-                               [reagent.core :as reagent]
-                               [abra.dialog :as dialog]
-                               [re-com.core :refer [input-text input-textarea 
-                                                     button hyperlink label 
-                               spinner progress-bar checkbox radio-button 
-                               title slider]]
-                               [re-com.box :refer [h-box v-box box 
-                                                   gap line]]))")
+(reg-sub-key :namespace-string "(ns test.core)")
 
 (reg-sub-key :locals-string "x\ny\nz")
 
@@ -72,8 +63,8 @@
 
 (reg-sub-key :lein-repl-status false)
 
-(reg-sub-key :call-frame-id 0)
+(reg-sub-key :call-frame-id nil)
 
-(reg-sub-key :call-frames [{:id 0 :label ""}])
+(reg-sub-key :call-frames [])
 
-(reg-sub-key :scoped-locals {0 [] 1 []})
+(reg-sub-key :scoped-locals {})

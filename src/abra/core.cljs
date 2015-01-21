@@ -42,8 +42,8 @@
        (dispatch [:lein-repl-status (js->clj arg)]))) 
 
 (.on ipc "translated-javascript" 
-     (fn [js-expression]
-       (dispatch [:translated-javascript js-expression]))) 
+     (fn [err js-expression]
+       (dispatch [:translated-javascript err js-expression]))) 
 
 ;;------------------------------------------------------------------------------
 
@@ -94,23 +94,27 @@
        :justify :start
        :gap "20px"
        :children [[v-box
-                   :children [[field-label "namespace"]
-                              [input-textarea
-                               :model @namespace-string
-                               :on-change #(dispatch [:namespace-string %])
-                               :rows 12
-                               :width "550px"]]]
-                  [v-box
-                   :children [[field-label "locals"]
-                              [input-textarea
-                               :model (reduce #(str %1 "\n" %2) 
-                                              (get @locals @call-frame-id))]]]
-                  [v-box
-                   :children [[field-label "call-frames"]
-                              [vertical-bar-tabs
-                               :model @call-frame-id
-                               :tabs @call-frames
-                               :on-change #(dispatch [:call-frame-id %])]]]]])))
+                   :children 
+                   [[field-label "namespace"]
+                    [input-textarea
+                     :model @namespace-string
+                     :on-change #(dispatch [:namespace-string %])
+                     :rows 12
+                     :width "550px"]]]
+                  (when @call-frame-id 
+                    [v-box
+                     :children [[field-label "locals"]
+                                [input-textarea
+                                 :model (reduce #(str %1 "\n" %2) 
+                                                (get @locals @call-frame-id))]]])
+                  (when @call-frame-id 
+                    [v-box
+                     :children [[field-label "call-frames"]
+                                [vertical-bar-tabs
+                                 :model @call-frame-id
+                                 :tabs @call-frames
+                                 :on-change 
+                                 #(dispatch [:call-frame-id %])]]])]])))
 
 (defn clojurescript-input-output
   []
