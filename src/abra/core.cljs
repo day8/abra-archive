@@ -8,6 +8,7 @@
             [re-com.buttons :refer [button]]
             [re-com.box   :refer [h-box v-box box gap line]]
             [re-com.tabs :refer [vertical-bar-tabs]]
+            [re-com.layout :refer [v-layout]]
             [cljs.core.async :refer [<!]]
             [re-frame.handlers :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -18,18 +19,18 @@
 (enable-console-print!)
 
 #_(fw/start {
-           ;; configure a websocket url if yor are using your own server
-           :websocket-url "ws://localhost:3449/figwheel-ws"
-           
-           ;; optional callback
-           :on-jsload (fn [] 
-                        (println (reagent/force-update-all)))
-           
-           ;; when the compiler emits warnings figwheel
-           ;; blocks the loading of files.
-           ;; To disable this behavior:
-           :load-warninged-code true
-           })
+             ;; configure a websocket url if yor are using your own server
+             :websocket-url "ws://localhost:3449/figwheel-ws"
+             
+             ;; optional callback
+             :on-jsload (fn [] 
+                          (println (reagent/force-update-all)))
+             
+             ;; when the compiler emits warnings figwheel
+             ;; blocks the loading of files.
+             ;; To disable this behavior:
+             :load-warninged-code true
+             })
 
 (def ipc (js/require "ipc"))
 
@@ -65,7 +66,7 @@
   (let [lein-repl-status (subscribe [:lein-repl-status])]
     (fn []
       [:p "Nrepl state -- " 
-       (if lein-repl-status
+       (if @lein-repl-status
          "running"
          "stopped")])))
 
@@ -74,13 +75,6 @@
   [label 
    :label text
    :style {:font-variant "small-caps"}])
-
-(defn abra-debug-panel []
-  (let [debug-crmux-url (subscribe [:debug-crmux-url])]
-    (fn []
-      [h-box 
-       :style {:class "debug-panel-body"}
-       :children [[:iframe.debug-iframe {:src @debug-crmux-url}]]])))
 
 (defn namespace-locals
   []
@@ -149,6 +143,25 @@
                               [input-textarea
                                :model @js-print-string]]]]])))
 
+(defn abra-debug-panel []
+  (let [debug-crmux-url (subscribe [:debug-crmux-url])]
+    (fn []
+      [h-box 
+       :style {:class "debug-panel-body"}
+       :children [[:iframe.debug-iframe {:src @debug-crmux-url}]]])))
+
+(defn top-debug-panel
+  []
+  [v-box 
+   :style {:class "panel-body"}
+   :gap "20px"
+   :children [[button
+               :label "STOP"
+               :on-click  #(dispatch [:stop-debugging])
+               :class    "btn-danger"]
+              [namespace-locals]
+              [clojurescript-input-output]]])
+
 (defn debug-view
   []
   [v-box
@@ -156,15 +169,10 @@
    :children [
               [page-header "Start Debugging"]
               [nrepl-state-text]
-              [v-box 
-               :gap "20px"
-               :children [[button
-                           :label "STOP"
-                           :on-click  #(dispatch [:stop-debugging])
-                           :class    "btn-danger"]
-                          [namespace-locals]
-                          [clojurescript-input-output]
-                          [abra-debug-panel]]]]])
+              [v-layout
+               :top-panel top-debug-panel
+               :bottom-panel abra-debug-panel
+               ]]])
 
 (defn project-form
   []
