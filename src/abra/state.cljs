@@ -47,7 +47,7 @@
 
 (reg-sub-key :debugging? false)
 
-(reg-sub-key :debug-url "file:///home/stu/dev/Abra2/test-page/index.html")
+(reg-sub-key :debug-url "file:///E:\\abra2-win\\test-page\\index.html")
 
 (reg-sub-key :project-dir ".")
 
