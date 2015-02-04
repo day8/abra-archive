@@ -52,7 +52,7 @@ I bootstrap the application and kick off the GUI (Browser Window)."
                              :web-preferences #js {:web-security false}}))
   (.loadUrl @main-window abra-html)
   (.start_crmux_server crmux)
-  ; (.toggleDevTools @main-window)             ;;  TODO: condition this on a developer environment variable
+  (.toggleDevTools @main-window)             ;;  TODO: condition this on a developer environment variable
   (.on @main-window "closed" #(reset! main-window nil)))
 
 

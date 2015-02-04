@@ -100,4 +100,5 @@
   :aliases {"auto-test" ["do" "clean," "cljsbuild" "auto" "test-node"]
             "run" ["npm" "run" "start"]}
   
-  :clean-targets ["run/js/compiled"])
+  :clean-targets ^{:protect false} ["run/js/compiled" 
+                                    "resources/public/js/compiled"])

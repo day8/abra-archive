@@ -15,7 +15,7 @@
   (let [url (:debug-url @db)
         debug-host (:debug-host @db)]
     (.send ipc "open-url" url)
-    #_(.send ipc "start-lein-repl" (:project-dir @db))
+    (.send ipc "start-lein-repl" (:project-dir @db))
     (crmux-handlers/get-debug-window-info debug-host url)
     (swap! db assoc :debugging? true)))
 

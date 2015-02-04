@@ -147,14 +147,14 @@
   (let [debug-crmux-url (subscribe [:debug-crmux-url])]
     (fn []
       [h-box 
-       :style {:class "debug-panel-body"}
+       :size "auto"
        :children [[:iframe.debug-iframe {:src @debug-crmux-url}]]])))
 
 (defn top-debug-panel
   []
   [v-box 
-   :style {:class "panel-body"}
    :gap "20px"
+   :size "auto"
    :children [[button
                :label "STOP"
                :on-click  #(dispatch [:stop-debugging])
@@ -165,7 +165,7 @@
 (defn debug-view
   []
   [v-box
-   :width "100%"
+   :height "100%"
    :children [
               [page-header "Start Debugging"]
               [nrepl-state-text]

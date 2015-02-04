@@ -10,9 +10,14 @@
 (enable-console-print!)
 
 (defn clean-url 
-  "Removes leading/trailing spaces then removes trailing slash if it exists"
+  "Removes leading/trailing spaces 
+   then removes trailing slash if it exists
+   Changes slashs if they are windows ones"
   [url]
-  (string/replace (string/trim url) #"/$" ""))
+  (-> url
+    string/trim
+    (string/replace #"/$" "")
+    (string/replace "\\" "/")))
 
 (defn get-debug-page-details 
   "Takes a vector of maps (from http://localhost:9223/json) and selects the map
