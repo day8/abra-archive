@@ -4,7 +4,8 @@
 ;;   - The test is to run  "lein --version" and check the output
 ;;   - outcome is i"broadcast" via ipc on channel "lein-status-is"
 ;;     The value broadcast in this IPC send is the map in "lein-stats" below.
-;;   - browser clients can also send the message "send-lein-status" to trigger a re-broadcast
+;;   - browser clients can also send the message "send-lein-status" to trigger 
+;;     a re-broadcast
 ;;
 ;;
 
@@ -14,21 +15,15 @@
   (:require [main.backend.nrepl :as nrepl]))
 ;;   (:require [main.core :as core]))
 
+(enable-console-print!)
+
 (def ipc           (js/require "ipc"))
 (def child-process (js/require "child_process"))
 
-
-;; keeps current knowledge
-(def lein-status (atom {:error false  :version-str nil}))
-
-;; a render client might ask for lein status on this channel
-(.on ipc "get-lein-status"
-     (fn [event arg]
-       (.send (.-sender event) "lein-status-is" true )))
-
 (.on ipc "get-lein-repl-status"
      (fn [event arg]
-       (.send (.-sender event) "lein-repl-status" (clj->js (:nrepl @nrepl/state)))))
+       (.send (.-sender event) "lein-repl-status" 
+              (clj->js (:nrepl @nrepl/state)))))
 
 ;; a render client might ask for lein to start a repl
 (.on ipc "start-lein-repl"
@@ -51,21 +46,13 @@
 (.on ipc "translate-clojurescript"
      (fn [event statement namespace-string locals]
        (go
-         (let [result (<? (nrepl/cljs->js statement 
-                                          :namespace-str namespace-string :locals locals))]
-           (.send (.-sender event) "translated-javascript" result)))))
-
-(defn callback
-  [error stdout stderr]
-  (reset! lein-status   {:run true :error error :version-str stdout} )
-  (if error (swap!  lein-status :error true))
-  (if stderr (swap!  lein-status :error true))
-  (if stdout (reset!  lein-status {:error false :version-str  ""}))
-  #_(send-lein-status))
-
-
-
-;; XXXX problem ... if I supply an error then nothing get through to the callback
-(defn run
-  []
-  (.exec child-process "lein --version"  callback))
+         (try 
+           (let [result (<? (nrepl/cljs->js 
+                              statement 
+                              :namespace-str namespace-string 
+                              :locals locals))]
+             (.send (.-sender event) "translated-javascript" nil result))
+           (catch js/Error e
+             (.send (.-sender event) "translated-javascript" 
+                    "clojurescript error" nil) 
+             e)))))

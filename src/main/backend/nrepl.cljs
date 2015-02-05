@@ -2,12 +2,15 @@
 ;;;; UI calls as they must be tested on the node runner
 (ns main.backend.nrepl
   (:require-macros [cljs.core.async.macros :refer [go]]
-                     [cljs-asynchronize.macros :refer [asynchronize]])  
+                   [cljs-asynchronize.macros :refer [asynchronize]]
+                   [main.backend.macros :refer [<?]])  
   (:require [cljs.reader :as reader]
             [clojure.string :as string]
             [goog.string :as gstring] 
             [goog.string.format]
             [cljs.core.async :refer [put!, chan, <!, >!]]))
+
+(enable-console-print!)
 
 (def state (atom {:nrepl false :port nil}))
 
@@ -67,7 +70,6 @@
     (try  
       (def connection (.connect node-client (:port @state) ...)) 
       (def result (.eval connection command ...))
-      #_(.log js/console (print-str result))
       (last (js->seq result))
     (catch js/Error e 
       e))))
@@ -89,7 +91,8 @@
    {:ns {:name \"%s\" :requires %s} :locals %s} '%s)))))")
 
 (defn- position   
-  "Takes a vector 'v' and an 'item' within 'v'.  Returns the zero-based index of 'item' in 'v'.
+  "Takes a vector 'v' and an 'item' within 'v'.  
+  Returns the zero-based index of 'item' in 'v'.
   Returns nil if item not found."
   [v item]
   (let [index-fn (fn [index i] (when (= i item) index))]
@@ -208,8 +211,12 @@
    #_(println statement)
    (if (:nrepl @state)
      (local-eval statement)
-     (go (let [port (<! (start-lein-repl options))]
-           (<! (local-eval statement)))))))
+     (go 
+       (try 
+         (let [port (<! (start-lein-repl options))]
+           (<? (local-eval statement)))
+         (catch js/Error e 
+           e))))))
 
 (defn cljs->js 
   "Asynchronously converts clojurescript into javascript using a repl,
@@ -230,23 +237,28 @@
   
     Returns: (chan)
       str. the cljs statement converted into javascript"
-  ([statement & {:keys [project-path port namespace locals
-                        namespace-str]
-               :or {project-path "." port 7888
-                    namespace nil locals []
-                    namespace-str ""}
-               :as options}]
-   (go 
-     (let [locals (into [] (for [name locals] 
-                             (reader/read-string name)))
-           locals (into {} (for [name locals]
-                             [`'~name {:name `'~name}]))
-           {:keys [as-map refer-map]} (process-namespace namespace-str)
-           locals (merge locals refer-map)
-           namespace (or namespace (find-namespace namespace-str))
-           eval-str (gstring/format convert-cljs-str namespace
-                                    as-map locals statement)
-           repl-str (str private-namespace-str eval-str)
-           result (<! (eval repl-str options))
-           evaled-result (reader/read-string result)]
-       (last (.match evaled-result #"(.*;)"))))))
+    ([statement & {:keys [project-path port namespace locals
+                          namespace-str]
+                   :or {project-path "." port 7888
+                        namespace nil locals []
+                        namespace-str ""}
+                   :as options}]
+     (go 
+       (try 
+         (let [locals (into [] (for [name locals] 
+                                 (reader/read-string name)))
+               locals (into {} (for [name locals]
+                                 [`'~name {:name `'~name}]))
+               {:keys [as-map refer-map]} (process-namespace namespace-str)
+               locals (merge locals refer-map)
+               namespace (or namespace (find-namespace namespace-str))
+               eval-str (gstring/format convert-cljs-str namespace
+                                        as-map locals statement)
+               repl-str (str private-namespace-str eval-str)
+               result (<? (eval repl-str options))
+               evaled-result (reader/read-string result)] 
+           (if evaled-result
+             (last (.match evaled-result #"([\s\S]*;)"))
+             "clojure error"))
+         (catch js/Error e 
+           e)))))
