@@ -1,69 +1,13 @@
 (ns abra.crmux.websocket
   (:require-macros [cljs.core.async.macros :refer [go-loop, go]])
-  (:require [cljs.core.async :refer [put!, chan, <!, >!, mult, tap, untap]]
+  (:require [cljs.core.async :refer [put!, chan, <!, >!, mult, pub, sub]]
             [cljs.reader :as reader]
-            [re-frame.handlers :refer [register dispatch]]))
+            [re-frame.handlers :refer [register dispatch]]
+            [re-frame.db :refer [app-db]]
+            [abra.crmux.debug-handlers :refer [handler js-result-filter]]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
-
-;; -- Notification Handlers -----------------------------------------------------------------------
-;;
-;; JSON messages flow down the websocket from the debugger (VM).
-;; Each arriving message has a "method" and some "parameters".
-;; A multimethod is used to handle the different "methods"
-;;
-
-(defn extract-method-name
-  "I return the method name for a chrome-Remote-debugger-protocol JSON message"
-  [message]
-  (let [method (:method message)
-        msg-id (:id message)]
-    (if (some? msg-id)
-      :result
-      (keyword (:method message)))))
-
-(defmulti handler extract-method-name)
-
-;; pipe results so they can be inspected
-(def js-result-in (chan))
-
-(defmethod handler :result
-  ;; "grab a result and put it in a channel"
-  [message]
-  (print "Result from javasript debugger: " message)
-  (put! js-result-in message))
-
-(defmethod handler :Debugger.paused
-  [message]
-  (let [call-frames (get-in message [:params :callFrames])]
-    (print "debugger.paused " message)
-    (dispatch [:call-frames call-frames])))
-
-(defmethod handler :default
-  [message]
-  #_(print (str "ignoring " (:method message))))
-
-;; use a mult so that we can have multiple suscribers to the chan
-(def js-result-mult (mult js-result-in))
-
-(defn js-result-filter 
-  "I watch the js-result channel and return when I find a message that matches 
-  msg-id"
-  [msg-id]
-  (let [js-result (tap js-result-mult (chan))]
-    (go-loop []
-             (let [message (<! js-result)
-                   message-id (:id message)
-                   result-str (-> message :result :result :value)
-                   error-str (-> message :result :exceptionDetails :text)]
-               (if (= msg-id message-id)
-                 (do 
-                   (untap js-result-mult js-result)
-                   (if (some? result-str)
-                     (reader/read-string result-str)
-                     error-str))
-                 (recur))))))
 
 ;; -- Web Socket ----------------------------------------------------------------------------------
 ;;
@@ -95,7 +39,7 @@
   (print (str "ws error:" error)))
 
 (defn on-ws-close
-  "remove the handle in the db (shoudl it attempt to reconnect?)"
+  "remove the handle in the db (should it attempt to reconnect?)"
   [db]
   (swap! db assoc :debug-crmux-websocket nil))
 
@@ -113,7 +57,7 @@
         (aset new-ws "onmessage" on-ws-message)
         (aset new-ws "onerror" on-ws-error)
         (aset new-ws "onclose" #(on-ws-error db))))))
-  
+
 (defn ws-send
   "sends a message to the websocket" 
   [db message]
@@ -121,11 +65,44 @@
     (.send ws (.stringify js/JSON message))))   ;; XXX turn it into str
 
 (defn ws-evaluate 
-  "evaluate javasript on the websocket and pop the result onto the database"
+  "evaluate javascript on the websocket and pop the result onto the database"
   [db expression]
   (let [msg-id (goog/getUid expression)
-        message (clj->js {"method" "Runtime.evaluate" "id" msg-id "params" 
-                          {"expression" expression "returnByValue" true}})
+        call-frame-id (:call-frame-id @db)
+        call-frames (:call-frames @db)
+        call-frame (first (filter #(= call-frame-id (:id %)) call-frames))
+        call-frame-debugger-id (:call-frame-id call-frame)
+        debugger-method (if call-frame-debugger-id 
+                          "Debugger.evaluateOnCallFrame"
+                          "Runtime.evaluate")
+        message (clj->js {"method" debugger-method "id" msg-id "params" 
+                          {"expression" expression "returnByValue" true
+                           "callFrameId" call-frame-debugger-id}})
         result (js-result-filter msg-id)]
     (ws-send db message)
-    (go (swap! db assoc :js-print-string (<! result)))))
+    (go (let [result (<! result)
+              value (:value result)
+              value (if value
+                      value
+                      (:description result))]
+          (swap! db assoc :js-print-string value)))))
+
+
+(defn ws-getProperties 
+  "get the properties from the websocket"
+  [db [_ object-id call-frame-id]]
+  (let [msg-id  (goog/getUid object-id)
+        message (clj->js {"method" "Runtime.getProperties" "id" msg-id "params" 
+                          {"objectId" object-id 
+                           "ownProperties" false 
+                           "accessorPropertiesOnly" false}})
+        result  (js-result-filter msg-id)]
+    (ws-send db message)
+    (go 
+      (let [result (<! result)
+            local-names (map :name result)]
+        #_(print "ws-getProperties" call-frame-id local-name)
+        (doseq [l local-names] 
+          (dispatch [:add-scoped-local call-frame-id l]))))))
+
+(register :crmux.ws-getProperties ws-getProperties)

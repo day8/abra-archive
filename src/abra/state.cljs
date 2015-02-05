@@ -47,27 +47,24 @@
 
 (reg-sub-key :debugging? false)
 
-(reg-sub-key :debug-url "file:///home/stu/dev/Abra2/test-page/index.html")
+(reg-sub-key :debug-url "file:///E:\\abra2-win\\test-page\\index.html")
 
 (reg-sub-key :project-dir ".")
 
-(reg-sub-key :clojurescript-string "(+ 2 3)")
+(reg-sub-key :clojurescript-string "(+ counter 3)")
 
 (reg-sub-key :javascript-string "")
 
-(reg-sub-key :namespace-string "(ns abra.core
-                               (:require [abra.state :as state]
-                               [reagent.core :as reagent]
-                               [abra.dialog :as dialog]
-                               [re-com.core :refer [input-text input-textarea 
-                                                     button hyperlink label 
-                               spinner progress-bar checkbox radio-button 
-                               title slider]]
-                               [re-com.box :refer [h-box v-box box 
-                                                   gap line]]))")
+(reg-sub-key :namespace-string "(ns test.core)")
 
 (reg-sub-key :locals-string "x\ny\nz")
 
 (reg-sub-key :js-print-string "")
 
 (reg-sub-key :lein-repl-status false)
+
+(reg-sub-key :call-frame-id nil)
+
+(reg-sub-key :call-frames [])
+
+(reg-sub-key :scoped-locals {})

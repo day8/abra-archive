@@ -1,11 +1,14 @@
 (ns abra.core
   (:require [abra.state :as state]
             [reagent.core :as reagent]
+            [reagent.ratom :as ratom]
             [abra.dialog :as dialog]
-            [re-com.core  :refer [input-text input-textarea 
-                                  label title]]
+            [re-com.core :refer [input-text input-textarea 
+                                 label title]]
             [re-com.buttons :refer [button]]
             [re-com.box   :refer [h-box v-box box gap line]]
+            [re-com.tabs :refer [vertical-bar-tabs]]
+            [re-com.layout :refer [v-layout]]
             [cljs.core.async :refer [<!]]
             [re-frame.handlers :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -15,19 +18,19 @@
 ;; redirects any println to console.log
 (enable-console-print!)
 
-(fw/start {
-           ;; configure a websocket url if yor are using your own server
-           :websocket-url "ws://localhost:3449/figwheel-ws"
-           
-           ;; optional callback
-           :on-jsload (fn [] 
-                        (println (reagent/force-update-all)))
-           
-           ;; when the compiler emits warnings figwheel
-           ;; blocks the loading of files.
-           ;; To disable this behavior:
-           :load-warninged-code true
-           })
+#_(fw/start {
+             ;; configure a websocket url if yor are using your own server
+             :websocket-url "ws://localhost:3449/figwheel-ws"
+             
+             ;; optional callback
+             :on-jsload (fn [] 
+                          (println (reagent/force-update-all)))
+             
+             ;; when the compiler emits warnings figwheel
+             ;; blocks the loading of files.
+             ;; To disable this behavior:
+             :load-warninged-code true
+             })
 
 (def ipc (js/require "ipc"))
 
@@ -40,8 +43,8 @@
        (dispatch [:lein-repl-status (js->clj arg)]))) 
 
 (.on ipc "translated-javascript" 
-     (fn [js-expression]
-       (dispatch [:translated-javascript js-expression]))) 
+     (fn [err js-expression]
+       (dispatch [:translated-javascript err js-expression]))) 
 
 ;;------------------------------------------------------------------------------
 
@@ -63,7 +66,7 @@
   (let [lein-repl-status (subscribe [:lein-repl-status])]
     (fn []
       [:p "Nrepl state -- " 
-       (if lein-repl-status
+       (if @lein-repl-status
          "running"
          "stopped")])))
 
@@ -73,35 +76,39 @@
    :label text
    :style {:font-variant "small-caps"}])
 
-(defn abra-debug-panel []
-  (let [debug-crmux-url (subscribe [:debug-crmux-url])]
-    (fn []
-      [h-box 
-       :style {:class "debug-panel-body"}
-       :children [[:iframe.debug-iframe {:src @debug-crmux-url}]]])))
-
 (defn namespace-locals
   []
   (let [namespace-string (subscribe [:namespace-string])
-        locals-string (subscribe [:locals-string])]
+        locals (subscribe [:scoped-locals])
+        call-frames (subscribe [:call-frames])
+        call-frame-id (subscribe [:call-frame-id])]
     (fn
       []
       [h-box
        :justify :start
        :gap "20px"
        :children [[v-box
-                   :children [[field-label "namespace"]
-                              [input-textarea
-                               :model @namespace-string
-                               :on-change #(dispatch [:namespace-string %])
-                               :rows 12
-                               :width "550px"]]]
-                  [v-box
-                   :children [[field-label "locals"]
-                              [input-textarea
-                               :model @locals-string
-                               :on-change #(dispatch 
-                                             [:locals-string %])]]]]])))
+                   :children 
+                   [[field-label "namespace"]
+                    [input-textarea
+                     :model @namespace-string
+                     :on-change #(dispatch [:namespace-string %])
+                     :rows 12
+                     :width "550px"]]]
+                  (when @call-frame-id 
+                    [v-box
+                     :children [[field-label "locals"]
+                                [input-textarea
+                                 :model (reduce #(str %1 "\n" %2) 
+                                                (get @locals @call-frame-id))]]])
+                  (when @call-frame-id 
+                    [v-box
+                     :children [[field-label "call-frames"]
+                                [vertical-bar-tabs
+                                 :model @call-frame-id
+                                 :tabs @call-frames
+                                 :on-change 
+                                 #(dispatch [:call-frame-id %])]]])]])))
 
 (defn clojurescript-input-output
   []
@@ -136,22 +143,36 @@
                               [input-textarea
                                :model @js-print-string]]]]])))
 
+(defn abra-debug-panel []
+  (let [debug-crmux-url (subscribe [:debug-crmux-url])]
+    (fn []
+      [h-box 
+       :size "auto"
+       :children [[:iframe.debug-iframe {:src @debug-crmux-url}]]])))
+
+(defn top-debug-panel
+  []
+  [v-box 
+   :gap "20px"
+   :size "auto"
+   :children [[button
+               :label "STOP"
+               :on-click  #(dispatch [:stop-debugging])
+               :class    "btn-danger"]
+              [namespace-locals]
+              [clojurescript-input-output]]])
+
 (defn debug-view
   []
   [v-box
-   :width "100%"
+   :height "100%"
    :children [
               [page-header "Start Debugging"]
               [nrepl-state-text]
-              [v-box 
-               :gap "20px"
-               :children [[button
-                           :label "STOP"
-                           :on-click  #(dispatch [:stop-debugging])
-                           :class    "btn-danger"]
-                          [namespace-locals]
-                          [clojurescript-input-output]
-                          [abra-debug-panel]]]]])
+              [v-layout
+               :top-panel top-debug-panel
+               :bottom-panel abra-debug-panel
+               ]]])
 
 (defn project-form
   []
@@ -225,5 +246,5 @@
 (defn start
   []
   (dispatch [:initialise])
-  #_(dispatch [:start-debugging])
+  (dispatch [:start-debugging])
   (reagent/render [main-page] (get-element-by-id "app")))

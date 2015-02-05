@@ -10,6 +10,17 @@
   "count every second"
   [counter]
   (print "counter at " counter)
-  (js/setTimeout #(one-second-count (inc counter)) 10000))
+  (js/setTimeout #((a-closure 1) counter) 3000))
+
+(defn one-frame-up
+  "up one more frame"
+  [ofu-counter]
+  (let [five (+ 5 ofu-counter)]
+    (one-second-count (+ five ofu-counter))))
+
+(defn a-closure
+  [closure-var]
+  (fn [ac-counter]
+    (one-frame-up (+ ac-counter closure-var))))
 
 (one-second-count 1)
