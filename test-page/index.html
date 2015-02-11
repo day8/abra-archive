@@ -4,7 +4,7 @@
     </head>
     <body>
     <div id="app"></div>
-        <h3>Abra test page I have a counter</h3>
+        <h3>Abra test page, I have a counter</h3>
         <pre>(ns test.core)
 
 ;; redirects any println to console.log
@@ -28,7 +28,22 @@
 (defn a-closure
   [closure-var]
   (fn [ac-counter]
-    (one-frame-up (+ ac-counter closure-var))))
+    (four-frame-up (+ ac-counter closure-var))))
+
+(defn two-frame-up
+  "up one more frame"
+  [counter]
+    (one-frame-up counter))
+
+(defn three-frame-up
+  "up one more frame"
+  [counter]
+    (two-frame-up counter))
+
+(defn four-frame-up
+  "up one more frame"
+  [counter]
+    (three-frame-up counter))
 
 (one-second-count 1)</pre>
         <script src="http://fb.me/react-0.9.0.js"></script>

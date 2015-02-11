@@ -21,6 +21,21 @@
 (defn a-closure
   [closure-var]
   (fn [ac-counter]
-    (one-frame-up (+ ac-counter closure-var))))
+    (four-frame-up (+ ac-counter closure-var))))
+
+(defn two-frame-up
+  "up one more frame"
+  [counter]
+    (one-frame-up counter))
+
+(defn three-frame-up
+  "up one more frame"
+  [counter]
+    (two-frame-up counter))
+
+(defn four-frame-up
+  "up one more frame"
+  [counter]
+    (three-frame-up counter))
 
 (one-second-count 1)

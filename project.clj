@@ -4,13 +4,14 @@
   
   
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2277"]
-                 [cljs-ajax "0.2.4"]
-                 [reagent "0.5.0-alpha"]
+                 [org.clojure/clojurescript "0.0-2760"]
+                 [org.clojure/core.async    "0.1.338.0-5c5012-alpha"]
+                 [cljs-ajax "0.3.9" :exclusions [org.clojure/core.async]]
+                 [reagent "0.5.0-alpha3"]
                  [re-com "0.1.6"]
                  [re-frame "0.1.0"]
                  [cljs-asynchronize "0.1.1-SNAPSHOT"]
-                 [figwheel "0.2.1-SNAPSHOT"]
+                 [figwheel "0.2.2-SNAPSHOT"]
                  [ring/ring-core "1.3.1"]]
   
   :node-dependencies [[ws "~0.4.31"]
@@ -21,9 +22,9 @@
                       [portscanner "~1.0.0"]
                       [atom-shell "1.2.1"]]  
   
-  :plugins [[lein-cljsbuild "1.0.3"]
-            [com.cemerick/clojurescript.test "0.3.1"]
-            [lein-figwheel "0.2.1-SNAPSHOT"]
+  :plugins [[lein-cljsbuild "1.0.4"]
+            [com.cemerick/clojurescript.test "0.3.3"]
+            [lein-figwheel "0.2.2-SNAPSHOT"]
             [lein-npm "0.5.0"]]
   
   :npm-root "run"

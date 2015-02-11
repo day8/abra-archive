@@ -6,7 +6,7 @@
             [re-com.core :refer [input-text input-textarea 
                                  label title]]
             [re-com.buttons :refer [button]]
-            [re-com.box   :refer [h-box v-box box gap line]]
+            [re-com.box   :refer [h-box v-box box scroller gap line]]
             [re-com.tabs :refer [vertical-bar-tabs]]
             [re-com.layout :refer [v-layout]]
             [cljs.core.async :refer [<!]]
@@ -19,18 +19,18 @@
 (enable-console-print!)
 
 #_(fw/start {
-             ;; configure a websocket url if yor are using your own server
-             :websocket-url "ws://localhost:3449/figwheel-ws"
-             
-             ;; optional callback
-             :on-jsload (fn [] 
-                          (println (reagent/force-update-all)))
-             
-             ;; when the compiler emits warnings figwheel
-             ;; blocks the loading of files.
-             ;; To disable this behavior:
-             :load-warninged-code true
-             })
+           ;; configure a websocket url if yor are using your own server
+           :websocket-url "ws://localhost:3449/figwheel-ws"
+           
+           ;; optional callback
+           :on-jsload (fn [] 
+                        (println (reagent/force-update-all)))
+           
+           ;; when the compiler emits warnings figwheel
+           ;; blocks the loading of files.
+           ;; To disable this behavior:
+           :load-warninged-code true
+           })
 
 (def ipc (js/require "ipc"))
 
@@ -93,22 +93,25 @@
                     [input-textarea
                      :model @namespace-string
                      :on-change #(dispatch [:namespace-string %])
-                     :rows 12
-                     :width "550px"]]]
+                     :rows 5
+                     :width "300px"]]]
+                  (when @call-frame-id 
+                    [v-box
+                     :children [[field-label "call-frames"]
+                                [scroller
+                                 :h-scroll :off
+                                 :height "125px"
+                                 :child [vertical-bar-tabs
+                                         :model @call-frame-id
+                                         :tabs @call-frames
+                                         :on-change 
+                                         #(dispatch [:call-frame-id %])]]]])
                   (when @call-frame-id 
                     [v-box
                      :children [[field-label "locals"]
                                 [input-textarea
                                  :model (reduce #(str %1 "\n" %2) 
-                                                (get @locals @call-frame-id))]]])
-                  (when @call-frame-id 
-                    [v-box
-                     :children [[field-label "call-frames"]
-                                [vertical-bar-tabs
-                                 :model @call-frame-id
-                                 :tabs @call-frames
-                                 :on-change 
-                                 #(dispatch [:call-frame-id %])]]])]])))
+                                                (get @locals @call-frame-id))]]])]])))
 
 (defn clojurescript-input-output
   []
@@ -135,13 +138,13 @@
                                :on-click #(dispatch [:translate])
                                :disabled? (not @lein-repl-status)]]]
                   [v-box
+                   :children [[field-label "result"]
+                              [input-textarea
+                               :model @js-print-string]]]
+                                    [v-box
                    :children [[field-label "javascript"]
                               [input-textarea
-                               :model @javascript-string]]]
-                  [v-box
-                   :children [[field-label "javascript result"]
-                              [input-textarea
-                               :model @js-print-string]]]]])))
+                               :model @javascript-string]]]]])))
 
 (defn abra-debug-panel []
   (let [debug-crmux-url (subscribe [:debug-crmux-url])]
@@ -152,27 +155,35 @@
 
 (defn top-debug-panel
   []
-  [v-box 
-   :gap "20px"
-   :size "auto"
-   :children [[button
-               :label "STOP"
-               :on-click  #(dispatch [:stop-debugging])
-               :class    "btn-danger"]
-              [namespace-locals]
-              [clojurescript-input-output]]])
+  [scroller 
+   :child [v-box 
+           :gap "20px"
+           ;;:size "auto"
+           :children [[h-box 
+                       ; :align :center
+                       :gap "5px"
+                       :children [
+                                  [button
+                                   :label "STOP"
+                                   :on-click  #(dispatch [:stop-debugging])
+                                   :class    "btn-danger"]
+                                  [button
+                                   :label "refresh"]
+                                  [gap 
+                                   :size "40px"]
+                                  [nrepl-state-text]]]
+                      [namespace-locals]
+                      [clojurescript-input-output]]]])
 
 (defn debug-view
   []
   [v-box
    :height "100%"
    :children [
-              [page-header "Start Debugging"]
-              [nrepl-state-text]
               [v-layout
+               :initial-split "65%"
                :top-panel top-debug-panel
-               :bottom-panel abra-debug-panel
-               ]]])
+               :bottom-panel abra-debug-panel]]])
 
 (defn project-form
   []
@@ -180,44 +191,49 @@
     (fn 
       []
       [h-box 
+       :gap "10px"
        :children 
-       [[:div "Root directory   "]
-        [v-box :children 
-         [[input-text 
-           :model @project-dir]
-          [:div (str "This directory is the root "
-                     "of your clojurescript project")]]]
-        [:input.btn.btn-success
-         {:type "button"
-          :value "Browse"
-          :on-click  (fn 
-                       [] 
-                       (dialog/open 
-                         {:title "Open Project.clj Directory" 
-                          :properties ["openDirectory"] 
-                          :defaultPath  "c:\\"
-                          :filters [{:name "Project Files" 
-                                     :extensions ["clj"]}]}
-                         (fn [[project-dir]] 
-                           (dispatch 
-                             [:project-dir project-dir]))))}]]])))
+       [
+        [v-box :children [
+                          [field-label "project directory   "]
+                          [v-box :children 
+                           [[h-box
+                             :gap "2px"
+                             :children [
+                                        [input-text 
+                                         :model @project-dir]
+                                        [button
+                                         :label "Browse"
+                                         :on-click  (fn 
+                                                      [] 
+                                                      (dialog/open 
+                                                        {:title "Open Project.clj Directory" 
+                                                         :properties ["openDirectory"] 
+                                                         :defaultPath  "c:\\"
+                                                         :filters [{:name "Project Files" 
+                                                                    :extensions ["clj"]}]}
+                                                        (fn [[project-dir]] 
+                                                          (dispatch 
+                                                            [:project-dir project-dir]))))]]]
+                            [:div (str "This directory is the root "
+                                       "of your clojurescript project")]]]]]]])))
 
 (defn debug-url
   []
   (let [debug-url (subscribe [:debug-url])]
     (fn 
       []
-      [h-box 
+      [v-box 
        :children 
-       [[:div "Debug URL   "]
+       [[field-label "debug url   "]
         [v-box 
          :children 
          [[input-text 
            :model debug-url
            :on-change #(dispatch [:debug-url %])]
           [:div "You want to debug an HTML page right? 
-                Via which URL should it be loaded? 
-                Probably something like:"]
+                Via which URL should it be loaded? "]
+          [:div "Probably something like:"]
           [:ul [:li "file:///path/to/my/project/folder/index.html"]
            [:li (str "http://localhost:3449/index.html"
                      "(if you are running figwheel or "
@@ -225,15 +241,17 @@
 
 (defn details-view
   []
-  [:div
-   [page-header "What Debug Session Do You Want To Launch?"]
-   [project-form]
-   [debug-url]   
-   
-   [:input.btn.btn-success
-    {:type "button"
-     :value "Debug"
-     :on-click #(dispatch [:start-debugging])}]])
+  [v-box
+   :padding "20px 10px 0px 30px"
+   :gap "10px"
+   :children [
+              [page-header "What Debug Session Do You Want To Launch?"]
+              [project-form]
+              [debug-url]   
+              [button
+               :class "btn-success"
+               :label "Debug"
+               :on-click #(dispatch [:start-debugging])]]])
 
 (defn main-page
   []
