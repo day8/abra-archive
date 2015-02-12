@@ -74,3 +74,6 @@ I bootstrap the application and kick off the GUI (Browser Window)."
      (fn [event]
        (print "Closing the debug window")
        (.close @debug-window)))
+
+;;; needed to use the :target :nodejs
+(set! *main-cli-fn* #())

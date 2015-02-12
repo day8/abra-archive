@@ -4,6 +4,7 @@
 *-init.clj
 *.log
 Thumbs.db
+run/package.json
 run/node_modules/
 run/js/compiled/
 resources/public/js/compiled

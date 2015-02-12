@@ -4,15 +4,15 @@
   
   
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2760"]
-                 [org.clojure/core.async    "0.1.338.0-5c5012-alpha"]
-                 [cljs-ajax "0.3.9" :exclusions [org.clojure/core.async]]
+                 [org.clojure/clojurescript "0.0-2843"]
+                 [org.clojure/core.async    "0.1.346.0-17112a-alpha"]
+                 [cljs-ajax "0.3.9"]
                  [reagent "0.5.0-alpha3"]
                  [re-com "0.1.6"]
                  [re-frame "0.1.0"]
                  [cljs-asynchronize "0.1.1-SNAPSHOT"]
                  [figwheel "0.2.2-SNAPSHOT"]
-                 [ring/ring-core "1.3.1"]]
+                 [ring/ring-core "1.3.2"]]
   
   :node-dependencies [[ws "~0.4.31"]
                       [bl "~0.4.2"]
@@ -23,6 +23,7 @@
                       [atom-shell "1.2.1"]]  
   
   :plugins [[lein-cljsbuild "1.0.4"]
+            [lein-ancient "0.6.2"]
             [com.cemerick/clojurescript.test "0.3.3"]
             [lein-figwheel "0.2.2-SNAPSHOT"]
             [lein-npm "0.5.0"]]
@@ -45,6 +46,7 @@
                         :output-to  "run/js/compiled/main.js"
                         :source-map "run/js/compiled/main.js.map"
                         :output-dir "run/js/compiled/main"
+                        :target :nodejs
                         :optimizations :simple
                         :pretty-print true
                         :closure-warnings {:check-useless-code :off}}}
@@ -93,7 +95,8 @@
                                  "run/js/compiled/test_node.js"]}}
   
   :figwheel {:http-server-root "public"
-             :server-port 3449}  
+             :server-port 3449
+             :repl false}  
   
   :source-paths ["src"]
   :test-paths ["test"]
