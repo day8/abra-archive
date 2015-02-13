@@ -15,7 +15,10 @@
 (defn one-frame-up
   "up one more frame"
   [ofu-counter]
-  (let [five (+ 5 ofu-counter)]
+  (let [five (+ 5 ofu-counter)
+        i-am-a-map {:a 1 :b 2}
+        i_am_a_map {:a :b}
+        hello "hello"]
     (one-second-count (+ five ofu-counter))))
 
 (defn a-closure

@@ -93,7 +93,7 @@
         locals (subscribe [:scoped-locals])
         call-frames (subscribe [:call-frames])
         call-frame-id (subscribe [:call-frame-id])
-        local-id (ratom/atom 0)]
+        local-id (subscribe [:local-id])]
     (fn
       []
       [h-box
@@ -111,32 +111,36 @@
                        :width "300px"]]]]
                    (when @call-frame-id 
                      (when-let [locals-tab (get @locals @call-frame-id)]
-                       [[v-box
-                         :children 
-                         [[field-label "call-frames" "the active call frames"]
-                          [scroller
-                           :h-scroll :off
-                           :height "125px"
-                           :child [vertical-bar-tabs
-                                   :model @call-frame-id
-                                   :tabs @call-frames
-                                   :on-change 
-                                   #(dispatch [:call-frame-id %])]]]]  
-                        [v-box
-                         :children 
-                         [[field-label "locals"]
-                          [scroller
-                           :h-scroll :off
-                           :height "125px"
-                           :child [vertical-bar-tabs
-                                   :model @local-id
-                                   :tabs locals-tab
-                                   :on-change #(swap! local-id %)]]]]
-                        [v-box
-                         :children 
-                         [[field-label "local value"]
-                          [input-textarea
-                           :model "hello"]]]])))])))
+                       (let [[local-map] (filter #(= (:id %) @local-id) 
+                                                 locals-tab)]
+                         [[v-box
+                           :children 
+                           [[field-label "call-frames" "the active call frames"]
+                            [scroller
+                             :h-scroll :off
+                             :height "125px"
+                             :child [vertical-bar-tabs
+                                     :model @call-frame-id
+                                     :tabs @call-frames
+                                     :on-change 
+                                     (fn [id]
+                                       (dispatch [:call-frame-id id])
+                                       (dispatch [:local-id 0]))]]]]  
+                          [v-box
+                           :children 
+                           [[field-label "locals"]
+                            [scroller
+                             :h-scroll :off
+                             :height "125px"
+                             :child [vertical-bar-tabs
+                                     :model @local-id
+                                     :tabs locals-tab
+                                     :on-change #(dispatch [:local-id %])]]]]
+                          [v-box
+                           :children 
+                           [[field-label "local value"]
+                            [input-textarea
+                             :model (print-str (:value local-map))]]]]))))])))
 
 (defn clojurescript-input-output
   []
@@ -193,7 +197,9 @@
                                    :on-click  #(dispatch [:stop-debugging])
                                    :class    "btn-danger"]
                                   [button
-                                   :label "refresh"]
+                                   :label "refresh"
+                                   :on-click #(dispatch [:refresh-page])
+                                   :disabled? true]
                                   [gap 
                                    :size "40px"]
                                   [nrepl-state-text]]]

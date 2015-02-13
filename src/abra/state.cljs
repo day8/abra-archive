@@ -68,3 +68,5 @@
 (reg-sub-key :call-frames [])
 
 (reg-sub-key :scoped-locals {})
+
+(reg-sub-key :local-id 0)

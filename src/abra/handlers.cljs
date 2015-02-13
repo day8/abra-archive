@@ -67,21 +67,39 @@
         (.send ipc "get-lein-repl-status")))))
 
 ;; clear the scoped-locals dictionary
+(defn clear-scoped-locals
+  [db [_]]
+  (swap! db assoc :scoped-locals {}))
+
 (register 
   :clear-scoped-locals
-  (fn [db [_]]
-    (swap! db assoc :scoped-locals {})))
+  clear-scoped-locals)
 
 ;; add a scoped local to the db
 (register 
   :add-scoped-local
-  (fn [db [_ scope-id local-name]]
-    (let [locals (get (:scoped-locals @db) scope-id [])]
+  (fn [db [_ scope-id variable-map]]
+    (let [locals (get (:scoped-locals @db) scope-id [])
+          local-name (:name variable-map)
+          value (:value variable-map)]
       (swap! db assoc-in [:scoped-locals scope-id] 
-             (conj locals {:label local-name :id (count locals)})))))
+             (conj locals {:label local-name :id (count locals)
+                           :value value})))))
 
 ;; clear the call-frames dictionary
+(defn clear-call-frames
+  [db [_]]
+  (swap! db assoc :call-frames []))
+
 (register 
   :clear-call-frames
-  (fn [db [_]]
-    (swap! db assoc :call-frames [])))
+  clear-call-frames)
+
+;; refresh the page to be debugged
+(register
+  :refresh-page
+  (fn [db _]
+    (clear-scoped-locals db _)
+    (clear-call-frames db _)
+    (swap! db assoc :local-id 0)
+    (.send ipc "refresh-page")))
