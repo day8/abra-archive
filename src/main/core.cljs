@@ -52,7 +52,7 @@ I bootstrap the application and kick off the GUI (Browser Window)."
                              :web-preferences #js {:web-security false}}))
   (.loadUrl @main-window abra-html)
   (.start_crmux_server crmux)
-  (.toggleDevTools @main-window)             ;;  TODO: condition this on a developer environment variable
+  ; (.toggleDevTools @main-window)             ;;  TODO: condition this on a developer environment variable
   (.on @main-window "closed" #(reset! main-window nil)))
 
 
@@ -63,14 +63,21 @@ I bootstrap the application and kick off the GUI (Browser Window)."
 
 ;; a render client might ask for a url to be opened
 (.on ipc "open-url"
-     (fn [event, debug-url]
+     (fn [event debug-url]
        (print "Opening " debug-url)
        (reset! debug-window (browser-window. #js {:width 800 :height 600}))
        (.loadUrl @debug-window debug-url)
        #_(.toggleDevTools @debug-window)
        (.on @debug-window "closed" #(reset! main-window nil))))
 
+(.on ipc "refresh-page"
+     (fn [event]
+       (.reload @debug-window)))
+
 (.on ipc "close-url"
      (fn [event]
        (print "Closing the debug window")
        (.close @debug-window)))
+
+;;; needed to use the :target :nodejs
+(set! *main-cli-fn* #())

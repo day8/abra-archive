@@ -139,7 +139,7 @@ Now all the source files are installed. Let's build the app:
 
 Everything involved in the build is placed in the `run\js\compiled` folder.
 
-Now it's ready to run (assuming atom-shell is somewhere on your path):
+Now it's ready to run:
 
     lein npm run start
 
