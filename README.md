@@ -1,31 +1,115 @@
-Abra2
-=====
+# Status
 
-A ClojureScript debugging application.
+Unpublished - but getting close
 
-There is a distinct lack of first-class debugging tools for ClojureScript. In particular, because ClojureScript compiles to 
-JavaScript, and because the JavaScript debugger included in browsers such as Chrome only work in a JavaScript context, you 
-can't easily view the value of complex ClojureScript objects or execute arbitrary ClojureScript, which is crucial when you're 
-stopped at a breakpoint.
+# Abra
 
-{probably add more explanation here}     
+Abra is a proof of concept ClojureScript debugger.
 
-Abra2 is an integrated ClojureScript Debugger, written in ClojureScript. It runs under atom-shell.
+It works!!  It does the stuff you can't do via a bRepl.
 
-You simply enter the URL of the ClojureScript app you want to debug in the address bar and press the Debug button. 
-This does the following:
+You can set breakpoints and, when they are hit, you can:
+ - inspect the value of ClojureScript variables in the call stack
+ - evaluate arbitrary cljs code, referencing locals on the stack.
 
- * Launches the application in a new window.
- * Splits the Abra window into two vertical panes with a splitter inbetween.
- * The BOTTOM pane loads the standard Chrome DevTools window which gives you the full DevTools functionality, like view and 
-   manipulate the HTML and CSS in the Elements tab, and view and manipulate the source code in the Sources tab, including setting
-   breakpoints, watches etc. and viewing the call stack and local variables when the code is stopped at a breakpoint. Note that 
-   everything in this pane is in a JavaScript context. 
- * The TOP pane loads our ClojureScript debugger functions, allowing you to view and manipulate everything in ClojureScript 
-   context, including the call stack, local and global variables and a built-in ClojureScript repl which allows you to 
-   execute arbitrary ClojureScript, in the current context, whether the app is at a breakpoint or not.   
+In the future, we hope to evolve Abra towards being
+a [Time Traveling Debugger] and perhaps include some effortless,
+optional [tracing](https://github.com/spellhouse/clairvoyant) facilities.
 
-{probably add more explanation here}     
+We think designing a good debugger is a data visualization
+problem. Not that we really know what that means, just yet ,except to say that
+ClojureScript has a unique set of properties which should allow for
+something quite special to be done.
+
+# The Bad News
+
+It is especially fruitless to tell people to "never judge a book by its cover". Everyone
+does and there is absolutely nothing you can say to make them not do it.
+
+But really, you shouldn't judge Abra by its current poor cover. That worked, right?
+
+Our goal until now has been to simply prove the concept, not
+to create something lovely to use.
+
+As a result, you will be confronted with a user interface which is very
+basic and clunky.
+
+Oh, and please don't judge Abra badly for its lack of documentation and
+poor performance. Did we mention how it is currently a proof of concept?
+
+## What Does It Give Me?
+
+Chrome's DevTools already do so much.  You can set breakpoints, inspect code and page
+elements, profile, etc.  So powerful. You want access to that.
+
+But it lives in a dystopian world wholly without ClojureScript. It
+can't show you the stack or its locals in ClojureScript terms. A dark place indeed.
+
+Abra solves the problem by putting a ClojusreScrit specific UI side by
+side with DevTools. You get all the power of DevTools, combined with the
+a custom ClojureScript capability. They work together.
+
+## How Does It Work?
+
+Magic!  Didn't you notice the name?
+
+Should you look behind the curtain, we can neither confirm nor deny that you'd find pieces like:
+
+  - Reagent
+  - re-com    (our component library)
+  - re-frame  (our framework)
+  - [atom-shell](https://github.com/atom/atom-shell)
+  - [Chrome Remote debugging protocol](https://developer.chrome.com/devtools/docs/debugger-protocol)
+  - [crmux](https://github.com/sidorares/crmux)
+
+
+## SetUp
+
+To install Abra:
+
+1. Install [Leiningen] and [Node.js].
+1. Checkout this repo:
+
+    ```sh
+    git clone https://github.com/Day8/Abra.git
+    ```
+
+1. cd into root folder:
+
+    ```sh
+    cd Abra
+    ```
+
+1. download dependencies:
+
+    ```sh
+    lein deps
+    ```
+
+1. compile the application (place generated js into `run/js/compiled`):
+
+    ```sh
+    lein cljsbuild once
+    ```
+
+1. You are now ready to run the app.  If later you run into problems, try a re-compile:
+
+    ```sh
+    lein clean
+    lein cljsbuild once
+    ```
+
+## Run And Using Abra
+
+1. To run Abra we must start atom-shell the right way:
+
+    ```sh
+    lein npm run start
+    ```
+
+1. When Abra starts ... XXXXXX
+
+
 
 
 Building with figwheel
@@ -47,12 +131,6 @@ Then in the root directory
 $honcho start
 ```
 
-Running
---------
-
-```
-$lein npm run start
-```
 
 Dependencies
 ------------
@@ -94,85 +172,14 @@ Abra makes use of the following tools, libraries and technologies:
      - [Google Closure v?](https://developers.google.com/closure): Google JavaScript Tools and libraries, including a compiler which 
        optimises JavaScript.
 
-## Getting Started
 
-After going through the following set of commands, you will be fully configured and able to run the application:
+## ToDos
 
-(Note: I have collated these steps a long time after having set myself up so there's a chance I have something wrong here.
-Let me know if anything didn't work) 
-
-Start by going to a command line or terminal window, then change directory to your dev folder. This procedure will create an Abra folder 
-under your dev folder.
-
-First we need to configure git to NOT prompt you for username and password when connecting to PRIVATE remote repositories, such as Day8.
-
-Apart from this being very convenient, it is a must-have to be able to use the lein-git-deps plugin.
-
-Start by setting up your GitHub username and email address: 
-
-    git config --global user.name "{your-github-username}"
-    git config --global user.email "{your-github-email-address}"
-
-Now we need a password manager extension:
-
-    git config --global credential.helper store
-
-I believe this worked for DJ under Linux, but it didn't for me under Windows. Possibly because I had already installed a credentials 
-manager by installing [git extensions](http://chocolatey.org/packages/gitextensions). The included credentials manager is 
-called [git-credential-winstore](https://gitcredentialstore.codeplex.com). I had to use this command instead:
-    
-    git config --global credential.helper wincred
-
-Now we can download the Abra repository, which will create an Abra folder in the current folder:
-
-    git clone https://github.com/Day8/Abra2.git
-
-Now ask Leiningen to load the ClojureScript dependencies from clojars.com, and npm
-dependencies (specified in project.clj):
-
-    lein deps
+ - This looks interesting.  Use a similar approach?
+ - reove git-deps from project.clj
 
 
-Now all the source files are installed. Let's build the app:
-
-    lein cljsbuild once
-
-Everything involved in the build is placed in the `run\js\compiled` folder.
-
-Now it's ready to run:
-
-    lein npm run start
-
-If you want to automatically recompile each source file as it is saved, 
-and use figwheel use this command:
-
-    honcho start
-
-If ever the app is not working properly and you suspect some of the build files are in some way, broken, you can clear ALL build files 
-from the `Abra\deploy\core\lib\out` folder with the following\command:
-
-    lein cljsbuild clean
-
-Then you can do a `lein cljsbuild once` and that should prove if the problem is you
-
-
-## Original Mike notes
-
-Okay, I've worked out one way we could do the debugger which would mean it was uttlerly self contained.
-No other moving parts. No other servers, no other windows, no starting up crmux, etc.  Just one application.
-
--  it will be done as a nodeweb-kit application  (Duh! why didn't we think of this before)
-
--  which will launch with the debug port 9222 on itself turned on (via contents of package.json as you worked out yesterday)
-
--  on launch it will startup crmux (not as a seperate process, crmux is just javascript, right, designed to run on node, so can be started "internally" to the app)
-
--  and this crmux will point back at itself (after all this app started with port 9222 open for debugging)
-
--  it will ask the user for the page to launch  (the page to be debugged)
-
--  it will launch that page and then ...
-
--  it will launch the normal chrome debugger AND our cljs debugger both pointing to this page via the locally started crmux
-
--  final piece:  in our cljs debug page we need to turn cljs into javascript ... we have been talking about using a server to do that .... but what if we instead used an embedded java (clj) applet embedded in our page??   From javascript (ClojureScript) we could execute a java method (clj method) inside the applet to turn cljs into javascript.  It certainly looks possible from the quick bit of googling I've done. And, if we could pull that off, then there'd be no server required.
+[Leiningen]:http://leiningen.org
+[Node.js]:http://nodejs.org
+[Atom Shell]:https://github.com/atom/atom-shell
+[Time Traveling Debugger]:http://debug.elm-lang.org/
