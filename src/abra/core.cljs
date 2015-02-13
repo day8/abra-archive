@@ -5,7 +5,7 @@
             [abra.dialog :as dialog]
             [re-com.core :refer [input-text input-textarea 
                                  label title]]
-            [re-com.buttons :refer [button]]
+            [re-com.buttons :refer [button info-button]]
             [re-com.box   :refer [h-box v-box box scroller gap line]]
             [re-com.tabs :refer [vertical-bar-tabs]]
             [re-com.layout :refer [v-layout]]
@@ -71,47 +71,72 @@
          "stopped")])))
 
 (defn field-label
-  [text]
-  [label 
-   :label text
-   :style {:font-variant "small-caps"}])
+  ;takes the field label and a text or hiccup help text
+  ([text]
+   (field-label text nil))
+  ([text info]
+   [h-box 
+    :children (concat 
+                [[label 
+                  :label text
+                  :style {:font-variant "small-caps"}]]
+                (when info
+                  [[gap :size "5px"] 
+                   [info-button
+                    :info (if string? info 
+                            [:div info]
+                            info)]]))]))
 
 (defn namespace-locals
   []
   (let [namespace-string (subscribe [:namespace-string])
         locals (subscribe [:scoped-locals])
         call-frames (subscribe [:call-frames])
-        call-frame-id (subscribe [:call-frame-id])]
+        call-frame-id (subscribe [:call-frame-id])
+        local-id (ratom/atom 0)]
     (fn
       []
       [h-box
        :justify :start
        :gap "20px"
-       :children [[v-box
-                   :children 
-                   [[field-label "namespace"]
-                    [input-textarea
-                     :model @namespace-string
-                     :on-change #(dispatch [:namespace-string %])
-                     :rows 5
-                     :width "300px"]]]
-                  (when @call-frame-id 
-                    [v-box
-                     :children [[field-label "call-frames"]
-                                [scroller
-                                 :h-scroll :off
-                                 :height "125px"
-                                 :child [vertical-bar-tabs
-                                         :model @call-frame-id
-                                         :tabs @call-frames
-                                         :on-change 
-                                         #(dispatch [:call-frame-id %])]]]])
-                  (when @call-frame-id 
-                    [v-box
-                     :children [[field-label "locals"]
-                                [input-textarea
-                                 :model (reduce #(str %1 "\n" %2) 
-                                                (get @locals @call-frame-id))]]])]])))
+       :children (concat  
+                   [[v-box
+                     :children 
+                     [[field-label "namespace" 
+                       "enter the namespace of the file inspected"]
+                      [input-textarea
+                       :model @namespace-string
+                       :on-change #(dispatch [:namespace-string %])
+                       :rows 5
+                       :width "300px"]]]]
+                   (when @call-frame-id 
+                     (when-let [locals-tab (get @locals @call-frame-id)]
+                       [[v-box
+                         :children 
+                         [[field-label "call-frames" "the active call frames"]
+                          [scroller
+                           :h-scroll :off
+                           :height "125px"
+                           :child [vertical-bar-tabs
+                                   :model @call-frame-id
+                                   :tabs @call-frames
+                                   :on-change 
+                                   #(dispatch [:call-frame-id %])]]]]  
+                        [v-box
+                         :children 
+                         [[field-label "locals"]
+                          [scroller
+                           :h-scroll :off
+                           :height "125px"
+                           :child [vertical-bar-tabs
+                                   :model @local-id
+                                   :tabs locals-tab
+                                   :on-change #(swap! local-id %)]]]]
+                        [v-box
+                         :children 
+                         [[field-label "local value"]
+                          [input-textarea
+                           :model "hello"]]]])))])))
 
 (defn clojurescript-input-output
   []
@@ -194,29 +219,28 @@
        :gap "10px"
        :children 
        [
-        [v-box :children [
-                          [field-label "project directory   "]
-                          [v-box :children 
-                           [[h-box
-                             :gap "2px"
-                             :children [
-                                        [input-text 
-                                         :model @project-dir]
-                                        [button
-                                         :label "Browse"
-                                         :on-click  (fn 
-                                                      [] 
-                                                      (dialog/open 
-                                                        {:title "Open Project.clj Directory" 
-                                                         :properties ["openDirectory"] 
-                                                         :defaultPath  "c:\\"
-                                                         :filters [{:name "Project Files" 
-                                                                    :extensions ["clj"]}]}
-                                                        (fn [[project-dir]] 
-                                                          (dispatch 
-                                                            [:project-dir project-dir]))))]]]
-                            [:div (str "This directory is the root "
-                                       "of your clojurescript project")]]]]]]])))
+        [v-box 
+         :children 
+         [[field-label "project directory" 
+           "This directory is the root of your clojurescript project"]
+          [v-box :children 
+           [[h-box
+             :gap "2px"
+             :children 
+             [[input-text 
+               :model @project-dir]
+              [button
+               :label "Browse"
+               :on-click  
+               #(dialog/open 
+                  {:title "Open Project.clj Directory" 
+                   :properties ["openDirectory"] 
+                   :defaultPath  "c:\\"
+                   :filters [{:name "Project Files" 
+                              :extensions ["clj"]}]}
+                  (fn [[project-dir]] 
+                    (dispatch 
+                      [:project-dir project-dir])))]]]]]]]]])))
 
 (defn debug-url
   []
@@ -225,19 +249,18 @@
       []
       [v-box 
        :children 
-       [[field-label "debug url   "]
-        [v-box 
-         :children 
-         [[input-text 
-           :model debug-url
-           :on-change #(dispatch [:debug-url %])]
-          [:div "You want to debug an HTML page right? 
-                Via which URL should it be loaded? "]
-          [:div "Probably something like:"]
-          [:ul [:li "file:///path/to/my/project/folder/index.html"]
-           [:li (str "http://localhost:3449/index.html"
-                     "(if you are running figwheel or "
-                     "an external server)")]]]]]])))
+       [[field-label "debug url" 
+         [v-box 
+          :children [[:div "You want to debug an HTML page right? 
+                           Via which URL should it be loaded? "]
+                     [:div "Probably something like:"]
+                     [:ul [:li "file:///path/index.html"]
+                      [:li (str "http://localhost:3449/index.html "
+                                "(if you are running figwheel or "
+                                "an external server)")]]]]]
+        [input-text 
+         :model debug-url
+         :on-change #(dispatch [:debug-url %])]]])))
 
 (defn details-view
   []

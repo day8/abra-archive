@@ -41,7 +41,8 @@
   (let [clojurescript-string (:clojurescript-string @db)
         namespace-string (:namespace-string @db)
         call-frame-id (:call-frame-id @db)
-        locals (clj->js (get-in @db [:scoped-locals call-frame-id]))]
+        locals-map (get-in @db [:scoped-locals call-frame-id])
+        locals (clj->js (map :label locals-map))]
     (.send ipc "translate-clojurescript" 
            clojurescript-string 
            namespace-string 
@@ -77,7 +78,7 @@
   (fn [db [_ scope-id local-name]]
     (let [locals (get (:scoped-locals @db) scope-id [])]
       (swap! db assoc-in [:scoped-locals scope-id] 
-             (conj locals local-name)))))
+             (conj locals {:label local-name :id (count locals)})))))
 
 ;; clear the call-frames dictionary
 (register 
