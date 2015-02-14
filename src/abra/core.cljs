@@ -3,8 +3,7 @@
             [reagent.core :as reagent]
             [reagent.ratom :as ratom]
             [abra.dialog :as dialog]
-            [re-com.core :refer [input-text input-textarea 
-                                 label title]]
+            [re-com.core :refer [input-text input-textarea label title]]
             [re-com.buttons :refer [button info-button]]
             [re-com.box   :refer [h-box v-box box scroller gap line]]
             [re-com.tabs :refer [vertical-bar-tabs]]
@@ -37,10 +36,14 @@
 ;; equivalent of:  process.versions['atom-shell']
 (def atom-shell-version (aget (.-versions js/process) "atom-shell"))
 
-(.send ipc "get-lein-repl-status")                       ;; ask for the status
+;; Make sure that lein exists on this machine.
+;; XXX what if they use boot instead?
+(.send ipc "get-lein-repl-status")
 (.on ipc "lein-repl-status" 
      (fn [arg]
-       (dispatch [:lein-repl-status (js->clj arg)]))) 
+       (dispatch [:lein-repl-status (js->clj arg)])))
+
+;;------------------------------------------------------------------------------
 
 (.on ipc "translated-javascript" 
      (fn [err js-expression]
@@ -57,9 +60,7 @@
   [h-box :children [[h-box :size "80%"
                      :children [[title 
                                  :label header]]]
-                    [v-box :children [[:div nil "Abra"]
-                                      [:div (str "Atom Shell Version: " 
-                                                 atom-shell-version)]]]]])
+                    ]])
 
 (defn nrepl-state-text 
   []
@@ -228,7 +229,7 @@
         [v-box 
          :children 
          [[field-label "project directory" 
-           "This directory is the root of your clojurescript project"]
+           [:span "This is the directory which contains the " [:span.info-bold "project.clj"]  " or "  [:span.info-bold "build.boot"] " for your ClojureScript project"]]
           [v-box :children 
            [[h-box
              :gap "2px"
@@ -256,31 +257,35 @@
       [v-box 
        :children 
        [[field-label "debug url" 
-         [v-box 
-          :children [[:div "You want to debug an HTML page right? 
-                           Via which URL should it be loaded? "]
+         [v-box
+          ; :width "400px"
+          :children [[:p "You want to debug an HTML page right?"]
+                     [:p "Via which URL should this page be loaded? "]
                      [:div "Probably something like:"]
-                     [:ul [:li "file:///path/index.html"]
-                      [:li (str "http://localhost:3449/index.html "
-                                "(if you are running figwheel or "
-                                "an external server)")]]]]]
+                     [:ul
+                       [:li "file:///path/index.html"]
+                       [:li "http://localhost:3449/index.html "
+                            [:br]
+                            "(if you are running figwheel or an external server)"]]]]]
         [input-text 
          :model debug-url
          :on-change #(dispatch [:debug-url %])]]])))
 
-(defn details-view
+(defn session-details-view
   []
   [v-box
    :padding "20px 10px 0px 30px"
-   :gap "10px"
-   :children [
-              [page-header "What Debug Session Do You Want To Launch?"]
+   :gap "15px"
+   :children [[page-header "What Debug Session Do You Want To Launch?"]
+              [gap :size "10px"]
               [project-form]
               [debug-url]   
               [button
                :class "btn-success"
                :label "Debug"
-               :on-click #(dispatch [:start-debugging])]]])
+               :on-click #(dispatch [:start-debugging])]
+              [gap :size "100%"]
+              [:div (str "Atom Shell Version: " atom-shell-version)]]])
 
 (defn main-page
   []
@@ -288,7 +293,7 @@
     (fn [] 
       (if @debugging?
         [debug-view]
-        [details-view]))))
+        [session-details-view]))))
 
 (defn start
   []
