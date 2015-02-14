@@ -2,6 +2,16 @@
 
 Unpublished - but getting close
 
+ToDO:
+  - after you press "Debug" the debug window comes up exactly over the Session window.
+  - if Abra is already running, produce an error for the user  (chrome remote debugging port is already locked)
+  - Verify that the project director contains a "project.clj" or a ".boot".
+  - In the Session Details, remember the values put in last time.  In fact save the last few values.
+  - What can we do about the first translate taking so long?
+  - Pressing "Stop" doesn't really stop
+
+
+
 # Abra
 
 Abra is a proof of concept ClojureScript debugger.
@@ -80,26 +90,40 @@ To install Abra:
     cd Abra
     ```
 
-1. download dependencies:
+1. download dependencies (you might see a fair bit of downloading):
 
     ```sh
     lein deps
     ```
 
-1. compile the application (place generated js into `run/js/compiled`):
+1. compile the application (is actually two compiles):
 
     ```sh
-    lein cljsbuild once
+    lein build
     ```
 
 1. You are now ready to run the app.  If later you run into problems, try a re-compile:
 
     ```sh
     lein clean
-    lein cljsbuild once
+    lein build
     ```
 
-## Run And Using Abra
+XXX trouble shooting -- how to run the tests??
+
+## Run Abra
+
+1. To run Abra we must start atom-shell the right way:
+
+    ```sh
+    lein run
+    ```
+
+1. When Abra starts ... XXXXXX
+
+
+
+## Run Abra
 
 1. To run Abra we must start atom-shell the right way:
 
@@ -108,8 +132,6 @@ To install Abra:
     ```
 
 1. When Abra starts ... XXXXXX
-
-
 
 
 Building with figwheel
