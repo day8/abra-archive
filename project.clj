@@ -101,8 +101,9 @@
   :source-paths ["src"]
   :test-paths ["test"]
   
-  :aliases {"auto-test" ["do" "clean," "cljsbuild" "auto" "test-node"]
-            "run" ["npm" "run" "start"]}
+  :aliases {"build"     ["do" "clean," "cljsbuild" "once" "main," "cljsbuild" "once" "abra"]
+            "auto-test" ["do" "clean," "cljsbuild" "auto" "test-node"]
+            "run"       ["npm" "run" "start"]}
   
   :clean-targets ^{:protect false} ["run/js/compiled" 
                                     "resources/public/js/compiled"])
