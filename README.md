@@ -41,10 +41,10 @@ But really, you shouldn't judge Abra by its current poor cover. That worked, rig
 Our goal until now has been to simply prove the concept, not
 to create something lovely to use.
 
-As a result, you will be confronted with a user interface which is very
+As a result, you will be confronted with a user interface which is
 basic and clunky.
 
-Oh, and please don't judge Abra badly for its lack of documentation and
+Oh, and along the same lines, and please don't judge Abra badly for its lack of documentation and
 poor performance. Did we mention how it is currently a proof of concept?
 
 ## What Does It Give Me?
