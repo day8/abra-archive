@@ -1,6 +1,7 @@
 (ns abra.core
   (:require [reagent.core :as reagent]
             [abra.dialog :as dialog]
+            [abra.state :as state]    ;; although not used, leave it in here, or else the subscriptions don't get pulled in.
             [re-com.core :refer [input-text input-textarea label title]]
             [re-com.buttons :refer [button info-button]]
             [re-com.box   :refer [h-box v-box box scroller gap line]]
