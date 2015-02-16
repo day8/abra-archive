@@ -1,7 +1,5 @@
 (ns abra.core
-  (:require [abra.state :as state]
-            [reagent.core :as reagent]
-            [reagent.ratom :as ratom]
+  (:require [reagent.core :as reagent]
             [abra.dialog :as dialog]
             [re-com.core :refer [input-text input-textarea label title]]
             [re-com.buttons :refer [button info-button]]
@@ -275,11 +273,13 @@
   []
   [v-box
    :padding "20px 10px 0px 30px"
-   :gap "15px"
+   :gap "10px"
+   :height "100%"
    :children [[page-header "What Debug Session Do You Want To Launch?"]
               [gap :size "10px"]
               [project-form]
-              [debug-url]   
+              [debug-url]
+              [gap :size "20px"]
               [button
                :class "btn-success"
                :label "Debug"
