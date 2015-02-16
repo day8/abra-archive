@@ -9,6 +9,10 @@ ToDO:
   - In the Session Details, remember the values put in last time.  In fact save the last few values.
   - What can we do about the first translate taking so long?
   - Pressing "Stop" doesn't really stop
+  - Tried to `lein run` got this
+    D:\Day8-git\Abra2>lein run
+    Your project already has a package.json file.  Please remove it.
+    
 
 
 
