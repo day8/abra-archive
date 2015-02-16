@@ -67,6 +67,8 @@
 
 (reg-sub-key :call-frames [])
 
+(reg-sub-key :scope-objects nil)
+
 (reg-sub-key :scoped-locals {})
 
 (reg-sub-key :local-id 0)

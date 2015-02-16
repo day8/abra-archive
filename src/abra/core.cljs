@@ -123,7 +123,7 @@
                                      :tabs @call-frames
                                      :on-change 
                                      (fn [id]
-                                       (dispatch [:call-frame-id id])
+                                       (dispatch [:change-call-frame-id id])
                                        (dispatch [:local-id 0]))]]]]  
                           [v-box
                            :children 
