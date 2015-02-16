@@ -1,6 +1,7 @@
 (ns abra.handlers
   (:require [re-frame.handlers :refer [register]]
             [re-frame.subs :refer [subscribe]]
+            [re-frame.handlers :refer [dispatch]]
             [abra.crmux.handlers :as crmux-handlers]
             [abra.crmux.websocket :as crmux-websocket]))
 
@@ -94,6 +95,20 @@
 (register 
   :clear-call-frames
   clear-call-frames)
+
+(register
+  :change-call-frame-id
+  (fn [db [_ call-frame-id]]
+    (swap! db assoc :call-frame-id call-frame-id)
+    (let [scope-objects (:scope-objects @db)]
+      ;;) add the locals for the lowest call frame to the db
+      (print "i am here" call-frame-id scope-objects)
+      
+      (doseq [{:keys [id objects]} scope-objects]
+        (when (= id call-frame-id) 
+          (doseq [o objects] 
+            (print o id)
+            (dispatch [:crmux.ws-getProperties o id])))))))
 
 ;; refresh the page to be debugged
 (register
