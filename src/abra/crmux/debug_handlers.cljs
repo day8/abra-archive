@@ -66,8 +66,8 @@
     (dispatch [:scope-objects scope-objects])
     (dispatch [:call-frames call-frames-for-selection])
     ;; clear the scoped-locals in the db
-    (dispatch [:clear-scoped-locals]
-    (dispatch [:change-call-frame-id 0]))))
+    (dispatch [:clear-scoped-locals])
+    (dispatch [:change-call-frame-id 0])))
 
 (defmethod handler :Debugger.resumed
   ;; "called when the debugger resumes and you are no longer in a call frame"
