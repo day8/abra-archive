@@ -3,6 +3,7 @@
 Unpublished - but getting close
 
 ToDO:
+  - it isn't translating core fucntions correctly:  Eg map.  Ending up as   my.namespace.map
   - after you press "Debug" the debug window comes up exactly over the Session window.
   - if Abra is already running, produce an error for the user  (chrome remote debugging port is already locked)
   - Verify that the project director contains a "project.clj" or a ".boot".
@@ -12,7 +13,7 @@ ToDO:
   - Tried to `lein run` got this
     D:\Day8-git\Abra2>lein run
     Your project already has a package.json file.  Please remove it.
-    
+
 
 
 
