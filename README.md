@@ -6,13 +6,16 @@ ToDO:
   - it isn't translating core fucntions correctly:  Eg map.  Ending up as   my.namespace.map
   - after you press "Debug" the debug window comes up exactly over the Session window.
   - if Abra is already running, produce an error for the user  (chrome remote debugging port is already locked)
-  - Verify that the project director contains a "project.clj" or a ".boot".
-  - In the Session Details, remember the values put in last time.  In fact save the last few values.
+  - Verify that the project directory contains a "project.clj" or a ".boot".
+  - In the Session Details, remember the values put in last time.  In fact save the last few values. 
+    - storage-atom
   - What can we do about the first translate taking so long?
   - Pressing "Stop" doesn't really stop
   - Tried to `lein run` got this
     D:\Day8-git\Abra2>lein run
     Your project already has a package.json file.  Please remove it.
+    -attempt to delete
+  - add a spinner after translate
 
 
 
