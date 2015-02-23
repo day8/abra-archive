@@ -38,10 +38,10 @@ I bootstrap the application and kick off the GUI (Browser Window)."
 
 ; (def abra-html "http://localhost:3449/abra.html") ;;figwheel
 (def abra-html
- (let [html (str js/__dirname "/../../abra.html")]   ;; __dirname is that of the main.js
-   (if (.existsSync fs html)
-     (str "file:///" html)
-     (.log js/console (str "HTML file not found: " html)))))
+  (let [html (str js/__dirname "/../../abra.html")]   ;; __dirname is that of the main.js
+    (if (.existsSync fs html)
+      (str "file:///" html)
+      (.log js/console (str "HTML file not found: " html)))))
 
 
 (defn init-browser
@@ -65,9 +65,9 @@ I bootstrap the application and kick off the GUI (Browser Window)."
 (.on ipc "open-url"
      (fn [event debug-url]
        (print "Opening " debug-url)
-       (reset! debug-window (browser-window. 
-                              #js {:width 800 :height 600
-                                   :x 0 :y 0}))
+       (reset! debug-window 
+               (browser-window. 
+                 #js {:width 800 :height 600 :x 0 :y 0}))
        (.loadUrl @debug-window debug-url)
        #_(.toggleDevTools @debug-window)
        (.on @debug-window "closed" #(reset! main-window nil))
