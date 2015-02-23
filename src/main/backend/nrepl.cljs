@@ -250,8 +250,10 @@
                    :as options}]
      (go 
        (try 
-         (let [locals (into [] (for [name locals] 
-                                 (reader/read-string name)))
+         (let [locals (flatten (into [] (for [name locals] 
+                                 [(reader/read-string name)
+                                 (reader/read-string
+                                   (string/replace name #"_" "-"))])))
                locals (into {} (for [name locals]
                                  [`'~name {:name `'~name}]))
                {:keys [as-map refer-map]} (process-namespace namespace-str)

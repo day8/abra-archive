@@ -3,7 +3,9 @@
 Unpublished - but getting close
 
 ToDO:
-  - it isn't translating core fucntions correctly:  Eg map.  Ending up as   my.namespace.map
+  * it isn't translating core fucntions correctly:  Eg map.  Ending up as   my.namespace.map
+  * fix the double up of variables
+  * fix the - and _ issue (doesn't handle mixed case)
   - after you press "Debug" the debug window comes up exactly over the Session window.
   - if Abra is already running, produce an error for the user  (chrome remote debugging port is already locked)
   - Verify that the project directory contains a "project.clj" or a ".boot".

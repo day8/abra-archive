@@ -78,6 +78,8 @@
                 core-result (<? (nrepl/cljs->js "(map 2 3)"))
                 locals-result (<? (nrepl/cljs->js "(+ x 3)" :namespace "test.core" 
                                                   :locals ["x"]))
+                locals-dash-result (<? (nrepl/cljs->js "(+ x-y 3)" :namespace "test.core" 
+                                                  :locals ["x_y"]))
                 require-as-result (<? (nrepl/cljs->js 
                                         "(gstring/format x 3)" :namespace "test.core"
                                         :locals ["x"] :namespace-str "[goog.string :as gstring]"))
@@ -93,6 +95,7 @@
             (is (= "(test.core.x + (3));" namespace-result))
             (is (= "cljs.core.map.call(null,(2),(3));" core-result))
             (is (= "(x + (3));" locals-result))
+            (is (= "(x_y + (3));" locals-dash-result))
             (is (= "goog.string.format(x,(3));" require-as-result))
             (is (= "goog.string.format(test.core.x,(3));" require-as-result-namespace))
             (is (= "goog.string.format(test.core.x,(3));" require-as-result-namespace2)))

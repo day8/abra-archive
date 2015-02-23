@@ -100,10 +100,8 @@
   :change-call-frame-id
   (fn [db [_ call-frame-id]]
     (swap! db assoc :call-frame-id call-frame-id)
+    (clear-scoped-locals db [])
     (let [scope-objects (:scope-objects @db)]
-      ;;) add the locals for the lowest call frame to the db
-      (print "i am here" call-frame-id scope-objects)
-      
       (doseq [{:keys [id objects]} scope-objects]
         (when (= id call-frame-id) 
           (doseq [o objects] 
