@@ -107,7 +107,7 @@
                       [input-textarea
                        :model @namespace-string
                        :on-change #(dispatch [:namespace-string %])
-                       :rows 5
+                       :rows "5"
                        :width "300px"]]]]
                    (when @call-frame-id 
                      (when-let [locals-tab (get @locals @call-frame-id)]
@@ -140,7 +140,8 @@
                            :children 
                            [[field-label "local value"]
                             [input-textarea
-                             :model (print-str (:value local-map))]]]]))))])))
+                             :model (print-str (:value local-map))
+                               :on-change #()]]]]))))])))
 
 (defn clojurescript-input-output
   []
@@ -169,11 +170,13 @@
                   [v-box
                    :children [[field-label "result"]
                               [input-textarea
-                               :model @js-print-string]]]
+                               :model @js-print-string
+                               :on-change #()]]]
                   [v-box
                    :children [[field-label "javascript"]
                               [input-textarea
-                               :model @javascript-string]]]]])))
+                               :model @javascript-string
+                               :on-change #()]]]]])))
 
 (defn abra-debug-panel []
   (let [debug-crmux-url (subscribe [:debug-crmux-url])]
@@ -234,7 +237,8 @@
              :gap "2px"
              :children 
              [[input-text 
-               :model @project-dir]
+               :model (if @project-dir @project-dir "")
+               :on-change #(dispatch [:project-dir %])]
               [button
                :label "Browse"
                :on-click  
@@ -267,7 +271,7 @@
                             [:br]
                             "(if you are running figwheel or an external server)"]]]]]
         [input-text 
-         :model debug-url
+         :model (if @debug-url @debug-url "")
          :on-change #(dispatch [:debug-url %])]]])))
 
 (defn session-details-view

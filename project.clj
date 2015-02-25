@@ -4,15 +4,16 @@
   
   
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2843"]
+                 [org.clojure/clojurescript "0.0-2913"]
                  [org.clojure/core.async    "0.1.346.0-17112a-alpha"]
-                 [cljs-ajax "0.3.9"]
+                 [cljs-ajax "0.3.10"]
                  [reagent "0.5.0-alpha3"]
                  [re-com "0.1.6"]
-                 [re-frame "0.1.0"]
+                 [re-frame "0.1.6"]
                  [cljs-asynchronize "0.1.1-SNAPSHOT"]
                  [figwheel "0.2.2-SNAPSHOT"]
-                 [ring/ring-core "1.3.2"]]
+                 [ring/ring-core "1.3.2"]
+                 [alandipert/storage-atom "1.2.4"]]
   
   :node-dependencies [[ws "~0.4.31"]
                       [bl "~0.4.2"]
