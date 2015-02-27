@@ -8,7 +8,7 @@
             [re-com.tabs :refer [vertical-bar-tabs]]
             [re-com.layout :refer [v-layout]]
             [cljs.core.async :refer [<!]]
-            [re-frame.handlers :refer [dispatch]]
+            [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
             [abra.handlers]
             [figwheel.client :as fw]))
@@ -16,7 +16,7 @@
 ;; redirects any println to console.log
 (enable-console-print!)
 
-#_(fw/start {
+(fw/start {
              ;; configure a websocket url if yor are using your own server
              :websocket-url "ws://localhost:3449/figwheel-ws"
              
@@ -237,7 +237,7 @@
              :gap "2px"
              :children 
              [[input-text 
-               :model (if @project-dir @project-dir "")
+               :model @project-dir
                :on-change #(dispatch [:project-dir %])]
               [button
                :label "Browse"
@@ -271,7 +271,7 @@
                             [:br]
                             "(if you are running figwheel or an external server)"]]]]]
         [input-text 
-         :model (if @debug-url @debug-url "")
+         :model @debug-url
          :on-change #(dispatch [:debug-url %])]]])))
 
 (defn session-details-view
@@ -294,11 +294,13 @@
 
 (defn main-page
   []
-  (let [debugging? (subscribe [:debugging?])]
-    (fn [] 
-      (if @debugging?
-        [debug-view]
-        [session-details-view]))))
+  (let [initialised (subscribe [:initialised])]
+    (when @initialised 
+      (let [debugging? (subscribe [:debugging?])]
+        (fn [] 
+          (if @debugging?
+            [debug-view]
+            [session-details-view]))))))
 
 (defn start
   []

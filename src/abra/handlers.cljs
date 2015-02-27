@@ -1,7 +1,6 @@
 (ns abra.handlers
-  (:require [re-frame.handlers :refer [register]]
-            [re-frame.subs :refer [subscribe]]
-            [re-frame.handlers :refer [dispatch]]
+  (:require [re-frame.core :refer [register-handler
+                                   dispatch]]
             [abra.crmux.handlers :as crmux-handlers]
             [abra.crmux.websocket :as crmux-websocket]))
 
@@ -20,7 +19,7 @@
     (crmux-handlers/get-debug-window-info debug-host url)
     (swap! db assoc :debugging? true)))
 
-(register 
+(register-handler 
   :start-debugging 
   start-debugging)
 
@@ -32,7 +31,7 @@
   (.send ipc "close-url")
   (swap! db assoc :debugging? false))
 
-(register 
+(register-handler 
   :stop-debugging
   stop-debugging)
 
@@ -49,11 +48,11 @@
            namespace-string 
            locals)))
 
-(register 
+(register-handler 
   :translate
   translate)
 
-(register 
+(register-handler 
   :translated-javascript
   (fn [db [_ err js-expression]]
     (if err 
@@ -72,12 +71,12 @@
   [db [_]]
   (swap! db assoc :scoped-locals {}))
 
-(register 
+(register-handler 
   :clear-scoped-locals
   clear-scoped-locals)
 
 ;; add a scoped local to the db
-(register 
+(register-handler 
   :add-scoped-local
   (fn [db [_ scope-id variable-map]]
     (let [locals (get (:scoped-locals @db) scope-id [])
@@ -92,11 +91,11 @@
   [db [_]]
   (swap! db assoc :call-frames []))
 
-(register 
+(register-handler 
   :clear-call-frames
   clear-call-frames)
 
-(register
+(register-handler
   :change-call-frame-id
   (fn [db [_ call-frame-id]]
     (swap! db assoc :call-frame-id call-frame-id)
@@ -109,7 +108,7 @@
             (dispatch [:crmux.ws-getProperties o id])))))))
 
 ;; refresh the page to be debugged
-(register
+(register-handler
   :refresh-page
   (fn [db _]
     (clear-scoped-locals db _)

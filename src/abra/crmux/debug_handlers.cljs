@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go-loop, go]])
   (:require [cljs.core.async :refer [put!, chan, <!, >!, mult, pub, sub]]
             [cljs.reader :as reader]
-            [re-frame.handlers :refer [register dispatch]]
+            [re-frame.core :refer [dispatch]]
             [re-frame.db :refer [app-db]]))
 
 ;; redirects any println to console.log
