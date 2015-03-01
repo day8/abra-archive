@@ -1,17 +1,19 @@
-(defproject abra "0.1.1-SNAPSHOT"
+(defproject abra "0.1.2-SNAPSHOT"
   :description "A ClojureScript debugging tool"
   :url "https://github.com/Day8/Abra2/"
   
   
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2277"]
-                 [cljs-ajax "0.2.4"]
-                 [reagent "0.5.0-alpha"]
+                 [org.clojure/clojurescript "0.0-2913"]
+                 [org.clojure/core.async    "0.1.346.0-17112a-alpha"]
+                 [cljs-ajax "0.3.10"]
+                 [reagent "0.5.0-alpha3"]
                  [re-com "0.1.6"]
-                 [re-frame "0.1.0"]
+                 [re-frame "0.1.8"]
                  [cljs-asynchronize "0.1.1-SNAPSHOT"]
-                 [figwheel "0.2.1-SNAPSHOT"]
-                 [ring/ring-core "1.3.1"]]
+                 [figwheel "0.2.2-SNAPSHOT"]
+                 [ring/ring-core "1.3.2"]
+                 [alandipert/storage-atom "1.2.4"]]
   
   :node-dependencies [[ws "~0.4.31"]
                       [bl "~0.4.2"]
@@ -21,9 +23,10 @@
                       [portscanner "~1.0.0"]
                       [atom-shell "1.2.1"]]  
   
-  :plugins [[lein-cljsbuild "1.0.3"]
-            [com.cemerick/clojurescript.test "0.3.1"]
-            [lein-figwheel "0.2.1-SNAPSHOT"]
+  :plugins [[lein-cljsbuild "1.0.4"]
+            [lein-ancient "0.6.2"]
+            [com.cemerick/clojurescript.test "0.3.3"]
+            [lein-figwheel "0.2.2-SNAPSHOT"]
             [lein-npm "0.5.0"]]
   
   :npm-root "run"
@@ -44,6 +47,7 @@
                         :output-to  "run/js/compiled/main.js"
                         :source-map "run/js/compiled/main.js.map"
                         :output-dir "run/js/compiled/main"
+                        :target :nodejs
                         :optimizations :simple
                         :pretty-print true
                         :closure-warnings {:check-useless-code :off}}}
@@ -92,13 +96,16 @@
                                  "run/js/compiled/test_node.js"]}}
   
   :figwheel {:http-server-root "public"
-             :server-port 3449}  
+             :server-port 3449
+             :repl false}  
   
   :source-paths ["src"]
   :test-paths ["test"]
   
-  :aliases {"auto-test" ["do" "clean," "cljsbuild" "auto" "test-node"]
-            "run" ["npm" "run" "start"]}
+  :aliases {"build"       ["do" "clean," "cljsbuild" "once" "main" "abra" "test-page"]
+            "auto-build"  ["do" "clean," "cljsbuild" "auto" "main" "abra" "test-page"]
+            "auto-test"   ["do" "clean," "cljsbuild" "auto" "test-node"]
+            "run"         ["npm" "run" "start"]}
   
   :clean-targets ^{:protect false} ["run/js/compiled" 
                                     "resources/public/js/compiled"])

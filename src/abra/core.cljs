@@ -1,46 +1,49 @@
 (ns abra.core
-  (:require [abra.state :as state]
-            [reagent.core :as reagent]
-            [reagent.ratom :as ratom]
+  (:require [reagent.core :as reagent]
             [abra.dialog :as dialog]
-            [re-com.core :refer [input-text input-textarea 
-                                 label title]]
-            [re-com.buttons :refer [button]]
-            [re-com.box   :refer [h-box v-box box gap line]]
+            [abra.state :as state]    ;; although not used, leave it in here, or else the subscriptions don't get pulled in.
+            [re-com.core :refer [input-text input-textarea label title]]
+            [re-com.buttons :refer [button info-button]]
+            [re-com.box   :refer [h-box v-box box scroller gap line]]
             [re-com.tabs :refer [vertical-bar-tabs]]
             [re-com.layout :refer [v-layout]]
             [cljs.core.async :refer [<!]]
-            [re-frame.handlers :refer [dispatch]]
+            [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
             [abra.handlers]
+            [abra.keys :as keys]
             [figwheel.client :as fw]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
 
-#_(fw/start {
-             ;; configure a websocket url if yor are using your own server
-             :websocket-url "ws://localhost:3449/figwheel-ws"
+; (fw/start {
+;              ;; configure a websocket url if yor are using your own server
+;              :websocket-url "ws://localhost:3449/figwheel-ws"
              
-             ;; optional callback
-             :on-jsload (fn [] 
-                          (println (reagent/force-update-all)))
+;              ;; optional callback
+;              :on-jsload (fn [] 
+;                           (println (reagent/force-update-all)))
              
-             ;; when the compiler emits warnings figwheel
-             ;; blocks the loading of files.
-             ;; To disable this behavior:
-             :load-warninged-code true
-             })
+;              ;; when the compiler emits warnings figwheel
+;              ;; blocks the loading of files.
+;              ;; To disable this behavior:
+;              :load-warninged-code true
+;              })
 
 (def ipc (js/require "ipc"))
 
 ;; equivalent of:  process.versions['atom-shell']
 (def atom-shell-version (aget (.-versions js/process) "atom-shell"))
 
-(.send ipc "get-lein-repl-status")                       ;; ask for the status
+;; Make sure that lein exists on this machine.
+;; XXX what if they use boot instead?
+(.send ipc "get-lein-repl-status")
 (.on ipc "lein-repl-status" 
      (fn [arg]
-       (dispatch [:lein-repl-status (js->clj arg)]))) 
+       (dispatch [:lein-repl-status (js->clj arg)])))
+
+;;------------------------------------------------------------------------------
 
 (.on ipc "translated-javascript" 
      (fn [err js-expression]
@@ -57,9 +60,7 @@
   [h-box :children [[h-box :size "80%"
                      :children [[title 
                                  :label header]]]
-                    [v-box :children [[:div nil "Abra"]
-                                      [:div (str "Atom Shell Version: " 
-                                                 atom-shell-version)]]]]])
+                    ]])
 
 (defn nrepl-state-text 
   []
@@ -71,44 +72,77 @@
          "stopped")])))
 
 (defn field-label
-  [text]
-  [label 
-   :label text
-   :style {:font-variant "small-caps"}])
+  ;takes the field label and a text or hiccup help text
+  ([text]
+   (field-label text nil))
+  ([text info]
+   [h-box 
+    :children (concat 
+                [[label 
+                  :label text
+                  :style {:font-variant "small-caps"}]]
+                (when info
+                  [[gap :size "5px"] 
+                   [info-button
+                    :info (if string? info 
+                            [:div info]
+                            info)]]))]))
 
 (defn namespace-locals
   []
   (let [namespace-string (subscribe [:namespace-string])
         locals (subscribe [:scoped-locals])
         call-frames (subscribe [:call-frames])
-        call-frame-id (subscribe [:call-frame-id])]
+        call-frame-id (subscribe [:call-frame-id])
+        local-id (subscribe [:local-id])]
     (fn
       []
       [h-box
        :justify :start
        :gap "20px"
-       :children [[v-box
-                   :children 
-                   [[field-label "namespace"]
-                    [input-textarea
-                     :model @namespace-string
-                     :on-change #(dispatch [:namespace-string %])
-                     :rows 12
-                     :width "550px"]]]
-                  (when @call-frame-id 
-                    [v-box
-                     :children [[field-label "locals"]
-                                [input-textarea
-                                 :model (reduce #(str %1 "\n" %2) 
-                                                (get @locals @call-frame-id))]]])
-                  (when @call-frame-id 
-                    [v-box
-                     :children [[field-label "call-frames"]
-                                [vertical-bar-tabs
-                                 :model @call-frame-id
-                                 :tabs @call-frames
-                                 :on-change 
-                                 #(dispatch [:call-frame-id %])]]])]])))
+       :children (concat  
+                   [[v-box
+                     :children 
+                     [[field-label "namespace" 
+                       "enter the namespace of the file inspected"]
+                      [input-textarea
+                       :model @namespace-string
+                       :on-change #(dispatch [:namespace-string %])
+                       :rows "5"
+                       :width "300px"]]]]
+                   (when @call-frame-id 
+                     (when-let [locals-tab (get @locals @call-frame-id)]
+                       (let [[local-map] (filter #(= (:id %) @local-id) 
+                                                 locals-tab)]
+                         [[v-box
+                           :children 
+                           [[field-label "call-frames" "the active call frames"]
+                            [scroller
+                             :h-scroll :off
+                             :height "125px"
+                             :child [vertical-bar-tabs
+                                     :model @call-frame-id
+                                     :tabs @call-frames
+                                     :on-change 
+                                     (fn [id]
+                                       (dispatch [:change-call-frame-id id])
+                                       (dispatch [:local-id 0]))]]]]  
+                          [v-box
+                           :children 
+                           [[field-label "locals"]
+                            [scroller
+                             :h-scroll :off
+                             :height "125px"
+                             :child [vertical-bar-tabs
+                                     :model @local-id
+                                     :tabs locals-tab
+                                     :on-change #(dispatch [:local-id %])]]]]
+                          [v-box
+                           :children 
+                           [[field-label "local value"]
+                            [input-textarea
+                             :model (print-str (:value local-map))
+                               :on-change #()]]]]))))])))
 
 (defn clojurescript-input-output
   []
@@ -135,13 +169,15 @@
                                :on-click #(dispatch [:translate])
                                :disabled? (not @lein-repl-status)]]]
                   [v-box
+                   :children [[field-label "result"]
+                              [input-textarea
+                               :model @js-print-string
+                               :on-change #()]]]
+                  [v-box
                    :children [[field-label "javascript"]
                               [input-textarea
-                               :model @javascript-string]]]
-                  [v-box
-                   :children [[field-label "javascript result"]
-                              [input-textarea
-                               :model @js-print-string]]]]])))
+                               :model @javascript-string
+                               :on-change #()]]]]])))
 
 (defn abra-debug-panel []
   (let [debug-crmux-url (subscribe [:debug-crmux-url])]
@@ -152,27 +188,37 @@
 
 (defn top-debug-panel
   []
-  [v-box 
-   :gap "20px"
-   :size "auto"
-   :children [[button
-               :label "STOP"
-               :on-click  #(dispatch [:stop-debugging])
-               :class    "btn-danger"]
-              [namespace-locals]
-              [clojurescript-input-output]]])
+  [scroller 
+   :child [v-box 
+           :gap "20px"
+           ;;:size "auto"
+           :children [[h-box 
+                       ; :align :center
+                       :gap "5px"
+                       :children [
+                                  [button
+                                   :label "STOP"
+                                   :on-click  #(dispatch [:stop-debugging])
+                                   :class    "btn-danger"]
+                                  [button
+                                   :label "refresh"
+                                   :on-click #(dispatch [:refresh-page])
+                                   :disabled? true]
+                                  [gap 
+                                   :size "40px"]
+                                  [nrepl-state-text]]]
+                      [namespace-locals]
+                      [clojurescript-input-output]]]])
 
 (defn debug-view
   []
   [v-box
    :height "100%"
    :children [
-              [page-header "Start Debugging"]
-              [nrepl-state-text]
               [v-layout
+               :initial-split "65%"
                :top-panel top-debug-panel
-               :bottom-panel abra-debug-panel
-               ]]])
+               :bottom-panel abra-debug-panel]]])
 
 (defn project-form
   []
@@ -180,71 +226,86 @@
     (fn 
       []
       [h-box 
+       :gap "10px"
        :children 
-       [[:div "Root directory   "]
-        [v-box :children 
-         [[input-text 
-           :model @project-dir]
-          [:div (str "This directory is the root "
-                     "of your clojurescript project")]]]
-        [:input.btn.btn-success
-         {:type "button"
-          :value "Browse"
-          :on-click  (fn 
-                       [] 
-                       (dialog/open 
-                         {:title "Open Project.clj Directory" 
-                          :properties ["openDirectory"] 
-                          :defaultPath  "c:\\"
-                          :filters [{:name "Project Files" 
-                                     :extensions ["clj"]}]}
-                         (fn [[project-dir]] 
-                           (dispatch 
-                             [:project-dir project-dir]))))}]]])))
+       [
+        [v-box 
+         :children 
+         [[field-label "project directory" 
+           [:span "This is the directory which contains the " [:span.info-bold "project.clj"]  " or "  [:span.info-bold "build.boot"] " for your ClojureScript project"]]
+          [v-box :children 
+           [[h-box
+             :gap "2px"
+             :children 
+             [[input-text 
+               :model @project-dir
+               :on-change #(dispatch [:project-dir %])]
+              [button
+               :label "Browse"
+               :on-click  
+               #(dialog/open 
+                  {:title "Open Project.clj Directory" 
+                   :properties ["openDirectory"] 
+                   :defaultPath  "c:\\"
+                   :filters [{:name "Project Files" 
+                              :extensions ["clj"]}]}
+                  (fn [[project-dir]] 
+                    (dispatch 
+                      [:project-dir project-dir])))]]]]]]]]])))
 
 (defn debug-url
   []
   (let [debug-url (subscribe [:debug-url])]
     (fn 
       []
-      [h-box 
+      [v-box 
        :children 
-       [[:div "Debug URL   "]
-        [v-box 
-         :children 
-         [[input-text 
-           :model debug-url
-           :on-change #(dispatch [:debug-url %])]
-          [:div "You want to debug an HTML page right? 
-                Via which URL should it be loaded? 
-                Probably something like:"]
-          [:ul [:li "file:///path/to/my/project/folder/index.html"]
-           [:li (str "http://localhost:3449/index.html"
-                     "(if you are running figwheel or "
-                     "an external server)")]]]]]])))
+       [[field-label "debug url" 
+         [v-box
+          ; :width "400px"
+          :children [[:p "You want to debug an HTML page right?"]
+                     [:p "Via which URL should this page be loaded? "]
+                     [:div "Probably something like:"]
+                     [:ul
+                       [:li "file:///path/index.html"]
+                       [:li "http://localhost:3449/index.html "
+                            [:br]
+                            "(if you are running figwheel or an external server)"]]]]]
+        [input-text 
+         :model @debug-url
+         :on-change #(dispatch [:debug-url %])]]])))
 
-(defn details-view
+(defn session-details-view
   []
-  [:div
-   [page-header "What Debug Session Do You Want To Launch?"]
-   [project-form]
-   [debug-url]   
-   
-   [:input.btn.btn-success
-    {:type "button"
-     :value "Debug"
-     :on-click #(dispatch [:start-debugging])}]])
+  [v-box
+   :padding "20px 10px 0px 30px"
+   :gap "10px"
+   :height "100%"
+   :children [[page-header "What Debug Session Do You Want To Launch?"]
+              [gap :size "10px"]
+              [project-form]
+              [debug-url]
+              [gap :size "20px"]
+              [button
+               :class "btn-success"
+               :label "Debug"
+               :on-click #(dispatch [:start-debugging])]
+              [gap :size "100%"]
+              [:div (str "Atom Shell Version: " atom-shell-version)]]])
 
 (defn main-page
   []
-  (let [debugging? (subscribe [:debugging?])]
-    (fn [] 
-      (if @debugging?
-        [debug-view]
-        [details-view]))))
+  (let [initialised (subscribe [:initialised])]
+    (when @initialised 
+      (let [debugging? (subscribe [:debugging?])]
+        (fn [] 
+          (if @debugging?
+            [debug-view]
+            [session-details-view]))))))
 
 (defn start
   []
   (dispatch [:initialise])
-  (dispatch [:start-debugging])
+  (keys/bind-keys)
+  ; (dispatch [:start-debugging])
   (reagent/render [main-page] (get-element-by-id "app")))

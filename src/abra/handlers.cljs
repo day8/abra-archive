@@ -1,6 +1,6 @@
 (ns abra.handlers
-  (:require [re-frame.handlers :refer [register]]
-            [re-frame.subs :refer [subscribe]]
+  (:require [re-frame.core :refer [register-handler
+                                   dispatch]]
             [abra.crmux.handlers :as crmux-handlers]
             [abra.crmux.websocket :as crmux-websocket]))
 
@@ -19,7 +19,7 @@
     (crmux-handlers/get-debug-window-info debug-host url)
     (swap! db assoc :debugging? true)))
 
-(register 
+(register-handler 
   :start-debugging 
   start-debugging)
 
@@ -31,7 +31,7 @@
   (.send ipc "close-url")
   (swap! db assoc :debugging? false))
 
-(register 
+(register-handler 
   :stop-debugging
   stop-debugging)
 
@@ -41,17 +41,18 @@
   (let [clojurescript-string (:clojurescript-string @db)
         namespace-string (:namespace-string @db)
         call-frame-id (:call-frame-id @db)
-        locals (clj->js (get-in @db [:scoped-locals call-frame-id]))]
+        locals-map (get-in @db [:scoped-locals call-frame-id])
+        locals (clj->js (map :label locals-map))]
     (.send ipc "translate-clojurescript" 
            clojurescript-string 
            namespace-string 
            locals)))
 
-(register 
+(register-handler 
   :translate
   translate)
 
-(register 
+(register-handler 
   :translated-javascript
   (fn [db [_ err js-expression]]
     (if err 
@@ -66,21 +67,51 @@
         (.send ipc "get-lein-repl-status")))))
 
 ;; clear the scoped-locals dictionary
-(register 
+(defn clear-scoped-locals
+  [db [_]]
+  (swap! db assoc :scoped-locals {}))
+
+(register-handler 
   :clear-scoped-locals
-  (fn [db [_]]
-    (swap! db assoc :scoped-locals {})))
+  clear-scoped-locals)
 
 ;; add a scoped local to the db
-(register 
+(register-handler 
   :add-scoped-local
-  (fn [db [_ scope-id local-name]]
-    (let [locals (get (:scoped-locals @db) scope-id [])]
+  (fn [db [_ scope-id variable-map]]
+    (let [locals (get (:scoped-locals @db) scope-id [])
+          local-name (:name variable-map)
+          value (:value variable-map)]
       (swap! db assoc-in [:scoped-locals scope-id] 
-             (conj locals local-name)))))
+             (conj locals {:label local-name :id (count locals)
+                           :value value})))))
 
 ;; clear the call-frames dictionary
-(register 
+(defn clear-call-frames
+  [db [_]]
+  (swap! db assoc :call-frames []))
+
+(register-handler 
   :clear-call-frames
-  (fn [db [_]]
-    (swap! db assoc :call-frames [])))
+  clear-call-frames)
+
+(register-handler
+  :change-call-frame-id
+  (fn [db [_ call-frame-id]]
+    (swap! db assoc :call-frame-id call-frame-id)
+    (clear-scoped-locals db [])
+    (let [scope-objects (:scope-objects @db)]
+      (doseq [{:keys [id objects]} scope-objects]
+        (when (= id call-frame-id) 
+          (doseq [o objects] 
+            (print o id)
+            (dispatch [:crmux.ws-getProperties o id])))))))
+
+;; refresh the page to be debugged
+(register-handler
+  :refresh-page
+  (fn [db _]
+    (clear-scoped-locals db _)
+    (clear-call-frames db _)
+    (swap! db assoc :local-id 0)
+    (.send ipc "refresh-page")))

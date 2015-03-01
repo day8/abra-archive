@@ -2,11 +2,16 @@
 *.iml
 *~
 *-init.clj
+*.log
 Thumbs.db
+run/package.json
 run/node_modules/
 run/js/compiled/
+resources/public/js/compiled
+test-page/js
 target/
 out/
+scripts/
 pom.xml
 pom.xml.asc
 *jar

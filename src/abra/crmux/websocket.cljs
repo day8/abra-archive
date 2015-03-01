@@ -99,10 +99,8 @@
         result  (js-result-filter msg-id)]
     (ws-send db message)
     (go 
-      (let [result (<! result)
-            local-names (map :name result)]
-        #_(print "ws-getProperties" call-frame-id local-name)
-        (doseq [l local-names] 
-          (dispatch [:add-scoped-local call-frame-id l]))))))
+      (let [result (<! result)]
+        (doseq [variable-map result] 
+          (dispatch [:add-scoped-local call-frame-id variable-map]))))))
 
 (register :crmux.ws-getProperties ws-getProperties)

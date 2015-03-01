@@ -83,12 +83,17 @@
   ")
 
 (def ^:private convert-cljs-str
-  "(with-out-str 
-   (env/ensure
-   (compiler/with-core-cljs
-   (compiler/emit 
-   (analyzer/analyze 
-   {:ns {:name \"%s\" :requires %s} :locals %s} '%s)))))")
+  "(defn compile-form-seq
+    \"Compile a sequence of forms to a JavaScript source string.\"
+    [forms env]
+    (env/ensure
+    (compiler/with-core-cljs nil
+      (fn []
+        (with-out-str
+            (doseq [form forms]
+              (compiler/emit (analyzer/analyze env form))))))))
+   (compile-form-seq ['%s]
+    {:ns {:name \"%s\" :requires %s} :locals %s})")
 
 (defn- position   
   "Takes a vector 'v' and an 'item' within 'v'.  
@@ -245,15 +250,17 @@
                    :as options}]
      (go 
        (try 
-         (let [locals (into [] (for [name locals] 
-                                 (reader/read-string name)))
+         (let [locals (flatten (into [] (for [name locals] 
+                                 [(reader/read-string name)
+                                 (reader/read-string
+                                   (string/replace name #"_" "-"))])))
                locals (into {} (for [name locals]
                                  [`'~name {:name `'~name}]))
                {:keys [as-map refer-map]} (process-namespace namespace-str)
                locals (merge locals refer-map)
                namespace (or namespace (find-namespace namespace-str))
-               eval-str (gstring/format convert-cljs-str namespace
-                                        as-map locals statement)
+               eval-str (gstring/format convert-cljs-str statement
+                                        namespace as-map locals)
                repl-str (str private-namespace-str eval-str)
                result (<? (eval repl-str options))
                evaled-result (reader/read-string result)] 

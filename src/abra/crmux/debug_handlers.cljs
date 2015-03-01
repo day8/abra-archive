@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go-loop, go]])
   (:require [cljs.core.async :refer [put!, chan, <!, >!, mult, pub, sub]]
             [cljs.reader :as reader]
-            [re-frame.handlers :refer [register dispatch]]
+            [re-frame.core :refer [dispatch]]
             [re-frame.db :refer [app-db]]))
 
 ;; redirects any println to console.log
@@ -63,14 +63,11 @@
     ;;(print "scope-chains" scope-chains)
     ;;(print "call-frames-for-selection" call-frames-for-selection)
     (print "scope-objects" scope-objects)
+    (dispatch [:scope-objects scope-objects])
     (dispatch [:call-frames call-frames-for-selection])
-    (dispatch [:call-frame-id 0])
     ;; clear the scoped-locals in the db
     (dispatch [:clear-scoped-locals])
-    ;; add the locals for each call frame to the db
-    (doseq [{:keys [id objects]} scope-objects]
-      (doseq [o objects] 
-        (dispatch [:crmux.ws-getProperties o id])))))
+    (dispatch [:change-call-frame-id 0])))
 
 (defmethod handler :Debugger.resumed
   ;; "called when the debugger resumes and you are no longer in a call frame"

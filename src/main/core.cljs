@@ -38,10 +38,10 @@ I bootstrap the application and kick off the GUI (Browser Window)."
 
 ; (def abra-html "http://localhost:3449/abra.html") ;;figwheel
 (def abra-html
- (let [html (str js/__dirname "/../../abra.html")]   ;; __dirname is that of the main.js
-   (if (.existsSync fs html)
-     (str "file:///" html)
-     (.log js/console (str "HTML file not found: " html)))))
+  (let [html (str js/__dirname "/../../abra.html")]   ;; __dirname is that of the main.js
+    (if (.existsSync fs html)
+      (str "file:///" html)
+      (.log js/console (str "HTML file not found: " html)))))
 
 
 (defn init-browser
@@ -51,8 +51,8 @@ I bootstrap the application and kick off the GUI (Browser Window)."
                         #js {:width 800 :height 600 
                              :web-preferences #js {:web-security false}}))
   (.loadUrl @main-window abra-html)
+  ; (.toggleDevTools @main-window)
   (.start_crmux_server crmux)
-  (.toggleDevTools @main-window)             ;;  TODO: condition this on a developer environment variable
   (.on @main-window "closed" #(reset! main-window nil)))
 
 
@@ -63,14 +63,29 @@ I bootstrap the application and kick off the GUI (Browser Window)."
 
 ;; a render client might ask for a url to be opened
 (.on ipc "open-url"
-     (fn [event, debug-url]
+     (fn [event debug-url]
        (print "Opening " debug-url)
-       (reset! debug-window (browser-window. #js {:width 800 :height 600}))
+       (reset! debug-window 
+               (browser-window. 
+                 #js {:width 800 :height 600 :x 0 :y 0}))
        (.loadUrl @debug-window debug-url)
        #_(.toggleDevTools @debug-window)
-       (.on @debug-window "closed" #(reset! main-window nil))))
+       (.on @debug-window "closed" #(reset! main-window nil))
+       (.focus @main-window)))
+
+(.on ipc "refresh-page"
+     (fn [event]
+       (.reload @debug-window)))
 
 (.on ipc "close-url"
      (fn [event]
        (print "Closing the debug window")
        (.close @debug-window)))
+
+(.on ipc "toggle-dev-tools"
+     (fn [event]
+       (print "Open the chrome debugger")
+       (.toggleDevTools @main-window)))
+
+;;; needed to use the :target :nodejs
+(set! *main-cli-fn* #())

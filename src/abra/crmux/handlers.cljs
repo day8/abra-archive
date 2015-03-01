@@ -3,7 +3,7 @@
             [ajax.core :refer [GET]]
             [goog]
             [cljs.core.async :refer [put!, chan, <!, >!, mult, tap, untap]]
-            [re-frame.handlers :refer [register dispatch]]
+            [re-frame.core :refer [register-handler dispatch]]
             [abra.crmux.websocket :refer [create-websocket]]))
 
 ;; redirects any println to console.log
@@ -46,7 +46,7 @@
     (create-websocket db websocket-url)
     (swap! db assoc :debug-crmux-url dev-front-end-full)))
 
-(register :crmux-handlers.new-crmux-url new-crmux-url)
+(register-handler :crmux-handlers.new-crmux-url new-crmux-url)
 
 (defn get-debuggable-windows-error-handler 
   "called when there is a problem getting the chrome debugger main window"
