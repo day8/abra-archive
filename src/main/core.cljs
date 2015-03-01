@@ -36,12 +36,12 @@ I bootstrap the application and kick off the GUI (Browser Window)."
 
 
 
-(def abra-html "http://localhost:3449/abra.html") ;;figwheel
-; (def abra-html
-;   (let [html (str js/__dirname "/../../abra.html")]   ;; __dirname is that of the main.js
-;     (if (.existsSync fs html)
-;       (str "file:///" html)
-;       (.log js/console (str "HTML file not found: " html)))))
+; (def abra-html "http://localhost:3449/abra.html") ;;figwheel
+(def abra-html
+  (let [html (str js/__dirname "/../../abra.html")]   ;; __dirname is that of the main.js
+    (if (.existsSync fs html)
+      (str "file:///" html)
+      (.log js/console (str "HTML file not found: " html)))))
 
 
 (defn init-browser
@@ -51,6 +51,7 @@ I bootstrap the application and kick off the GUI (Browser Window)."
                         #js {:width 800 :height 600 
                              :web-preferences #js {:web-security false}}))
   (.loadUrl @main-window abra-html)
+  ; (.toggleDevTools @main-window)
   (.start_crmux_server crmux)
   (.on @main-window "closed" #(reset! main-window nil)))
 
