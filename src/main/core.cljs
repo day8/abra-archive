@@ -52,7 +52,6 @@ I bootstrap the application and kick off the GUI (Browser Window)."
                              :web-preferences #js {:web-security false}}))
   (.loadUrl @main-window abra-html)
   (.start_crmux_server crmux)
-  (.toggleDevTools @main-window)             ;;  TODO: condition this on a developer environment variable
   (.on @main-window "closed" #(reset! main-window nil)))
 
 
@@ -81,6 +80,11 @@ I bootstrap the application and kick off the GUI (Browser Window)."
      (fn [event]
        (print "Closing the debug window")
        (.close @debug-window)))
+
+(.on ipc "toggle-dev-tools"
+     (fn [event]
+       (print "Open the chrome debugger")
+       (.toggleDevTools @main-window)))
 
 ;;; needed to use the :target :nodejs
 (set! *main-cli-fn* #())

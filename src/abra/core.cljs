@@ -11,6 +11,7 @@
             [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
             [abra.handlers]
+            [abra.keys :as keys]
             [figwheel.client :as fw]))
 
 ;; redirects any println to console.log
@@ -305,5 +306,6 @@
 (defn start
   []
   (dispatch [:initialise])
+  (keys/bind-keys)
   ; (dispatch [:start-debugging])
   (reagent/render [main-page] (get-element-by-id "app")))
