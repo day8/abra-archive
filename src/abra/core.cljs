@@ -2,7 +2,7 @@
   (:require [reagent.core :as reagent]
             [abra.dialog :as dialog]
             [abra.state :as state]    ;; although not used, leave it in here, or else the subscriptions don't get pulled in.
-            [re-com.core :refer [input-text input-textarea label title]]
+            [re-com.core :refer [input-text input-textarea label title spinner]]
             [re-com.buttons :refer [button info-button]]
             [re-com.box   :refer [h-box v-box box scroller gap line]]
             [re-com.tabs :refer [vertical-bar-tabs]]
@@ -17,19 +17,19 @@
 ;; redirects any println to console.log
 (enable-console-print!)
 
-; (fw/start {
-;              ;; configure a websocket url if yor are using your own server
-;              :websocket-url "ws://localhost:3449/figwheel-ws"
+(fw/start {
+             ;; configure a websocket url if yor are using your own server
+             :websocket-url "ws://localhost:3449/figwheel-ws"
              
-;              ;; optional callback
-;              :on-jsload (fn [] 
-;                           (println (reagent/force-update-all)))
+             ;; optional callback
+             :on-jsload (fn [] 
+                          (println (reagent/force-update-all)))
              
-;              ;; when the compiler emits warnings figwheel
-;              ;; blocks the loading of files.
-;              ;; To disable this behavior:
-;              :load-warninged-code true
-;              })
+             ;; when the compiler emits warnings figwheel
+             ;; blocks the loading of files.
+             ;; To disable this behavior:
+             :load-warninged-code true
+             })
 
 (def ipc (js/require "ipc"))
 
@@ -149,35 +149,44 @@
   (let [lein-repl-status (subscribe [:lein-repl-status])
         clojurescript-string (subscribe [:clojurescript-string])
         javascript-string (subscribe [:javascript-string])
-        js-print-string (subscribe [:js-print-string])]
+        js-print-string (subscribe [:js-print-string])
+        show-spinner (subscribe [:show-spinner])]
     (fn
       []
-      [h-box
-       :gap "5px"
-       :children [[v-box
-                   :children [[field-label "clojurescript"]
-                              [input-textarea
-                               :model @clojurescript-string
-                               :on-change #(dispatch 
-                                             [:clojurescript-string %])]]]
-                  [v-box 
-                   :children [[gap
-                               :size "20px"]
-                              [button
-                               :label "Translate"
-                               :class "btn-primary"
-                               :on-click #(dispatch [:translate])
-                               :disabled? (not @lein-repl-status)]]]
-                  [v-box
-                   :children [[field-label "result"]
-                              [input-textarea
-                               :model @js-print-string
-                               :on-change #()]]]
-                  [v-box
-                   :children [[field-label "javascript"]
-                              [input-textarea
-                               :model @javascript-string
-                               :on-change #()]]]]])))
+      (let [elements [[v-box
+                       :children [[field-label "clojurescript"]
+                                  [input-textarea
+                                   :model @clojurescript-string
+                                   :on-change #(dispatch 
+                                                 [:clojurescript-string %])]]]
+                      [v-box 
+                       :children [[gap
+                                   :size "20px"]
+                                  [button
+                                   :label "Translate"
+                                   :class "btn-primary"
+                                   :on-click #(dispatch [:translate])
+                                   :disabled? (not @lein-repl-status)]]]]
+            result-elements (if @show-spinner 
+                              [[v-box 
+                                :children [[gap
+                                            :size "20px"]
+                                           [spinner]]]]
+                              (if @javascript-string 
+                                [[v-box
+                                  :children [[field-label "result"]
+                                             [input-textarea
+                                              :model @js-print-string
+                                              :on-change #()]]]
+                                 [v-box
+                                  :children [[field-label "javascript"]
+                                             [input-textarea
+                                              :model @javascript-string
+                                              :on-change #()]]]]
+                                []))]
+        [h-box
+         :gap "5px"
+         :children (concat elements result-elements)]))))
 
 (defn abra-debug-panel []
   (let [debug-crmux-url (subscribe [:debug-crmux-url])]

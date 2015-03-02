@@ -43,6 +43,7 @@
         call-frame-id (:call-frame-id @db)
         locals-map (get-in @db [:scoped-locals call-frame-id])
         locals (clj->js (map :label locals-map))]
+    (swap! db assoc :show-spinner true)
     (.send ipc "translate-clojurescript" 
            clojurescript-string 
            namespace-string 
@@ -64,6 +65,7 @@
                                    (drop-last js-expression)) ");")]
         (crmux-websocket/ws-evaluate db js-print-string)
         (swap! db assoc :javascript-string js-expression)
+        (swap! db assoc :show-spinner false)
         (.send ipc "get-lein-repl-status")))))
 
 ;; clear the scoped-locals dictionary

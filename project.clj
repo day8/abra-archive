@@ -91,6 +91,7 @@
                         :optimizations :none
                         :pretty-print true}}]
    
+   ; node run/test/bin/runner-node.js run/js/compiled/test run/js/compiled/test_node.js
    :test-commands {"node-tests" ["node" "run/test/bin/runner-node.js" 
                                  "run/js/compiled/test"
                                  "run/js/compiled/test_node.js"]}}
