@@ -7,6 +7,7 @@
             [re-com.box   :refer [h-box v-box box scroller gap line]]
             [re-com.tabs :refer [vertical-bar-tabs]]
             [re-com.layout :refer [v-layout]]
+            [re-com.modal :refer [modal-window]]
             [cljs.core.async :refer [<!]]
             [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -223,7 +224,8 @@
   []
   [v-box
    :height "100%"
-   :children [
+   :children [[modal-window
+               :child [:div "Please wait..."]]
               [v-layout
                :initial-split "65%"
                :top-panel top-debug-panel
@@ -286,7 +288,7 @@
 
 (defn session-details-view
   []
-  [v-box
+   [v-box
    :padding "20px 10px 0px 30px"
    :gap "10px"
    :height "100%"

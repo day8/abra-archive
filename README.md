@@ -10,8 +10,8 @@ ToDO:
   * In the Session Details, remember the values put in last time.  In fact save the last few values. 
   * add a spinner after translate
   * if Abra is already running, produce an error for the user  (chrome remote debugging port is already locked)
-  - Verify that the project directory contains a "project.clj" or a ".boot".
   - What can we do about the first translate taking so long?
+  - Verify that the project directory contains a "project.clj" or a ".boot".
   - Pressing "Stop" doesn't really stop
   - Tried to `lein run` got this
     D:\Day8-git\Abra2>lein run
