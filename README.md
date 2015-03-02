@@ -8,9 +8,8 @@ ToDO:
   * fix the - and _ issue (doesn't handle mixed case)
   * after you press "Debug" the debug window comes up exactly over the Session window.
   * In the Session Details, remember the values put in last time.  In fact save the last few values. 
-  - change code to use https://github.com/clojure/clojurescript/blob/master/src/clj/cljs/repl.clj#L397
-     to load namespaces
-  - if Abra is already running, produce an error for the user  (chrome remote debugging port is already locked)
+  * add a spinner after translate
+  * if Abra is already running, produce an error for the user  (chrome remote debugging port is already locked)
   - Verify that the project directory contains a "project.clj" or a ".boot".
   - What can we do about the first translate taking so long?
   - Pressing "Stop" doesn't really stop
@@ -18,8 +17,10 @@ ToDO:
     D:\Day8-git\Abra2>lein run
     Your project already has a package.json file.  Please remove it.
     -attempt to delete
-  - add a spinner after translate
   - fix the - and _ issue for the mixed case
+  - change code to use https://github.com/clojure/clojurescript/blob/master/src/clj/cljs/repl.clj#L397
+     to load namespaces
+     look at can't set *cljs-ns* variable error in analyzer/parse
   - look at the ability to run macros in the nrepl
 
 

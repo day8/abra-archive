@@ -17,19 +17,19 @@
 ;; redirects any println to console.log
 (enable-console-print!)
 
-(fw/start {
-             ;; configure a websocket url if yor are using your own server
-             :websocket-url "ws://localhost:3449/figwheel-ws"
+; (fw/start {
+;              ;; configure a websocket url if yor are using your own server
+;              :websocket-url "ws://localhost:3449/figwheel-ws"
              
-             ;; optional callback
-             :on-jsload (fn [] 
-                          (println (reagent/force-update-all)))
+;              ;; optional callback
+;              :on-jsload (fn [] 
+;                           (println (reagent/force-update-all)))
              
-             ;; when the compiler emits warnings figwheel
-             ;; blocks the loading of files.
-             ;; To disable this behavior:
-             :load-warninged-code true
-             })
+;              ;; when the compiler emits warnings figwheel
+;              ;; blocks the loading of files.
+;              ;; To disable this behavior:
+;              :load-warninged-code true
+;              })
 
 (def ipc (js/require "ipc"))
 
