@@ -19,7 +19,8 @@ I bootstrap the application and kick off the GUI (Browser Window)."
 (def browser-window (js/require "browser-window"))
 (def crash-reporter (js/require "crash-reporter"))
 (def app            (js/require "app"))
-(def crmux (js/require (str js/__dirname "/../crmux/crmux.js")))
+(def dialog         (js/require "dialog"))
+(def crmux          (js/require (str js/__dirname "/../crmux/crmux.js")))
 
 ;; check that lein exists on the user's machine
 #_(lein-check/run)
@@ -43,6 +44,13 @@ I bootstrap the application and kick off the GUI (Browser Window)."
 ;       (str "file:///" html)
 ;       (.log js/console (str "HTML file not found: " html)))))
 
+(defn show-message-exit
+  [msg]
+  "show a message and exit"
+  (.showMessageBox dialog @main-window #js {:message msg 
+                                            :type "warning"
+                                            :buttons #js ["Close"]})
+  (.close @main-window))
 
 (defn init-browser
   []
@@ -52,7 +60,12 @@ I bootstrap the application and kick off the GUI (Browser Window)."
                              :web-preferences #js {:web-security false}}))
   (.loadUrl @main-window abra-html)
   ; (.toggleDevTools @main-window)
-  (.start_crmux_server crmux)
+  (go 
+    (let [port-open (<? (nrepl/port-open? 9223))]
+      (if port-open 
+        (show-message-exit 
+          "The crmux port is in use, Abra may be running in another window")
+        (.start_crmux_server crmux))))
   (.on @main-window "closed" #(reset! main-window nil)))
 
 
