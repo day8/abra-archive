@@ -9,7 +9,7 @@
                  [cljs-ajax "0.3.10"]
                  [reagent "0.5.0-alpha3"]
                  [re-com "0.1.6"]
-                 [org.clojrs.stumitchell/re-frame "0.2.0"]
+                 [org.clojars.stumitchell/re-frame "0.2.0"]
                  [cljs-asynchronize "0.1.1-SNAPSHOT"]
                  [figwheel "0.2.2-SNAPSHOT"]
                  [ring/ring-core "1.3.2"]
