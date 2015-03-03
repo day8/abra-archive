@@ -98,6 +98,8 @@
 
 (reg-sub-key :initialised)
 
+(reg-sub-key :disabled "true")
+
 (reg-sub-key :clojurescript-string "(+ counter 3)")
 
 (reg-sub-key :javascript-string nil)

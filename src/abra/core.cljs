@@ -42,7 +42,8 @@
 (.send ipc "get-lein-repl-status")
 (.on ipc "lein-repl-status" 
      (fn [arg]
-       (dispatch [:lein-repl-status (js->clj arg)])))
+       (dispatch [:lein-repl-status (js->clj arg)])
+       (dispatch [:disabled (not (js->clj arg))])))
 
 ;;------------------------------------------------------------------------------
 
@@ -95,7 +96,8 @@
         locals (subscribe [:scoped-locals])
         call-frames (subscribe [:call-frames])
         call-frame-id (subscribe [:call-frame-id])
-        local-id (subscribe [:local-id])]
+        local-id (subscribe [:local-id])
+        disabled (subscribe [:disabled])]
     (fn
       []
       [h-box
@@ -111,7 +113,7 @@
                        :on-change #(dispatch [:namespace-string %])
                        :rows "5"
                        :width "300px"]]]]
-                   (when @call-frame-id 
+                   (when  (and (not @disabled) @call-frame-id) 
                      (when-let [locals-tab (get @locals @call-frame-id)]
                        (let [[local-map] (filter #(= (:id %) @local-id) 
                                                  locals-tab)]
@@ -222,14 +224,18 @@
 
 (defn debug-view
   []
-  [v-box
-   :height "100%"
-   :children [[modal-window
-               :child [:div "Please wait..."]]
-              [v-layout
-               :initial-split "65%"
-               :top-panel top-debug-panel
-               :bottom-panel abra-debug-panel]]])
+  (let [disabled (subscribe [:disabled])]
+    (fn
+      []
+      [v-box
+       :height "100%"
+       :children [[v-layout
+                   :initial-split "65%"
+                   :top-panel top-debug-panel
+                   :bottom-panel abra-debug-panel]
+                  (when @disabled 
+                    [modal-window
+                     :child [:div "Please wait for nrepl to start"]])]])))
 
 (defn project-form
   []
