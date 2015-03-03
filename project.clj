@@ -8,7 +8,7 @@
                  [org.clojure/core.async    "0.1.346.0-17112a-alpha"]
                  [cljs-ajax "0.3.10"]
                  [reagent "0.5.0-alpha3"]
-                 [re-com "0.1.6"]
+                 [org.clojars.stumitchell/re-com "0.1.6"]
                  [org.clojars.stumitchell/re-frame "0.2.0"]
                  [cljs-asynchronize "0.1.1-SNAPSHOT"]
                  [figwheel "0.2.2-SNAPSHOT"]
