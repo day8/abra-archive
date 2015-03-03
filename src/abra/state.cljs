@@ -98,9 +98,11 @@
 
 (reg-sub-key :initialised)
 
+(reg-sub-key :disabled "true")
+
 (reg-sub-key :clojurescript-string "(+ counter 3)")
 
-(reg-sub-key :javascript-string "")
+(reg-sub-key :javascript-string nil)
 
 (reg-sub-key :namespace-string "(ns test.core)")
 
@@ -119,3 +121,5 @@
 (reg-sub-key :scoped-locals {})
 
 (reg-sub-key :local-id 0)
+
+(reg-sub-key :show-spinner false)

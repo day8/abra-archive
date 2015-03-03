@@ -9,7 +9,7 @@
                  [cljs-ajax "0.3.10"]
                  [reagent "0.5.0-alpha3"]
                  [re-com "0.1.6"]
-                 [re-frame "0.1.8"]
+                 [re-frame "0.2.0"]
                  [cljs-asynchronize "0.1.1-SNAPSHOT"]
                  [figwheel "0.2.2-SNAPSHOT"]
                  [ring/ring-core "1.3.2"]
@@ -91,6 +91,7 @@
                         :optimizations :none
                         :pretty-print true}}]
    
+   ; node run/test/bin/runner-node.js run/js/compiled/test run/js/compiled/test_node.js
    :test-commands {"node-tests" ["node" "run/test/bin/runner-node.js" 
                                  "run/js/compiled/test"
                                  "run/js/compiled/test_node.js"]}}
