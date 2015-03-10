@@ -8,8 +8,8 @@
                  [org.clojure/core.async    "0.1.346.0-17112a-alpha"]
                  [cljs-ajax "0.3.10"]
                  [reagent "0.5.0-alpha3"]
-                 [re-com "0.1.6"]
-                 [re-frame "0.2.0"]
+                 [org.clojars.stumitchell/re-com "0.1.6"]
+                 [org.clojars.stumitchell/re-frame "0.2.0"]
                  [cljs-asynchronize "0.1.1-SNAPSHOT"]
                  [figwheel "0.2.2-SNAPSHOT"]
                  [ring/ring-core "1.3.2"]
@@ -106,7 +106,8 @@
   :aliases {"build"       ["do" "clean," "cljsbuild" "once" "main" "abra" "test-page"]
             "auto-build"  ["do" "clean," "cljsbuild" "auto" "main" "abra" "test-page"]
             "auto-test"   ["do" "clean," "cljsbuild" "auto" "test-node"]
-            "run"         ["npm" "run" "start"]}
+            "run"         ["npm" "run" "start"]
+            "node-tests"  ["do" "clean," "cljsbuild" "test" "node-tests"]}
   
   :clean-targets ^{:protect false} ["run/js/compiled" 
                                     "resources/public/js/compiled"])

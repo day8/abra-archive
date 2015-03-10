@@ -7,7 +7,7 @@
             [re-com.box   :refer [h-box v-box box scroller gap line]]
             [re-com.tabs :refer [vertical-bar-tabs]]
             [re-com.layout :refer [v-layout]]
-            [re-com.modal :refer [modal-window]]
+            [re-com.modal :refer [modal-panel]]
             [cljs.core.async :refer [<!]]
             [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -234,7 +234,7 @@
                    :top-panel top-debug-panel
                    :bottom-panel abra-debug-panel]
                   (when @disabled 
-                    [modal-window
+                    [modal-panel
                      :child [:div "Please wait for nrepl to start"]])]])))
 
 (defn project-form

@@ -3,8 +3,6 @@
 Unpublished - but getting close
 
 ToDO:
-  * it isn't translating core fucntions correctly:  Eg map.  Ending up as   my.namespace.map
-  * fix the double up of variables
   * fix the - and _ issue (doesn't handle mixed case)
   * after you press "Debug" the debug window comes up exactly over the Session window.
   * In the Session Details, remember the values put in last time.  In fact save the last few values. 
@@ -27,7 +25,7 @@ ToDO:
 
 
 
-# Abra
+# Abra [![Build Status](https://magnum.travis-ci.com/Day8/Abra.svg?token=ZxqzShvq5GKw1TUp9DLf&branch=master)](https://magnum.travis-ci.com/Day8/Abra)
 
 Abra is a proof of concept ClojureScript debugger.
 
@@ -209,11 +207,6 @@ Abra makes use of the following tools, libraries and technologies:
      - [Google Closure v?](https://developers.google.com/closure): Google JavaScript Tools and libraries, including a compiler which 
        optimises JavaScript.
 
-
-## ToDos
-
- - This looks interesting.  Use a similar approach?
- - reove git-deps from project.clj
 
 
 [Leiningen]:http://leiningen.org
