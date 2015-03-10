@@ -61,6 +61,7 @@ I bootstrap the application and kick off the GUI (Browser Window)."
   (.loadUrl @main-window abra-html)
   ; (.toggleDevTools @main-window)
   (go 
+    ;; check that no other chrome instances have their remote debugging turned on
     (let [port-open (<? (nrepl/port-open? 9223))]
       (if port-open 
         (show-message-exit 

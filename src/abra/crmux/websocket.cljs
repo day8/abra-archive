@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go-loop, go]])
   (:require [cljs.core.async :refer [put!, chan, <!, >!, mult, pub, sub]]
             [cljs.reader :as reader]
-            [re-frame.handlers :refer [register dispatch]]
+            [re-frame.core :refer [register-handler dispatch]]
             [re-frame.db :refer [app-db]]
             [abra.crmux.debug-handlers :refer [handler js-result-filter]]))
 
@@ -103,4 +103,4 @@
         (doseq [variable-map result] 
           (dispatch [:add-scoped-local call-frame-id variable-map]))))))
 
-(register :crmux.ws-getProperties ws-getProperties)
+(register-handler :crmux.ws-getProperties ws-getProperties)
