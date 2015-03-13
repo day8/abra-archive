@@ -113,7 +113,7 @@
                        :on-change #(dispatch [:namespace-string %])
                        :rows "5"
                        :width "300px"]]]]
-                   (when  (and (not @disabled) @call-frame-id) 
+                   (when (and (not @disabled) @call-frame-id) 
                      (when-let [locals-tab (get @locals @call-frame-id)]
                        (let [[local-map] (filter #(= (:id %) @local-id) 
                                                  locals-tab)]

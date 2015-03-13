@@ -11,16 +11,14 @@
         <!-- the GUI gets grafted to this "app" div -->
         <div id="app"></div>
 
-        <script src="http://fb.me/react-0.12.1.js"></script>
-        <script type="text/javascript" src="js/compiled/abra/goog/base.js" ></script>
-        <script type="text/javascript" src="js/compiled/abra.js"           ></script>
+        <script type="text/javascript" src="compiled/abra.js"           ></script>
         <script type="text/javascript">
-            goog.require("abra.core");
+            // goog.require("abra.core");
 
             // we can't refer directly to abra.core.start because it probably
             // doesn't exist yet ... the <script> is still loading async.
             // So wrap the call in a fucntion.
-            window.addEventListener('load', function() { abra.core.start(); });
+            window.onload = function() { abra.core.start(); };
         </script>
 
     </body>

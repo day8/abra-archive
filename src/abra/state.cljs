@@ -3,7 +3,6 @@
   (:require [reagent.core :as reagent]
             [re-frame.core :refer [register-sub
                                    register-handler
-                                   register-pure-handler
                                    path]] 
             [re-frame.db :refer [app-db]]
             [alandipert.storage-atom :refer [local-storage]]))
@@ -32,7 +31,7 @@
     (fn 
       [db] 
       (reaction (get @db key))))
-  (register-pure-handler
+  (register-handler
     key
     (path [key])
     (fn
@@ -47,7 +46,7 @@
       (merge default-state)
       (merge @persistent-db)))
 
-(register-pure-handler 
+(register-handler 
   :initialise 
   initialise)
 
@@ -79,7 +78,7 @@
          (swap! persistent-db assoc-in p result)
          result)))))
 
-(register-pure-handler
+(register-handler
   :project-dir
   (persistent-path [:project-dir])
   (fn [old-project-dir [_ value]]
@@ -92,13 +91,13 @@
 
 (register-handler
   :debug-url
-  (fn [db [_ value]]
-    (doseq [_db [persistent-db db]]
-      (swap! _db assoc :debug-url value))))
+  (persistent-path [:project-dir]) 
+  (fn [old-debug-url [_ value]]
+    value))
 
 (reg-sub-key :initialised)
 
-(reg-sub-key :disabled "true")
+(reg-sub-key :disabled true)
 
 (reg-sub-key :clojurescript-string "(+ counter 3)")
 

@@ -7,9 +7,9 @@
                  [org.clojure/clojurescript "0.0-2913"]
                  [org.clojure/core.async    "0.1.346.0-17112a-alpha"]
                  [cljs-ajax "0.3.10"]
-                 [reagent "0.5.0-alpha3"]
-                 [org.clojars.stumitchell/re-com "0.1.6"]
-                 [org.clojars.stumitchell/re-frame "0.2.0"]
+                 [reagent "0.5.0"]
+                 [re-com "0.1.6"]
+                 [re-frame "0.3.0"]
                  [cljs-asynchronize "0.1.1-SNAPSHOT"]
                  [figwheel "0.2.2-SNAPSHOT"]
                  [ring/ring-core "1.3.2"]
@@ -54,10 +54,11 @@
             
             {:id "abra"
              :source-paths ["src/abra"]
-             :compiler {
-                        :output-to  "run/js/compiled/abra.js"
-                        :source-map "run/js/compiled/abra.js.map"
-                        :output-dir "run/js/compiled/abra"
+             :compiler {:main "abra.core"
+                        :asset-path "compiled/abra"
+                        :output-to  "run/compiled/abra.js"
+                        :source-map true
+                        :output-dir "run/compiled/abra"
                         :optimizations :none
                         :pretty-print true}}
             
@@ -109,5 +110,6 @@
             "run"         ["npm" "run" "start"]
             "node-tests"  ["do" "clean," "cljsbuild" "test" "node-tests"]}
   
-  :clean-targets ^{:protect false} ["run/js/compiled" 
+  :clean-targets ^{:protect false} ["run/js/compiled"
+                                    "run/compiled"  
                                     "resources/public/js/compiled"])
