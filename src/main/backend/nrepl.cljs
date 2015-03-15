@@ -175,6 +175,8 @@
        (swap! state assoc :nrepl true)
        (swap! state assoc :port port)
        (swap! state assoc :server-state server-state)
+       ; send off an eval to warm up the nrepl
+       (local-eval "(+ 1 1)")
        port))))
 
 (defn stop-lein-repl 
