@@ -187,8 +187,9 @@
       closes this channel on completion" 
   []
   ;; can't use asynchronise as the callback is not the correct interface
-  (let [result (chan)] 
-    (.stop node-server (:server-state @state)
+  (let [result (chan)
+        server-state (:server-state @state)]
+    (.stop node-server server-state
            (fn [] 
              (swap! state assoc :nrepl false)
              (put! result true)))
