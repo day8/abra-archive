@@ -68,29 +68,7 @@
     (is (= (nrepl/find-namespace "(ns test.test)") "test.test"))
     (is (= (nrepl/find-namespace "(ns test.test?)") "test.test?"))))
 
-(deftest test-transit
-  (testing "test that transit custom writer works")
-  (let [a-map {:a 1 :b 2 :c 3}
-        big-map (doall (into {} 
-                             (for [i (range 20)]
-                               {i a-map})))
-        p       (Point. 1 2)]
-    (is (= "[\"^ \",\"~:a\",1,\"~:b\",2,\"~:c\",3]" (transit-write a-map)))
-    (is (= "[\"~#point\",[1,2]]" (write p)))
-    (is (= "[[\"~#point\",[1,2]],[\"^0\",[1,2]],[\"^0\",[1,2]],[\"^0\",[1,2]]]" 
-           (write [p p p p])))
-    ;; roundtrip
-    (is (= p (read (write p))))
-    (is (= [p p p p] (read (write [p p p p]))))
-    ;; caching
-    (is (= "[\"~#point\",[1,2]]" (c-write p)))
-    (is (= "[[\"~#point\",[1,2]],[\"~#cache\",0],[\"^1\",0],[\"^1\",0]]" 
-           (c-write [p p p p])))
-    ;; roundtrip
-    (is (= p (c-read (c-write p))))
-    (is (= [p p p p] (c-read (c-write [p p p p]))))))
-
-#_(deftest ^:async test-nrepl-startup-shutdown
+(deftest ^:async test-nrepl-startup-shutdown
     (testing "Test nrpel start up and shutdown and connection"
       (let [port 7889] ;; change the port number so the tests can run at the same time
         (is (= (@nrepl/state :nrepl) false))

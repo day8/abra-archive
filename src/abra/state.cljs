@@ -60,11 +60,6 @@
 
 (reg-sub-key :debugging? false)
 
-(register-sub
-  :project-dir 
-  (fn [db [_]]
-    (reaction (:project-dir @db))))
-
 (defn persistent-path
   "This middleware will persist the changes in the handler into
   local-storage"
@@ -77,6 +72,11 @@
        (let [result (handler db v)]
          (swap! persistent-db assoc-in p result)
          result)))))
+
+(register-sub
+  :project-dir 
+  (fn [db [_]]
+    (reaction (:project-dir @db))))
 
 (register-handler
   :project-dir
@@ -91,7 +91,7 @@
 
 (register-handler
   :debug-url
-  (persistent-path [:project-dir]) 
+  (persistent-path [:debug-url]) 
   (fn [old-debug-url [_ value]]
     value))
 
