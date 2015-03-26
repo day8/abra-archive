@@ -120,6 +120,6 @@
   (fn [db _]
     (.send ipc "refresh-page")
     (-> db    
-      (clear-scoped-locals _)
-      (clear-call-frames _)
+      (assoc :call-frames [])
+      (assoc :scoped-locals {})
       (assoc :local-id 0))))

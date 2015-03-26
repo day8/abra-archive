@@ -215,7 +215,7 @@
                                   [button
                                    :label "refresh"
                                    :on-click #(dispatch [:refresh-page])
-                                   :disabled? true]
+                                   :disabled? false]
                                   [gap 
                                    :size "40px"]
                                   [nrepl-state-text]]]
