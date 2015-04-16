@@ -2,12 +2,14 @@
   (:require [reagent.core :as reagent]
             [abra.dialog :as dialog]
             [abra.state :as state]    ;; although not used, leave it in here, or else the subscriptions don't get pulled in.
-            [re-com.core :refer [input-text input-textarea label title spinner]]
-            [re-com.buttons :refer [button info-button]]
-            [re-com.box   :refer [h-box v-box box scroller gap line]]
-            [re-com.tabs :refer [vertical-bar-tabs]]
-            [re-com.layout :refer [v-layout]]
-            [re-com.modal :refer [modal-panel]]
+            [re-com.core :refer [input-text input-textarea label title 
+                                 throbber
+                                 button info-button
+                                 h-box v-box box scroller gap line
+                                 vertical-bar-tabs
+                                 v-split
+                                 modal-panel
+                                 ]]
             [cljs.core.async :refer [<!]]
             [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -174,7 +176,7 @@
                               [[v-box 
                                 :children [[gap
                                             :size "20px"]
-                                           [spinner]]]]
+                                           [throbber]]]]
                               (if @javascript-string 
                                 [[v-box
                                   :children [[field-label "result"]
@@ -229,10 +231,10 @@
       []
       [v-box
        :height "100%"
-       :children [[v-layout
+       :children [[v-split
                    :initial-split "65%"
-                   :top-panel top-debug-panel
-                   :bottom-panel abra-debug-panel]
+                   :panel-1 [top-debug-panel]
+                   :panel-2 [abra-debug-panel]]
                   (when @disabled 
                     [modal-panel
                      :child [:div "Please wait for nrepl to start"]])]])))

@@ -135,18 +135,6 @@ XXX trouble shooting -- how to run the tests??
 1. When Abra starts ... XXXXXX
 
 
-
-## Run Abra
-
-1. To run Abra we must start atom-shell the right way:
-
-    ```sh
-    lein npm run start
-    ```
-
-1. When Abra starts ... XXXXXX
-
-
 Building with figwheel
 ----------------------
 
