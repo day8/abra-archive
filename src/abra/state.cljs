@@ -1,7 +1,6 @@
 (ns abra.state
   (:require-macros [reagent.ratom :refer [reaction]])  
-  (:require [reagent.core :as reagent]
-            [re-frame.core :refer [register-sub
+  (:require [re-frame.core :refer [register-sub
                                    register-handler
                                    path]] 
             [re-frame.db :refer [app-db]]
@@ -14,12 +13,14 @@
   {:debug-host "http://localhost:9223"
    :debug-crmux-url nil
    :debug-crmux-websocket nil
-   :initialised true})
+   :initialised true
+   :namespace-string ""})
 
 (def persistent-db (local-storage 
                      (atom {:project-dir "."
                             :debug-url 
-                            "file:///home/stu/dev/Abra2/test-page/index.html"}) 
+                            "file:///home/stu/dev/Abra2/test-page/index.html"}
+                           :namespace-string "(ns test.core)")
                      ::persistent-db))
 
 (defn reg-sub-key
@@ -35,7 +36,7 @@
     key
     (path [key])
     (fn
-      [old-value [_ value]]
+      [_ [_ value]]
       value))
   (when (some? default)
     (swap! app-db assoc key default)))
@@ -81,7 +82,7 @@
 (register-handler
   :project-dir
   (persistent-path [:project-dir])
-  (fn [old-project-dir [_ value]]
+  (fn [_ [_ value]]
     value))
 
 (register-sub
@@ -92,7 +93,18 @@
 (register-handler
   :debug-url
   (persistent-path [:debug-url]) 
-  (fn [old-debug-url [_ value]]
+  (fn [_ [_ value]]
+    value))
+
+(register-sub
+  :namespace-string
+  (fn [db [_]]
+    (reaction (:namespace-string @db))))
+
+(register-handler
+  :namespace-string
+  (persistent-path [:namespace-string])
+  (fn [_ [_ value]]
     value))
 
 (reg-sub-key :initialised)
@@ -102,8 +114,6 @@
 (reg-sub-key :clojurescript-string "(+ counter 3)")
 
 (reg-sub-key :javascript-string nil)
-
-(reg-sub-key :namespace-string "(ns test.core)")
 
 (reg-sub-key :locals-string "x\ny\nz")
 
