@@ -2,7 +2,8 @@
   (:require-macros [reagent.ratom :refer [reaction]])  
   (:require [re-frame.core :refer [register-sub
                                    register-handler
-                                   path]] 
+                                   path
+                                   dispatch]]
             [re-frame.db :refer [app-db]]
             [alandipert.storage-atom :refer [local-storage]]))
 
@@ -14,13 +15,15 @@
    :debug-crmux-url nil
    :debug-crmux-websocket nil
    :initialised true
-   :namespace-string ""})
+   :namespace-string ""
+   :show-project-form true})
 
 (def persistent-db (local-storage 
                      (atom {:project-dir "."
                             :debug-url 
                             "file:///home/stu/dev/Abra2/test-page/index.html"}
-                           :namespace-string "(ns test.core)")
+                           :namespace-string "(ns test.core)"
+                           :show-project-form false)
                      ::persistent-db))
 
 (defn reg-sub-key
@@ -43,9 +46,12 @@
 
 (defn initialise 
   [db]
-  (-> db 
-      (merge default-state)
-      (merge @persistent-db)))
+  (let [db (-> db
+               (merge default-state)
+               (merge @persistent-db))]
+    (when-not (:show-project-form db)
+      (dispatch [:start-debugging]))
+    db))
 
 (register-handler 
   :initialise 
@@ -58,39 +64,6 @@
       (or 
         (:debug-crmux-url @db)
         (:debug-host @db)))))
-
-(defn persistent-path
-  "This middleware will persist the changes in the handler into
-  local-storage"
-  [p]
-  (fn middleware
-    [handler]
-    ((path p)
-     (fn new-handler
-       [db v]
-       (let [result (handler db v)]
-         (swap! persistent-db assoc-in p result)
-         result)))))
-
-(defn register-persistent-sub-key
-  [key]
-  (register-sub
-    key
-    (fn [db [_]]
-      (reaction (key @db))))
-  (register-handler
-    key
-    (persistent-path [key])
-    (fn [_ [_ value]]
-      value)))
-
-(register-persistent-sub-key :project-dir )
-
-(register-persistent-sub-key :debug-url)
-
-(register-persistent-sub-key :namespace-string)
-
-(register-persistent-sub-key :namespace-string)
 
 (reg-sub-key :debugging? false)
 
@@ -119,3 +92,36 @@
 (reg-sub-key :local-id 0)
 
 (reg-sub-key :show-spinner false)
+
+(defn persistent-path
+  "This middleware will persist the changes in the handler into
+  local-storage"
+  [p]
+  (fn middleware
+    [handler]
+    ((path p)
+      (fn new-handler
+        [db v]
+        (let [result (handler db v)]
+          (swap! persistent-db assoc-in p result)
+          result)))))
+
+(defn register-persistent-sub-key
+  [key]
+  (register-sub
+    key
+    (fn [db [_]]
+      (reaction (key @db))))
+  (register-handler
+    key
+    (persistent-path [key])
+    (fn [_ [_ value]]
+      value)))
+
+(register-persistent-sub-key :project-dir )
+
+(register-persistent-sub-key :debug-url)
+
+(register-persistent-sub-key :namespace-string)
+
+(register-persistent-sub-key :show-project-form)

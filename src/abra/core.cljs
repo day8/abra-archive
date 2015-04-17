@@ -9,7 +9,7 @@
                                  vertical-bar-tabs
                                  v-split
                                  modal-panel
-                                 ]]
+                                 checkbox]]
             [cljs.core.async :refer [<!]]
             [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -258,7 +258,8 @@
          :children 
          [[field-label "project directory" 
            [:span "This is the directory which contains the " [:span.info-bold "project.clj"]  " or "  [:span.info-bold "build.boot"] " for your ClojureScript project"]]
-          [v-box :children 
+          [v-box
+           :children
            [[h-box
              :gap "2px"
              :children 
@@ -300,6 +301,19 @@
          :model @debug-url
          :on-change #(dispatch [:debug-url %])]]])))
 
+(defn show-project-form-view
+  []
+  (let [show-project-form (subscribe [:show-project-form])]
+    (fn
+      []
+      [h-box
+       :gap "4px"
+       :children [[label
+                   :label "Display this window on startup?"]
+                  [checkbox
+                   :model @show-project-form
+                   :on-change #(dispatch [:show-project-form %])]]])))
+
 (defn session-details-view
   []
    [v-box
@@ -315,18 +329,20 @@
                :class "btn-success"
                :label "Debug"
                :on-click #(dispatch [:start-debugging])]
+              [show-project-form-view]
               [gap :size "100%"]
               [:div (str "Atom Shell Version: " atom-shell-version)]]])
 
 (defn main-page
   []
-  (let [initialised (subscribe [:initialised])]
-    (when @initialised 
-      (let [debugging? (subscribe [:debugging?])]
-        (fn [] 
-          (if @debugging?
-            [debug-view]
-            [session-details-view]))))))
+  (let [initialised (subscribe [:initialised])
+        debugging? (subscribe [:debugging?])
+        show-session-details (subscribe [:show-project-form])]
+    (when @initialised
+       (fn []
+         (if @debugging?
+             [debug-view]
+             [session-details-view])))))
 
 (defn start
   []
