@@ -162,9 +162,15 @@
                        :children [[field-label "clojurescript"]
                                   [input-textarea
                                    :model @clojurescript-string
-                                   :on-change #(dispatch 
-                                                 [:clojurescript-string %])]]]
-                      [v-box 
+                                   :on-change #(dispatch
+                                                 [:clojurescript-string %])
+                                   :attr {:on-input (fn [event]
+                                                      (let [value (.-value (.-target event))]
+                                                        (dispatch [:clojurescript-string value])))
+                                          :on-key-press
+                                                    #(when (= (.-which %) 13)
+                                                      (dispatch [:translate]))}]]]
+                      [v-box
                        :children [[gap
                                    :size "20px"]
                                   [button
