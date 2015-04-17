@@ -59,8 +59,6 @@
         (:debug-crmux-url @db)
         (:debug-host @db)))))
 
-(reg-sub-key :debugging? false)
-
 (defn persistent-path
   "This middleware will persist the changes in the handler into
   local-storage"
@@ -74,38 +72,27 @@
          (swap! persistent-db assoc-in p result)
          result)))))
 
-(register-sub
-  :project-dir 
-  (fn [db [_]]
-    (reaction (:project-dir @db))))
+(defn register-persistent-sub-key
+  [key]
+  (register-sub
+    key
+    (fn [db [_]]
+      (reaction (key @db))))
+  (register-handler
+    key
+    (persistent-path [key])
+    (fn [_ [_ value]]
+      value)))
 
-(register-handler
-  :project-dir
-  (persistent-path [:project-dir])
-  (fn [_ [_ value]]
-    value))
+(register-persistent-sub-key :project-dir )
 
-(register-sub
-  :debug-url 
-  (fn [db [_]]
-    (reaction (:debug-url @db))))
+(register-persistent-sub-key :debug-url)
 
-(register-handler
-  :debug-url
-  (persistent-path [:debug-url]) 
-  (fn [_ [_ value]]
-    value))
+(register-persistent-sub-key :namespace-string)
 
-(register-sub
-  :namespace-string
-  (fn [db [_]]
-    (reaction (:namespace-string @db))))
+(register-persistent-sub-key :namespace-string)
 
-(register-handler
-  :namespace-string
-  (persistent-path [:namespace-string])
-  (fn [_ [_ value]]
-    value))
+(reg-sub-key :debugging? false)
 
 (reg-sub-key :initialised)
 
