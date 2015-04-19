@@ -3,30 +3,29 @@
 Unpublished - but getting close
 
 ToDO:
-  * it isn't translating core fucntions correctly:  Eg map.  Ending up as   my.namespace.map
-  * fix the double up of variables
   * fix the - and _ issue (doesn't handle mixed case)
   * after you press "Debug" the debug window comes up exactly over the Session window.
   * In the Session Details, remember the values put in last time.  In fact save the last few values. 
-  - change code to use https://github.com/clojure/clojurescript/blob/master/src/clj/cljs/repl.clj#L397
-     to load namespaces
-  - if Abra is already running, produce an error for the user  (chrome remote debugging port is already locked)
+  * add a spinner after translate
+  * if Abra is already running, produce an error for the user  (chrome remote debugging port is already locked)
+  * What can we do about the first translate taking so long?
   - Verify that the project directory contains a "project.clj" or a ".boot".
-  - What can we do about the first translate taking so long?
   - Pressing "Stop" doesn't really stop
   - Tried to `lein run` got this
     D:\Day8-git\Abra2>lein run
     Your project already has a package.json file.  Please remove it.
     -attempt to delete
-  - add a spinner after translate
   - fix the - and _ issue for the mixed case
+  - change code to use https://github.com/clojure/clojurescript/blob/master/src/clj/cljs/repl.clj#L397
+     to load namespaces
+     look at can't set *cljs-ns* variable error in analyzer/parse
   - look at the ability to run macros in the nrepl
 
 
 
 
 
-# Abra
+# Abra [![Build Status](https://magnum.travis-ci.com/Day8/Abra.svg?token=ZxqzShvq5GKw1TUp9DLf&branch=master)](https://magnum.travis-ci.com/Day8/Abra)
 
 Abra is a proof of concept ClojureScript debugger.
 
@@ -136,18 +135,6 @@ XXX trouble shooting -- how to run the tests??
 1. When Abra starts ... XXXXXX
 
 
-
-## Run Abra
-
-1. To run Abra we must start atom-shell the right way:
-
-    ```sh
-    lein npm run start
-    ```
-
-1. When Abra starts ... XXXXXX
-
-
 Building with figwheel
 ----------------------
 
@@ -208,11 +195,6 @@ Abra makes use of the following tools, libraries and technologies:
      - [Google Closure v?](https://developers.google.com/closure): Google JavaScript Tools and libraries, including a compiler which 
        optimises JavaScript.
 
-
-## ToDos
-
- - This looks interesting.  Use a similar approach?
- - reove git-deps from project.clj
 
 
 [Leiningen]:http://leiningen.org

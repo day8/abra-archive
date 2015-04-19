@@ -2,8 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go-loop, go]])
   (:require [cljs.core.async :refer [put!, chan, <!, >!, mult, pub, sub]]
             [cljs.reader :as reader]
-            [re-frame.handlers :refer [register dispatch]]
-            [re-frame.db :refer [app-db]]
+            [re-frame.core :refer [register-handler dispatch]]
             [abra.crmux.debug-handlers :refer [handler js-result-filter]]))
 
 ;; redirects any println to console.log
@@ -41,35 +40,35 @@
 (defn on-ws-close
   "remove the handle in the db (should it attempt to reconnect?)"
   [db]
-  (swap! db assoc :debug-crmux-websocket nil))
+  (assoc db :debug-crmux-websocket nil))
 
 (defn create-websocket
   "creates a websocket connection and adds it to the db"
   [db url]
-  (let [ws (:debug-crmux-websocket @db)]
+  (let [ws (:debug-crmux-websocket db)]
     (print "create-websocket")
     (when (some? ws)
       (.close ws))
     (if (nil? url)
-      (swap! db assoc :debug-crmux-websocket nil)
+      (assoc db :debug-crmux-websocket nil)
       (let [new-ws (js/WebSocket. url)]
-        (swap! db assoc :debug-crmux-websocket new-ws)
         (aset new-ws "onmessage" on-ws-message)
         (aset new-ws "onerror" on-ws-error)
-        (aset new-ws "onclose" #(on-ws-error db))))))
+        (aset new-ws "onclose" #(on-ws-error db))
+        (assoc db :debug-crmux-websocket new-ws)))))
 
 (defn ws-send
   "sends a message to the websocket" 
   [db message]
-  (when-let [ws (:debug-crmux-websocket @db)]
+  (when-let [ws (:debug-crmux-websocket db)]
     (.send ws (.stringify js/JSON message))))   ;; XXX turn it into str
 
 (defn ws-evaluate 
   "evaluate javascript on the websocket and pop the result onto the database"
   [db expression]
   (let [msg-id (goog/getUid expression)
-        call-frame-id (:call-frame-id @db)
-        call-frames (:call-frames @db)
+        call-frame-id (:call-frame-id db)
+        call-frames (:call-frames db)
         call-frame (first (filter #(= call-frame-id (:id %)) call-frames))
         call-frame-debugger-id (:call-frame-id call-frame)
         debugger-method (if call-frame-debugger-id 
@@ -85,7 +84,7 @@
               value (if value
                       value
                       (:description result))]
-          (swap! db assoc :js-print-string value)))))
+          (dispatch [:js-print-string value])))))
 
 
 (defn ws-getProperties 
@@ -101,6 +100,7 @@
     (go 
       (let [result (<! result)]
         (doseq [variable-map result] 
-          (dispatch [:add-scoped-local call-frame-id variable-map]))))))
+          (dispatch [:add-scoped-local call-frame-id variable-map]))))
+    db))
 
-(register :crmux.ws-getProperties ws-getProperties)
+(register-handler :crmux.ws-getProperties ws-getProperties)

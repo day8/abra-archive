@@ -7,6 +7,7 @@ Thumbs.db
 run/package.json
 run/node_modules/
 run/js/compiled/
+run/compiled
 resources/public/js/compiled
 test-page/js
 target/

@@ -57,12 +57,6 @@
                            (range) 
                            (for [scope scope-chains]
                              (filter some? (map get-object scope))))]
-    ;;(print "debugger.paused " message)
-    ;;(print "call-frame-id" call-frame-id)
-    (print "call-frames" call-frames)
-    ;;(print "scope-chains" scope-chains)
-    ;;(print "call-frames-for-selection" call-frames-for-selection)
-    (print "scope-objects" scope-objects)
     (dispatch [:scope-objects scope-objects])
     (dispatch [:call-frames call-frames-for-selection])
     ;; clear the scoped-locals in the db
@@ -93,7 +87,6 @@
             message-id (:id message)
             result (-> message :result :result)
             error-str (-> message :result :exceptionDetails :text)] 
-        #_(print "js-result-filter" result, error-str)
         (if (some? result)
           result
           error-str)))))

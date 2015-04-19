@@ -175,6 +175,8 @@
        (swap! state assoc :nrepl true)
        (swap! state assoc :port port)
        (swap! state assoc :server-state server-state)
+       ; send off an eval to warm up the nrepl
+       (local-eval "(+ 1 1)")
        port))))
 
 (defn stop-lein-repl 
@@ -185,8 +187,9 @@
       closes this channel on completion" 
   []
   ;; can't use asynchronise as the callback is not the correct interface
-  (let [result (chan)] 
-    (.stop node-server (:server-state @state)
+  (let [result (chan)
+        server-state (:server-state @state)]
+    (.stop node-server server-state
            (fn [] 
              (swap! state assoc :nrepl false)
              (put! result true)))

@@ -41,10 +41,11 @@
         window-to-debug (get-debug-page-details response url)
         dev-front-end-full (str host (window-to-debug "devtoolsFrontendUrl"))
         websocket-url (window-to-debug "webSocketDebuggerUrl")]
-    (print  "webSocketDebuggerUrl=" websocket-url 
+    #_(print  "webSocketDebuggerUrl=" websocket-url 
            ", devtoolsFrontendUrl=" dev-front-end-full)
-    (create-websocket db websocket-url)
-    (swap! db assoc :debug-crmux-url dev-front-end-full)))
+    (-> db 
+        (create-websocket websocket-url)
+        (assoc :debug-crmux-url dev-front-end-full))))
 
 (register-handler :crmux-handlers.new-crmux-url new-crmux-url)
 

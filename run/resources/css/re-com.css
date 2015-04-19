@@ -5,11 +5,31 @@
   To use the library, bootstrap.css is also required, which is best obtained from a CDN.
   So, place the following lines in the <head> section of the html file:
 
-    <link type="text/css" rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.css">
-    <link type="text/css" rel="stylesheet" href="css/re-com.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.css">
+    <link rel="stylesheet" href="resources/css/re-com.css">
 
+  The following is required for constraining an application to the
+  height of the browser window and setting some global defaults like font...
+----------------------------------------------------------------------------------------*/
+
+html, body {
+    font-family:    Segoe UI, Roboto, sans-serif;
+    font-size:      14px;
+    font-weight:    400;
+    color:          rgba(68, 68, 68, 1.0);
+    letter-spacing: 0.002em;
+    height:         100%;
+    margin:         0px;
+    padding:        0px;
+}
+
+/*----------------------------------------------------------------------------------------
   The section immediately below is required for the drop-down components and comes from
-  the bootstrap-chosen library (https://github.com/alxlit/bootstrap-chosen).
+  the bootstrap-chosen library:
+
+    https://github.com/alxlit/bootstrap-chosen
+    License: MIT.
+
   That library provides it's css as a .less file.
   To compile the less file into the css below, use the following steps from
   a command prompt (you'll need git and the lessc compiler (http://lesscss.org):
@@ -442,15 +462,371 @@
   bootstrap-chosen additions
 ----------------------------------------------------------------------------------------*/
 
-/* Mouse hover colour in drop-downs */
+/* Mouse hover color in drop-downs */
 .chosen-container .chosen-results li.mouseover {
   background-color: #eeeeee;
   background-image: none;
 }
 
 /*----------------------------------------------------------------------------------------
-  Bootstrap list-group-item variation
+ Stylesheet for re-com.date Date Picker variants inline-picker & dropdown-picker
+ Day8 variation loosely based on:
+ Copyright 2013 Dan Grossman ( http://www.dangrossman.info )
+ Licensed under the Apache License v2.0
+ http://www.apache.org/licenses/LICENSE-2.0
+ Built for http://www.improvely.com
+ http://eternicode.github.io/bootstrap-datepicker
+
+  START OF DATE PICKER SECTION...
 ----------------------------------------------------------------------------------------*/
+
+.datepicker.single .calendar {
+    float: none;
+}
+
+.datepicker .calendar {
+    display: none;
+    max-width: 200px;
+}
+
+.datepicker .calendar.single .calendar-date {
+    border: none;
+}
+
+.datepicker .calendar th, .datepicker .calendar td {
+    white-space: nowrap;
+    text-align: center;
+    min-width: 32px;
+}
+
+.datepicker .calendar-date {
+    border: 1px solid #ddd;
+    padding: 4px;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.datepicker .calendar-time {
+    text-align: center;
+    margin: 8px auto 0 auto;
+    line-height: 30px;
+}
+
+.datepicker {
+    position: absolute;
+    background: #fff;
+    top: 100px;
+    left: 20px;
+    padding: 10px 10px 5px;
+    margin-top: 1px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    line-height: 16px;
+    border-radius: 4px;
+}
+
+.datepicker table {
+    width: 100%;
+    margin: 0;
+    border-collapse: separate;
+}
+
+.datepicker td, .datepicker th {
+    text-align: center;
+    width: 27px;
+    height: 26px;
+    max-width: 27px;
+    max-height: 26px;
+    min-width: 27px;
+    min-height: 26px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    padding: 4px;
+    cursor: default;
+    white-space: nowrap;
+    font-weight: normal;
+}
+
+.datepicker td.off {
+    padding: 4px;
+    color: #999;
+}
+
+.datepicker td.disabled {
+    color: #999;
+}
+
+.datepicker th.disabled {
+    color: #999;
+}
+
+.datepicker td.available:hover, .datepicker th.available:hover {
+    background: #eee;
+    cursor: pointer;
+}
+
+.datepicker td.in-range {
+    background: #ebf4f8;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+  border-radius: 0;
+}
+
+.datepicker td.start-date {
+    -webkit-border-radius: 4px 0 0 4px;
+    -moz-border-radius: 4px 0 0 4px;
+    border-radius: 4px 0 0 4px;
+}
+
+.datepicker td.end-date {
+    -webkit-border-radius: 0 4px 4px 0;
+    -moz-border-radius: 0 4px 4px 0;
+    border-radius: 0 4px 4px 0;
+}
+
+.datepicker td.start-date.end-date {
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.datepicker td.active, .datepicker td.active:hover {
+    background-color: #357ebd;
+    border-color: #3071a9;
+    color: #fff;
+}
+
+/* Introduced by Day8 from http://eternicode.github.io/bootstrap-datepicker */
+.datepicker td.today, .datepicker td.today:hover {
+    background-color: #ffcd70;
+    border-color: #f59e00;
+    border-radius: 18px;
+    color: #fff;
+}
+
+.datepicker th.day-enabled, label.day-enabled {
+    font-weight: normal;
+    font-size: 10px;
+    color: #333;
+}
+
+.datepicker th.selectable {
+    font-weight: normal;
+    color: #357ebd;
+}
+
+.datepicker th.day-disabled {
+    font-weight: normal;
+    font-size: 10px;
+    color: #999;
+}
+
+.datepicker td.week, .datepicker th.week {
+  font-size: 80%;
+  color: #ccc;
+}
+
+
+.datepicker th.prev {
+    border: 1px solid #ccc;
+    border-right-style: none;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: #F7F7F7;
+}
+
+.datepicker th.next {
+    border: 1px solid #ccc;
+    border-left-style: none;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    background-color: #F7F7F7;
+}
+
+.datepicker th.month {
+    width: auto;
+    font-size: 14px;
+    color: #777;
+    border-radius: 0;
+    border: 1px solid #CCC;
+    border-right-style: none;
+    border-left-style: none;
+    background-color: #F7F7F7;
+}
+
+.dropdown-button {
+    cursor: pointer;
+    height: 32px;
+    font-size: 13px;
+    font-weight: normal;
+}
+
+.dropdown-button.activator {
+    width: 40px;
+    color: #777;
+    background-color: #F7F7F7
+}
+
+/*----------------------------------------------------------------------------------------
+  END OF DATE PICKER SECTION...
+
+
+  CSS THROBBER
+----------------------------------------------------------------------------------------*/
+@keyframes  blink {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(.5);
+        opacity: 0;
+    }
+}
+@-moz-keyframes blink {
+    0% {
+        -moz-transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        -moz-transform: scale(.5);
+        opacity: 0;
+    }
+}
+@-webkit-keyframes blink {
+    0% {
+        -webkit-transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        -webkit-transform: scale(.5);
+        opacity: 0;
+    }
+}
+
+.loader {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    margin: 20px;
+    padding: 0px;
+}
+
+.loader li {
+    position: absolute;
+    display: block;
+    border-radius: 4px;
+    background-color: #999;
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+    margin-left: -3px;
+    opacity: 0;
+    -webkit-animation: blink .8s ease infinite;
+    -moz-animation: blink .8s ease infinite;
+    animation: blink .8s ease infinite;
+}
+
+.loader li:nth-child(1) {
+    top: 0%;
+    left: 50%;
+    -webkit-animation-delay: -.7s;
+    -moz-animation-delay: -.7s;
+    animation-delay: -.7s;
+}
+
+.loader li:nth-child(2) {
+    top: 15%;
+    left: 85%;
+    -webkit-animation-delay: -.6s;
+    -moz-animation-delay: -.6s;
+    animation-delay: -.6s;
+}
+
+.loader li:nth-child(3) {
+    top: 50%;
+    left: 100%;
+    -webkit-animation-delay: -.5s;
+    -moz-animation-delay: -.5s;
+    animation-delay: -.5s;
+}
+
+.loader li:nth-child(4) {
+    top: 85%;
+    left: 85%;
+    -webkit-animation-delay: -.4s;
+    -moz-animation-delay: -.4s;
+    animation-delay: -.4s;
+}
+
+.loader li:nth-child(5) {
+    top: 100%;
+    left: 50%;
+    -webkit-animation-delay: -.3s;
+    -moz-animation-delay: -.3s;
+    animation-delay: -.3s;
+}
+
+.loader li:nth-child(6) {
+    top: 85%;
+    left: 15%;
+    -webkit-animation-delay: -.2s;
+    -moz-animation-delay: -.2s;
+    animation-delay: -.2s;
+}
+
+.loader li:nth-child(7) {
+    top: 50%;
+    left: 0%;
+    -webkit-animation-delay: -.1s;
+    -moz-animation-delay: -.1s;
+    animation-delay: -.1s;
+
+}
+
+.loader li:nth-child(8) {
+    top: 15%;
+    left: 15%;
+}
+
+
+.loader.small {
+    width: 12px;
+    height: 12px;
+    margin: 10px;
+}
+
+.loader.small li {
+    width: 4px;
+    height: 4px;
+    margin-top: -2px;
+    margin-left: -2px;
+}
+
+.loader.large {
+    width: 48px;
+    height: 48px;
+    margin: 20px;
+}
+
+.loader.large li {
+    border-radius: 14px;
+    width: 14px;
+    height: 14px;
+    margin-top: -7px;
+    margin-left: -7px;
+}
+
+/*----------------------------------------------------------------------------------------
+  END OF CSS THROBBER SECTION...
+
+
+  Bootstrap list-group-item variation (only used in selection-list component)
+----------------------------------------------------------------------------------------*/
+/* TODO: re-demo CSS */
 .compact {
     margin: 0;
     height: 19px;
@@ -462,7 +838,7 @@
     font-size: small;
     text-overflow: ellipsis;
 }
-
+/* TODO: re-demo CSS */
 .list-group-item:hover {
     background-color: #eeeeee;
 }
@@ -492,8 +868,15 @@
   background:rgba(0,0,0,0.45);
   }
 
+/* Color of selected text*/
+/*
+::-moz-selection { color: gold;  background: red; }
+::selection      { color: gold;  background: red; }
+*/
+
+
 /*----------------------------------------------------------------------------------------
-  Override bootstrap input text placeholder colour (it's too dark)
+  Override bootstrap input text placeholder color (it's too dark)
 ----------------------------------------------------------------------------------------*/
 
 .form-control::-webkit-input-placeholder {
@@ -501,7 +884,7 @@
 }
 
 /*----------------------------------------------------------------------------------------
-  Override bootstrap warning colour (from horrible browny orange to orange)
+  Override bootstrap warning color (from horrible brown/orange to orange)
 ----------------------------------------------------------------------------------------*/
 
 .has-warning .form-control {
@@ -513,7 +896,8 @@
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px rgba(245, 124, 0, 0.6);
 }
 
-.has-warning .form-control-feedback { /* TODO: REMOVE */
+/* TODO: REMOVE */
+.has-warning .form-control-feedback {
   color: #f57c00;
 }
 
@@ -530,7 +914,8 @@
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px rgba(213, 0, 0, 0.6);
 }
 
-.has-error .form-control-feedback { /* TODO: REMOVE */
+/* TODO: REMOVE */
+.has-error .form-control-feedback {
   color: #d50000;
 }
 
@@ -546,61 +931,37 @@
 
 
 code {
-    margin-right:   0.3em;
+    margin-right:   0.2em;
     border-radius:  4px;
     color:          #333;
     background:     #eee;
     border:         1px solid #ddd;
-    padding:        0.2em 0.5em;
-}
-
-.re-code {
-    color:          #333;
-    background:     #eee;
-    font-size:      90%;
-    border-radius:  4px;
-    border:         1px solid #ddd;
-    padding:        0.2em 0.5em;
-}
-
-
-
-/*----------------------------------------------------------------------------------------
-  Required for constraining an application to the height of the browser window
-----------------------------------------------------------------------------------------*/
-
-html, body {
-    height: 100%;
-    margin: 0px;
-    padding: 0px;
-    color:  #666366
+    padding:        0.1em 0.3em;
 }
 
 /*----------------------------------------------------------------------------------------
   Time component
 ----------------------------------------------------------------------------------------*/
 
-.time-icon {
-  border: 1px solid #bbb;
-  border-radius: 0 4px 4px 0;
-  background-color: #ddd;
-  display: inline-block;
-  height: 20px;
-  line-height: 20px;
-  margin-top: 1px;
-  text-align: center;
-  vertical-align: middle;
-  width: 20px;
-}
+
 .time-entry {
-  flex:  none;
-  padding-left: 2px;
-  padding-top:  0px;
-  font-size:    11px;
-  width:        35px;
+  flex:          none;
+  padding-left:  0.3em;
+  padding-top:   2px;
+  border:        1px solid #ccc;
+  border-radius: 4px 0 0 4px;
+  width:         3.3em;
 }
-.test-time {
-  font-size:    16px;
+.time-entry:last-child {
+  border-radius:    4px;
+}
+.time-icon {
+  display:          flex;
+  padding:          0 0.3em;
+  border:           1px solid #ccc;
+  border-left:      none;
+  border-radius:    0 4px 4px 0;
+  background-color: #ddd;
 }
 
 /*----------------------------------------------------------------------------------------
@@ -615,7 +976,6 @@ html, body {
     border-radius:       50%;
     background-color:    inherit;
     opacity:             0.9;
-    -webkit-user-select: none;
 }
 
 .rc-md-circle-icon-button > i {
@@ -684,7 +1044,6 @@ html, body {
     text-align:          center;             /* to horizontally center the icon */
     background-color:    inherit;
     border-radius:       3px;
-    -webkit-user-select: none;
 }
 
 .rc-md-icon-button > i {
@@ -723,17 +1082,29 @@ html, body {
 
 /*----------------------------------------------------------------------------------------
   info-button
+
+  CSS styles below are taken from https://github.com/oakmac/cljs.info...
+
+    The MIT License (MIT)
+    Copyright (c) 2014 Chris Oakman and contributors
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+    IN THE SOFTWARE.
 ----------------------------------------------------------------------------------------*/
 
 .rc-info-button {
     padding-left:        3px;
     padding-right:       3px;
     fill:                #bdbdbd;
-    -webkit-user-select: none;
 }
 
 .rc-info-button:hover {
-    fill:  #2962FF;
+    fill:  #2962ff;
 }
 
 .popover-content .info-heading {
@@ -745,8 +1116,22 @@ html, body {
     margin-top: 8px;
 }
 
+.popover-content .info-bold {
+    background-color: #555;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
 .popover-content a {
     color: #ccf;
+}
+
+.popover-content code {
+    color: white;
+    background-color: #555;
+    border: none;
 }
 
 /*----------------------------------------------------------------------------------------
@@ -759,7 +1144,6 @@ html, body {
     background-color:    inherit;
     opacity:             0;
     cursor:              pointer;
-    -webkit-user-select: none;
 }
 
 .rc-row-button > i {
@@ -809,3 +1193,81 @@ html, body {
     padding:     5px;
 }
 
+/*----------------------------------------------------------------------------------------
+  General Typography
+----------------------------------------------------------------------------------------*/
+
+.semibold {
+    font-weight: 500;
+}
+.bold {
+    font-weight: 700;
+}
+.italic {
+    font-style: italic;
+}
+.uppercase {
+    text-transform: uppercase;
+}
+.all-small-caps {
+    font-variant: small-caps;
+}
+
+.level1 {
+    font-family:    Segoe UI Semilight, Roboto, sans-serif;
+    font-weight:    200;
+    font-size:      40px;
+    color:          rgba(68, 68, 68, 1.0);
+    letter-spacing: normal;
+    /*-ms-font-feature-settings:    'ss20' 1;*/
+}
+.level2 {
+    font-family:    Segoe UI Semilight, Roboto, sans-serif;
+    font-weight:    200;
+    font-size:      26px;
+    color:          rgba(0, 0, 0, 1.0);
+    letter-spacing: 0.001em;
+}
+.level3 {
+    font-family:    Segoe UI Semilight, Roboto, sans-serif;
+    font-weight:    500;
+    font-size:      15px;
+    color:          rgba(68, 68, 68, 1.0);
+    letter-spacing: 0.002em;
+}
+.level4 {
+    font-family:    Segoe UI Semilight, Roboto, sans-serif;
+    font-weight:    500;
+    font-size:      15px;
+    color:          rgba(68, 68, 68, 0.6);
+    letter-spacing: 0.002em;
+}
+.field-label {
+    font-family:    Segoe UI Semilight, Roboto, sans-serif;
+    font-weight:    400;
+    font-size:      14px;
+    color:          rgba(68, 68, 68, 0.6);
+    letter-spacing: 0.002em;
+    font-variant:   small-caps;
+    flex:           none;
+}
+
+.noselect {
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+/*----------------------------------------------------------------------------------------
+  Flexbox "display" styles
+  Requires 2 display values which we can't represent in a Clojure map
+----------------------------------------------------------------------------------------*/
+
+.display-flex {
+    display: -webkit-flex;
+    display: flex;
+}
+.display-inline-flex {
+    display: -webkit-inline-flex;
+    display: inline-flex;
+}

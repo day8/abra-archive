@@ -2,11 +2,14 @@
   (:require [reagent.core :as reagent]
             [abra.dialog :as dialog]
             [abra.state :as state]    ;; although not used, leave it in here, or else the subscriptions don't get pulled in.
-            [re-com.core :refer [input-text input-textarea label title]]
-            [re-com.buttons :refer [button info-button]]
-            [re-com.box   :refer [h-box v-box box scroller gap line]]
-            [re-com.tabs :refer [vertical-bar-tabs]]
-            [re-com.layout :refer [v-layout]]
+            [re-com.core :refer [input-text input-textarea label title 
+                                 throbber
+                                 button info-button
+                                 h-box v-box box scroller gap line
+                                 vertical-bar-tabs
+                                 v-split
+                                 modal-panel
+                                 checkbox]]
             [cljs.core.async :refer [<!]]
             [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -41,7 +44,8 @@
 (.send ipc "get-lein-repl-status")
 (.on ipc "lein-repl-status" 
      (fn [arg]
-       (dispatch [:lein-repl-status (js->clj arg)])))
+       (dispatch [:lein-repl-status (js->clj arg)])
+       (dispatch [:disabled (not (js->clj arg))])))
 
 ;;------------------------------------------------------------------------------
 
@@ -94,7 +98,8 @@
         locals (subscribe [:scoped-locals])
         call-frames (subscribe [:call-frames])
         call-frame-id (subscribe [:call-frame-id])
-        local-id (subscribe [:local-id])]
+        local-id (subscribe [:local-id])
+        disabled (subscribe [:disabled])]
     (fn
       []
       [h-box
@@ -110,7 +115,7 @@
                        :on-change #(dispatch [:namespace-string %])
                        :rows "5"
                        :width "300px"]]]]
-                   (when @call-frame-id 
+                   (when (and (not @disabled) @call-frame-id) 
                      (when-let [locals-tab (get @locals @call-frame-id)]
                        (let [[local-map] (filter #(= (:id %) @local-id) 
                                                  locals-tab)]
@@ -149,35 +154,50 @@
   (let [lein-repl-status (subscribe [:lein-repl-status])
         clojurescript-string (subscribe [:clojurescript-string])
         javascript-string (subscribe [:javascript-string])
-        js-print-string (subscribe [:js-print-string])]
+        js-print-string (subscribe [:js-print-string])
+        show-spinner (subscribe [:show-spinner])]
     (fn
       []
-      [h-box
-       :gap "5px"
-       :children [[v-box
-                   :children [[field-label "clojurescript"]
-                              [input-textarea
-                               :model @clojurescript-string
-                               :on-change #(dispatch 
-                                             [:clojurescript-string %])]]]
-                  [v-box 
-                   :children [[gap
-                               :size "20px"]
-                              [button
-                               :label "Translate"
-                               :class "btn-primary"
-                               :on-click #(dispatch [:translate])
-                               :disabled? (not @lein-repl-status)]]]
-                  [v-box
-                   :children [[field-label "result"]
-                              [input-textarea
-                               :model @js-print-string
-                               :on-change #()]]]
-                  [v-box
-                   :children [[field-label "javascript"]
-                              [input-textarea
-                               :model @javascript-string
-                               :on-change #()]]]]])))
+      (let [elements [[v-box
+                       :children [[field-label "clojurescript"]
+                                  [input-textarea
+                                   :model @clojurescript-string
+                                   :on-change #(dispatch
+                                                 [:clojurescript-string %])
+                                   :attr {:on-input (fn [event]
+                                                      (let [value (.-value (.-target event))]
+                                                        (dispatch [:clojurescript-string value])))
+                                          :on-key-press
+                                                    #(when (= (.-which %) 13)
+                                                      (dispatch [:translate]))}]]]
+                      [v-box
+                       :children [[gap
+                                   :size "20px"]
+                                  [button
+                                   :label "Translate"
+                                   :class "btn-primary"
+                                   :on-click #(dispatch [:translate])
+                                   :disabled? (not @lein-repl-status)]]]]
+            result-elements (if @show-spinner 
+                              [[v-box 
+                                :children [[gap
+                                            :size "20px"]
+                                           [throbber]]]]
+                              (if @javascript-string 
+                                [[v-box
+                                  :children [[field-label "result"]
+                                             [input-textarea
+                                              :model @js-print-string
+                                              :on-change #()]]]
+                                 [v-box
+                                  :children [[field-label "javascript"]
+                                             [input-textarea
+                                              :model @javascript-string
+                                              :on-change #()]]]]
+                                []))]
+        [h-box
+         :gap "5px"
+         :children (concat elements result-elements)]))))
 
 (defn abra-debug-panel []
   (let [debug-crmux-url (subscribe [:debug-crmux-url])]
@@ -203,7 +223,7 @@
                                   [button
                                    :label "refresh"
                                    :on-click #(dispatch [:refresh-page])
-                                   :disabled? true]
+                                   :disabled? false]
                                   [gap 
                                    :size "40px"]
                                   [nrepl-state-text]]]
@@ -212,13 +232,18 @@
 
 (defn debug-view
   []
-  [v-box
-   :height "100%"
-   :children [
-              [v-layout
-               :initial-split "65%"
-               :top-panel top-debug-panel
-               :bottom-panel abra-debug-panel]]])
+  (let [disabled (subscribe [:disabled])]
+    (fn
+      []
+      [v-box
+       :height "100%"
+       :children [[v-split
+                   :initial-split "65%"
+                   :panel-1 [top-debug-panel]
+                   :panel-2 [abra-debug-panel]]
+                  (when @disabled 
+                    [modal-panel
+                     :child [:div "Please wait for nrepl to start"]])]])))
 
 (defn project-form
   []
@@ -233,7 +258,8 @@
          :children 
          [[field-label "project directory" 
            [:span "This is the directory which contains the " [:span.info-bold "project.clj"]  " or "  [:span.info-bold "build.boot"] " for your ClojureScript project"]]
-          [v-box :children 
+          [v-box
+           :children
            [[h-box
              :gap "2px"
              :children 
@@ -275,9 +301,22 @@
          :model @debug-url
          :on-change #(dispatch [:debug-url %])]]])))
 
+(defn show-project-form-view
+  []
+  (let [show-project-form (subscribe [:show-project-form])]
+    (fn
+      []
+      [h-box
+       :gap "4px"
+       :children [[label
+                   :label "Display this window on startup?"]
+                  [checkbox
+                   :model @show-project-form
+                   :on-change #(dispatch [:show-project-form %])]]])))
+
 (defn session-details-view
   []
-  [v-box
+   [v-box
    :padding "20px 10px 0px 30px"
    :gap "10px"
    :height "100%"
@@ -290,18 +329,20 @@
                :class "btn-success"
                :label "Debug"
                :on-click #(dispatch [:start-debugging])]
+              [show-project-form-view]
               [gap :size "100%"]
               [:div (str "Atom Shell Version: " atom-shell-version)]]])
 
 (defn main-page
   []
-  (let [initialised (subscribe [:initialised])]
-    (when @initialised 
-      (let [debugging? (subscribe [:debugging?])]
-        (fn [] 
-          (if @debugging?
-            [debug-view]
-            [session-details-view]))))))
+  (let [initialised (subscribe [:initialised])
+        debugging? (subscribe [:debugging?])
+        show-session-details (subscribe [:show-project-form])]
+    (when @initialised
+       (fn []
+         (if @debugging?
+             [debug-view]
+             [session-details-view])))))
 
 (defn start
   []

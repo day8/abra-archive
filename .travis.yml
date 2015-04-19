@@ -1,0 +1,4 @@
+language: clojure
+lein: lein2
+before-script: alias "lien"="lein2"
+script: lein2 node-tests
