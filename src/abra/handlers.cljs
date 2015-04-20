@@ -98,8 +98,7 @@
                             (if (= (:label old-local) local-name)
                               local-map
                               old-local))
-                          locals)
-          _ (print new-locals)]
+                          locals)]
       (assoc-in db [:scoped-locals scope-id] new-locals))))
 
 ;; add a scoped local to the db
