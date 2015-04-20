@@ -64,7 +64,7 @@
       (let [js-print-string (str "cljs.core.prn_str.call(null,"
                                  (clojure.string/join 
                                    (drop-last js-expression)) ");")]
-        (crmux-websocket/ws-evaluate db js-print-string)
+        (crmux-websocket/evaluate-js-string db js-print-string)
         (.send ipc "get-lein-repl-status")
         (-> db
             (assoc :javascript-string js-expression)
@@ -80,15 +80,39 @@
   (path :scoped-locals)
   clear-scoped-locals)
 
+;; find out the value of a variable in the debugger
+(register-handler
+  :find-variable-val
+  (fn [db [_ local-name local-id scope-id]]
+    (crmux-websocket/evaluate-variable-val db local-name local-id scope-id)
+    db))
+
+(register-handler
+  :add-local-value
+  (fn [db [_ local-name local-id scope-id value]]
+    (let [locals ((:scoped-locals db) scope-id)
+          local-map {:label local-name
+                     :id local-id
+                     :value value}
+          new-locals (map (fn [old-local]
+                            (if (= (:label old-local) local-name)
+                              local-map
+                              old-local))
+                          locals)
+          _ (print new-locals)]
+      (assoc-in db [:scoped-locals scope-id] new-locals))))
+
 ;; add a scoped local to the db
 (register-handler 
   :add-scoped-local
   (fn [db [_ scope-id variable-map]]
     (let [locals (get (:scoped-locals db) scope-id [])
           local-name (:name variable-map)
+          local-id (count locals)
           value (:value variable-map)]
+      (dispatch [:find-variable-val local-name local-id scope-id])
       (assoc-in db [:scoped-locals scope-id] 
-                (conj locals {:label local-name :id (count locals)
+                (conj locals {:label local-name :id local-id
                               :value value})))))
 
 ;; clear the call-frames dictionary

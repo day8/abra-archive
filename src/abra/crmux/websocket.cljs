@@ -64,28 +64,45 @@
     (.send ws (.stringify js/JSON message))))   ;; XXX turn it into str
 
 (defn ws-evaluate 
-  "evaluate javascript on the websocket and pop the result onto the database"
-  [db expression]
+  "evaluate javascript on the websocket and return a channel"
+  [db expression call-frame-id]
   (let [msg-id (goog/getUid expression)
-        call-frame-id (:call-frame-id db)
-        call-frames (:call-frames db)
-        call-frame (first (filter #(= call-frame-id (:id %)) call-frames))
-        call-frame-debugger-id (:call-frame-id call-frame)
-        debugger-method (if call-frame-debugger-id 
+        debugger-method (if call-frame-id
                           "Debugger.evaluateOnCallFrame"
                           "Runtime.evaluate")
         message (clj->js {"method" debugger-method "id" msg-id "params" 
                           {"expression" expression "returnByValue" true
-                           "callFrameId" call-frame-debugger-id}})
+                           "callFrameId" call-frame-id}})
         result (js-result-filter msg-id)]
     (ws-send db message)
+    result))
+
+(defn evaluate-variable-val
+  "evaluate a var put the result in the database"
+  [db local-name local-id scope-id]
+  (let [call-frames (:call-frames db)
+        call-frame (first (filter #(= scope-id (:id %)) call-frames))
+        call-frame-debugger-id (:call-frame-id call-frame)
+        expression (str "cljs.core.prn_str(" local-name ")")
+        result (ws-evaluate db expression call-frame-debugger-id)]
+    (go (let [result (<! result)
+              value (:value result)]
+          (dispatch [:add-local-value local-name local-id scope-id value])))))
+
+(defn evaluate-js-string
+  "evaluate js on and pop the result on the database"
+  [db expression]
+  (let [call-frame-id (:call-frame-id db)
+        call-frames (:call-frames db)
+        call-frame (first (filter #(= call-frame-id (:id %)) call-frames))
+        call-frame-debugger-id (:call-frame-id call-frame)
+        result (ws-evaluate db expression call-frame-debugger-id)]
     (go (let [result (<! result)
               value (:value result)
               value (if value
                       value
                       (:description result))]
           (dispatch [:js-print-string value])))))
-
 
 (defn ws-getProperties 
   "get the properties from the websocket"
