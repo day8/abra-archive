@@ -64,8 +64,8 @@
     (.send ws (.stringify js/JSON message))))   ;; XXX turn it into str
 
 (defn ws-evaluate 
-  "evaluate javascript on the websocket and pop the result onto the database"
-  [db expression]
+  "evaluate javascript on the websocket then run the calback cb"
+  [db expression call-back]
   (let [msg-id (goog/getUid expression)
         call-frame-id (:call-frame-id db)
         call-frames (:call-frames db)
@@ -84,7 +84,7 @@
               value (if value
                       value
                       (:description result))]
-          (dispatch [:js-print-string value])))))
+          (call-back value)))))
 
 
 (defn ws-getProperties 
@@ -100,7 +100,11 @@
     (go 
       (let [result (<! result)]
         (doseq [variable-map result] 
-          (dispatch [:add-scoped-local call-frame-id variable-map]))))
+          (let [name (:name variable-map)]
+            (ws-evaluate db name 
+                         #(dispatch [:add-scoped-local 
+                                    call-frame-id 
+                                    (assoc variable-map :value %)]))))))
     db))
 
 (register-handler :crmux.ws-getProperties ws-getProperties)

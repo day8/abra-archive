@@ -64,7 +64,8 @@
       (let [js-print-string (str "cljs.core.prn_str.call(null,"
                                  (clojure.string/join 
                                    (drop-last js-expression)) ");")]
-        (crmux-websocket/ws-evaluate db js-print-string)
+        (crmux-websocket/ws-evaluate db js-print-string
+                                     #(dispatch [:js-print-string %]))
         (.send ipc "get-lein-repl-status")
         (-> db
             (assoc :javascript-string js-expression)
