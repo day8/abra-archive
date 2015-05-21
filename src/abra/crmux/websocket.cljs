@@ -64,45 +64,27 @@
     (.send ws (.stringify js/JSON message))))   ;; XXX turn it into str
 
 (defn ws-evaluate 
-  "evaluate javascript on the websocket and return a channel"
-  [db expression call-frame-id]
+  "evaluate javascript on the websocket then run the calback cb"
+  [db expression call-back]
   (let [msg-id (goog/getUid expression)
-        debugger-method (if call-frame-id
+        call-frame-id (:call-frame-id db)
+        call-frames (:call-frames db)
+        call-frame (first (filter #(= call-frame-id (:id %)) call-frames))
+        call-frame-debugger-id (:call-frame-id call-frame)
+        debugger-method (if call-frame-debugger-id 
                           "Debugger.evaluateOnCallFrame"
                           "Runtime.evaluate")
         message (clj->js {"method" debugger-method "id" msg-id "params" 
                           {"expression" expression "returnByValue" true
-                           "callFrameId" call-frame-id}})
+                           "callFrameId" call-frame-debugger-id}})
         result (js-result-filter msg-id)]
     (ws-send db message)
-    result))
-
-(defn evaluate-variable-val
-  "evaluate a var put the result in the database"
-  [db local-name local-id scope-id]
-  (let [call-frames (:call-frames db)
-        call-frame (first (filter #(= scope-id (:id %)) call-frames))
-        call-frame-debugger-id (:call-frame-id call-frame)
-        expression (str "cljs.core.prn_str(" local-name ")")
-        result (ws-evaluate db expression call-frame-debugger-id)]
-    (go (let [result (<! result)
-              value (:value result)]
-          (dispatch [:add-local-value local-name local-id scope-id value])))))
-
-(defn evaluate-js-string
-  "evaluate js on and pop the result on the database"
-  [db expression]
-  (let [call-frame-id (:call-frame-id db)
-        call-frames (:call-frames db)
-        call-frame (first (filter #(= call-frame-id (:id %)) call-frames))
-        call-frame-debugger-id (:call-frame-id call-frame)
-        result (ws-evaluate db expression call-frame-debugger-id)]
     (go (let [result (<! result)
               value (:value result)
               value (if value
                       value
                       (:description result))]
-          (dispatch [:js-print-string value])))))
+          (call-back value)))))
 
 (defn ws-getProperties 
   "get the properties from the websocket"
@@ -117,7 +99,11 @@
     (go 
       (let [result (<! result)]
         (doseq [variable-map result] 
-          (dispatch [:add-scoped-local call-frame-id variable-map]))))
+          (let [name (:name variable-map)]
+            (ws-evaluate db name 
+                         #(dispatch [:add-scoped-local 
+                                    call-frame-id 
+                                    (assoc variable-map :value %)]))))))
     db))
 
 (register-handler :crmux.ws-getProperties ws-getProperties)
