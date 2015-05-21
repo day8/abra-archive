@@ -23,11 +23,11 @@
 ; (fw/start {
 ;              ;; configure a websocket url if yor are using your own server
 ;              :websocket-url "ws://localhost:3449/figwheel-ws"
-             
+
 ;              ;; optional callback
 ;              :on-jsload (fn [] 
 ;                           (println (reagent/force-update-all)))
-             
+
 ;              ;; when the compiler emits warnings figwheel
 ;              ;; blocks the loading of files.
 ;              ;; To disable this behavior:
@@ -114,8 +114,9 @@
                        :model @namespace-string
                        :on-change #(dispatch [:namespace-string %])
                        :rows "5"
-                       :width "300px"]]]]
-                   (when (and (not @disabled) @call-frame-id) 
+                       :width "300px"
+                       :height "300px"]]]]
+                   (when (and (not @disabled) @call-frame-id (seq @call-frames)) 
                      (when-let [locals-tab (sort-by :label (get @locals @call-frame-id))]
                        (let [[local-map] (filter #(= (:id %) @local-id) 
                                                  locals-tab)]
@@ -124,30 +125,36 @@
                            [[field-label "call-frames" "the active call frames"]
                             [scroller
                              :h-scroll :off
-                             :height "125px"
+                             :height "300px"
                              :child [vertical-bar-tabs
+                                     :style {:text-align "left"
+                                             :width "250px"}
                                      :model @call-frame-id
                                      :tabs @call-frames
                                      :on-change 
                                      (fn [id]
                                        (dispatch [:change-call-frame-id id])
                                        (dispatch [:local-id 0]))]]]]  
-                          [v-box
-                           :children 
-                           [[field-label "locals"]
-                            [scroller
-                             :h-scroll :off
-                             :height "125px"
-                             :child [vertical-bar-tabs
-                                     :model @local-id
-                                     :tabs locals-tab
-                                     :on-change #(dispatch [:local-id %])]]]]
-                          [v-box
-                           :children 
-                           [[field-label "local value"]
-                            [input-textarea
-                             :model (print-str (:value local-map))
-                               :on-change #()]]]]))))])))
+                          (when (seq locals-tab) 
+                            [v-box
+                             :children 
+                             [[field-label "locals"]
+                              [scroller
+                               :h-scroll :off
+                               :height "300px"
+                               :child [vertical-bar-tabs
+                                       :style {:text-align "left"
+                                               :width "250px"}
+                                       :model @local-id
+                                       :tabs locals-tab
+                                       :on-change #(dispatch [:local-id %])]]]])
+                          (when (:value local-map) 
+                            [v-box
+                             :children 
+                             [[field-label "local value"]
+                              [input-textarea
+                               :model (print-str (:value local-map))
+                               :on-change #()]]])]))))])))
 
 (defn clojurescript-input-output
   []
@@ -168,8 +175,8 @@
                                                       (let [value (.-value (.-target event))]
                                                         (dispatch [:clojurescript-string value])))
                                           :on-key-press
-                                                    #(when (= (.-which %) 13)
-                                                      (dispatch [:translate]))}]]]
+                                          #(when (= (.-which %) 13)
+                                             (dispatch [:translate]))}]]]
                       [v-box
                        :children [[gap
                                    :size "20px"]
@@ -293,10 +300,10 @@
                      [:p "Via which URL should this page be loaded? "]
                      [:div "Probably something like:"]
                      [:ul
-                       [:li "file:///path/index.html"]
-                       [:li "http://localhost:3449/index.html "
-                            [:br]
-                            "(if you are running figwheel or an external server)"]]]]]
+                      [:li "file:///path/index.html"]
+                      [:li "http://localhost:3449/index.html "
+                       [:br]
+                       "(if you are running figwheel or an external server)"]]]]]
         [input-text 
          :model @debug-url
          :on-change #(dispatch [:debug-url %])]]])))
@@ -316,7 +323,7 @@
 
 (defn session-details-view
   []
-   [v-box
+  [v-box
    :padding "20px 10px 0px 30px"
    :gap "10px"
    :height "100%"
@@ -339,10 +346,10 @@
         debugging? (subscribe [:debugging?])
         show-session-details (subscribe [:show-project-form])]
     (when @initialised
-       (fn []
-         (if @debugging?
-             [debug-view]
-             [session-details-view])))))
+      (fn []
+        (if @debugging?
+          [debug-view]
+          [session-details-view])))))
 
 (defn start
   []
