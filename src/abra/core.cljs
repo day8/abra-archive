@@ -148,12 +148,13 @@
                                        :model @local-id
                                        :tabs locals-tab
                                        :on-change #(dispatch [:local-id %])]]]]) 
-                            [v-box
+                            (when (print-str (:value local-map))
+                              [v-box
                              :children 
                              [[field-label "local value"]
                               [input-textarea
                                :model (print-str (:value local-map))
-                               :on-change #()]]]]))))])))
+                               :on-change #()]]])]))))])))
 
 (defn clojurescript-input-output
   []
