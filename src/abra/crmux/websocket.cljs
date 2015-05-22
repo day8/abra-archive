@@ -65,18 +65,14 @@
 
 (defn ws-evaluate 
   "evaluate javascript on the websocket then run the calback cb"
-  [db expression call-back]
+  [db expression call-frame-id call-back]
   (let [msg-id (goog/getUid expression)
-        call-frame-id (:call-frame-id db)
-        call-frames (:call-frames db)
-        call-frame (first (filter #(= call-frame-id (:id %)) call-frames))
-        call-frame-debugger-id (:call-frame-id call-frame)
-        debugger-method (if call-frame-debugger-id 
+        debugger-method (if call-frame-id 
                           "Debugger.evaluateOnCallFrame"
                           "Runtime.evaluate")
         message (clj->js {"method" debugger-method "id" msg-id "params" 
                           {"expression" expression "returnByValue" true
-                           "callFrameId" call-frame-debugger-id}})
+                           "callFrameId" call-frame-id}})
         result (js-result-filter msg-id)]
     (ws-send db message)
     (go (let [result (<! result)
@@ -88,8 +84,11 @@
 
 (defn ws-getProperties 
   "get the properties from the websocket"
-  [db [_ object-id call-frame-id]]
+  [db [_ object-id scope-id]]
   (let [msg-id  (goog/getUid object-id)
+        call-frames (:call-frames db)
+        call-frame (first (filter #(= scope-id (:id %)) call-frames))
+        call-frame-id (:call-frame-id call-frame)
         message (clj->js {"method" "Runtime.getProperties" "id" msg-id "params" 
                           {"objectId" object-id 
                            "ownProperties" false 
@@ -100,10 +99,10 @@
       (let [result (<! result)]
         (doseq [variable-map result] 
           (let [name (:name variable-map)]
-            (ws-evaluate db name 
+            (ws-evaluate db name call-frame-id
                          #(dispatch [:add-scoped-local 
-                                    call-frame-id 
-                                    (assoc variable-map :value %)]))))))
+                                     scope-id 
+                                     (assoc variable-map :value %)]))))))
     db))
 
 (register-handler :crmux.ws-getProperties ws-getProperties)

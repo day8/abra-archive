@@ -57,19 +57,23 @@
 (register-handler 
   :translated-javascript
   (fn [db [_ err js-expression]]
-    (if err 
-      (-> db
-          (assoc :javascript-string (print-str err))
-          (assoc :js-print-string ""))
-      (let [js-print-string (str "cljs.core.prn_str.call(null,"
-                                 (clojure.string/join 
-                                   (drop-last js-expression)) ");")]
-        (crmux-websocket/ws-evaluate db js-print-string
-                                     #(dispatch [:js-print-string %]))
-        (.send ipc "get-lein-repl-status")
+    (let [call-frame-id (:call-frame-id db)
+          call-frames (:call-frames db)
+          call-frame (first (filter #(= call-frame-id (:id %)) call-frames))
+          call-frame-id (:call-frame-id call-frame)]
+      (if err 
         (-> db
-            (assoc :javascript-string js-expression)
-            (assoc :show-spinner false))))))
+            (assoc :javascript-string (print-str err))
+            (assoc :js-print-string ""))
+        (let [js-print-string (str "cljs.core.prn_str.call(null,"
+                                   (clojure.string/join 
+                                     (drop-last js-expression)) ");")]
+          (crmux-websocket/ws-evaluate db js-print-string call-frame-id 
+                                       #(dispatch [:js-print-string %]))
+          (.send ipc "get-lein-repl-status")
+          (-> db
+              (assoc :javascript-string js-expression)
+              (assoc :show-spinner false)))))))
 
 ;; clear the scoped-locals dictionary
 (defn clear-scoped-locals
@@ -121,6 +125,6 @@
   (fn [db _]
     (.send ipc "refresh-page")
     (-> db    
-      (assoc :call-frames [])
-      (assoc :scoped-locals {})
-      (assoc :local-id 0))))
+        (assoc :call-frames [])
+        (assoc :scoped-locals {})
+        (assoc :local-id 0))))
