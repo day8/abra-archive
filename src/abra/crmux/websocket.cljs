@@ -98,8 +98,9 @@
     (go 
       (let [result (<! result)]
         (doseq [variable-map result] 
-          (let [name (:name variable-map)]
-            (ws-evaluate db name call-frame-id
+          (let [name (:name variable-map)
+                expression (str "cljs.core.prn_str(" name ")")]
+            (ws-evaluate db expression call-frame-id
                          #(dispatch [:add-scoped-local 
                                      scope-id 
                                      (assoc variable-map :value %)]))))))
