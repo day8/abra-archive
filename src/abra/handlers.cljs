@@ -113,7 +113,6 @@
       (doseq [{:keys [id objects]} scope-objects]
         (when (= id call-frame-id) 
           (doseq [o objects] 
-            (print o id)
             (dispatch [:crmux.ws-getProperties o id])))))
     (-> db
         (assoc :scoped-locals {})

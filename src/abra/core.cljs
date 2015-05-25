@@ -154,7 +154,8 @@
                              [[field-label "local value"]
                               [input-textarea
                                :model (print-str (:value local-map))
-                               :on-change #()]]])]))))])))
+                               :on-change #()
+                               :height "300px"]]])]))))])))
 
 (defn clojurescript-input-output
   []
