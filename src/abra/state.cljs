@@ -23,7 +23,8 @@
                             :debug-url 
                             "file:///home/stu/dev/Abra2/test-page/index.html"}
                            :namespace-string "(ns test.core)"
-                           :show-project-form false)
+                           :show-project-form false
+                           :clojurescript-string "(+ counter 3)")
                      ::persistent-db))
 
 (defn reg-sub-key
@@ -117,6 +118,8 @@
     (persistent-path [key])
     (fn [_ [_ value]]
       value)))
+
+(register-persistent-sub-key :clojurescript-string)
 
 (register-persistent-sub-key :project-dir )
 
