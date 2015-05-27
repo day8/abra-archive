@@ -43,7 +43,7 @@
         namespace-string (:namespace-string db)
         call-frame-id (:call-frame-id db)
         locals-map (get-in db [:scoped-locals call-frame-id])
-        locals (clj->js (map :label locals-map))]
+        locals (clj->js (keys locals-map))]
     (.send ipc "translate-clojurescript" 
            clojurescript-string 
            namespace-string 
@@ -88,12 +88,13 @@
 ;; add a scoped local to the db
 (register-handler 
   :add-scoped-local
-  (fn [db [_ scope-id variable-map]]
-    (let [locals (get (:scoped-locals db) scope-id [])
+  (path [:scoped-locals])
+  (fn [scoped-locals [_ scope-id variable-map]]
+    (let [locals (scoped-locals scope-id {})
           local-name (:name variable-map)
           value (:value variable-map)]
-      (assoc-in db [:scoped-locals scope-id] 
-                (conj locals {:label local-name :id (count locals)
+      (assoc scoped-locals scope-id 
+                (assoc locals local-name {:label local-name :id (count locals)
                               :value value})))))
 
 ;; clear the call-frames dictionary

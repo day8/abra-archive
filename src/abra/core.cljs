@@ -117,7 +117,7 @@
                        :width "300px"
                        :height "300px"]]]]
                    (when (and (not @disabled) @call-frame-id (seq @call-frames)) 
-                     (when-let [locals-tab (sort-by :label (get @locals @call-frame-id))]
+                     (when-let [locals-tab (sort-by :label (vals (get @locals @call-frame-id)))]
                        (let [[local-map] (filter #(= (:id %) @local-id) 
                                                  locals-tab)]
                          [[v-box
