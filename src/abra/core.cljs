@@ -92,6 +92,11 @@
                             [:div info]
                             info)]]))]))
 
+(defn is-model-in-tab?
+  "checks if there is an id in the tabs that matches model"
+  [model tabs]
+  (some #(= (:id %) model) tabs))
+
 (defn namespace-locals
   []
   (let [namespace-string (subscribe [:namespace-string])
@@ -116,7 +121,7 @@
                        :rows "5"
                        :width "300px"
                        :height "300px"]]]]
-                   (when (and (not @disabled) @call-frame-id (seq @call-frames)) 
+                   (when (and (not @disabled) (is-model-in-tab? @call-frame-id @call-frames)) 
                      (when-let [locals-tab (sort-by :label (vals (get @locals @call-frame-id)))]
                        (let [[local-map] (filter #(= (:id %) @local-id) 
                                                  locals-tab)]
@@ -135,7 +140,7 @@
                                      (fn [id]
                                        (dispatch [:change-call-frame-id id])
                                        (dispatch [:local-id 0]))]]]]  
-                          (when (seq locals-tab) 
+                          (when (is-model-in-tab? @local-id locals-tab) 
                             [v-box
                              :children 
                              [[field-label "locals"]
@@ -148,8 +153,8 @@
                                        :model @local-id
                                        :tabs locals-tab
                                        :on-change #(dispatch [:local-id %])]]]]) 
-                            (when (print-str (:value local-map))
-                              [v-box
+                          (when (print-str (:value local-map))
+                            [v-box
                              :children 
                              [[field-label "local value"]
                               [input-textarea

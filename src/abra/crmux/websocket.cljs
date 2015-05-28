@@ -100,6 +100,7 @@
         (doseq [variable-map result] 
           (let [name (:name variable-map)
                 expression (str "cljs.core.prn_str(" name ")")]
+            (dispatch [:add-scoped-local scope-id variable-map])
             (ws-evaluate db expression call-frame-id
                          #(dispatch [:add-scoped-local 
                                      scope-id 

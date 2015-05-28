@@ -92,9 +92,10 @@
   (fn [scoped-locals [_ scope-id variable-map]]
     (let [locals (scoped-locals scope-id {})
           local-name (:name variable-map)
-          value (:value variable-map)]
+          value (:value variable-map)
+          old_id (get-in locals [local-name :id] (count locals))]
       (assoc scoped-locals scope-id 
-                (assoc locals local-name {:label local-name :id (count locals)
+                (assoc locals local-name {:label local-name :id old_id
                               :value value})))))
 
 ;; clear the call-frames dictionary
