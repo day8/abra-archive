@@ -139,14 +139,15 @@ function start_crmux_server(config) {
                       s.send(message);
                   });
               } else {
-                  var idMap = upstreamMap[wsUpstreamUrl].localIdToRemote[msgObj.id];
+                  var local = msgObj.id;
+                  var idMap = upstreamMap[wsUpstreamUrl].localIdToRemote[local];
                   msgObj.id = idMap.id;
                   idMap.client.send(JSON.stringify(msgObj));
                   if (config.debug) {
                       console.log(String(idMap.client._id).blue + "> " + idMap.message.yellow);
                       console.log(String(idMap.client._id).blue + "> " + JSON.stringify(msgObj).green);
                   }
-                  delete upstreamMap[wsUpstreamUrl].localIdToRemote[msgObj.id];
+                  delete upstreamMap[wsUpstreamUrl].localIdToRemote[local];
               }
           });
       } else {
