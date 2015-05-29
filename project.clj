@@ -1,4 +1,4 @@
-(defproject abra "0.1.3"
+(defproject abra "0.1.4"
   :description "A ClojureScript debugging tool"
   :url "https://github.com/Day8/Abra2/"
   
@@ -8,8 +8,8 @@
                  [org.clojure/core.async    "0.1.346.0-17112a-alpha"]
                  [cljs-ajax "0.3.10"]
                  [reagent "0.5.0"]
-                 [re-com "0.5.2"]
-                 [re-frame "0.3.0"]
+                 [re-com "0.5.4"]
+                 [re-frame "0.4.0"]
                  [cljs-asynchronize "0.1.1-SNAPSHOT"]
                  [figwheel "0.2.2-SNAPSHOT"]
                  [ring/ring-core "1.3.2"]
@@ -107,7 +107,7 @@
   :aliases {"build"       ["do" "clean," "cljsbuild" "once" "main" "abra" "test-page"]
             "auto-build"  ["do" "clean," "cljsbuild" "auto" "main" "abra" "test-page"]
             "auto-test"   ["do" "clean," "cljsbuild" "auto" "test-node"]
-            "run"         ["npm" "run" "start"]
+            "run"         ["do" "cljsbuild" "once" "main" "abra," "npm" "run" "start"]
             "node-tests"  ["do" "clean," "cljsbuild" "test" "node-tests"]}
   
   :clean-targets ^{:protect false} ["run/js/compiled"

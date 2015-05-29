@@ -4,13 +4,7 @@
                    [main.backend.macros :refer [<?]])
   (:require [cemerick.cljs.test :as test]
             [main.backend.nrepl :as nrepl]
-            [cljs.core.async :refer [<!, chan, put!]]
-            [main.transit :as abra-transit :refer [transit-write
-                                                   write
-                                                   c-write
-                                                   read
-                                                   c-read
-                                                   Point]]))
+            [cljs.core.async :refer [<!, chan, put!]]))
 
 (deftest test-tests
   (testing "process-namespace"

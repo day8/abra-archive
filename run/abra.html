@@ -1,23 +1,36 @@
 <html>
-    <head>
-        <meta charset='utf-8'>
-        <title>Abra</title>
-        <link type="text/css" rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.css">
-        <link type="text/css" rel="stylesheet" href="resources/css/re-com.css"> 
-        <link type="text/css" rel="stylesheet" href="resources/css/abra.css">
+<head>
+    <meta charset='utf-8'>
+    <title>Abra</title>
+    <link type="text/css" rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.css">
+    <link type="text/css" rel="stylesheet" href="resources/css/re-com.css"> 
+    <link type="text/css" rel="stylesheet" href="resources/css/abra.css">
 
     </head>
     <body>
         <!-- the GUI gets grafted to this "app" div -->
         <div id="app"></div>
 
-        <script type="text/javascript" src="compiled/abra.js"           ></script>
-        <script type="text/javascript">
+    <script type="text/javascript" src="compiled/abra.js"           ></script>
+    <script type="text/javascript">
             // we can't refer directly to abra.core.start because it probably
             // doesn't exist yet ... the <script> is still loading async.
             // So wrap the call in a fucntion.
             window.onload = function() { abra.core.start(); };
+
+            // Prevent loading files on dragging into the window
+            document.addEventListener('drop', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+          });
+            document.addEventListener('dragover', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+          });
+            webview.addEventListener('dragover', function(e) {
+              e.preventDefault();
+          });
         </script>
 
     </body>
-</html>
+    </html>
