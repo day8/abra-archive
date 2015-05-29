@@ -16,14 +16,15 @@
    :debug-crmux-websocket nil
    :initialised true
    :namespace-string ""
-   :show-project-form true})
+   :show-project-form true
+   :clojurescript-string "(+ counter 3)"})
 
 (def persistent-db (local-storage 
                      (atom {:project-dir "."
                             :debug-url 
                             "file:///home/stu/dev/Abra2/test-page/index.html"}
                            :namespace-string "(ns test.core)"
-                           :show-project-form false
+                           :show-project-form true
                            :clojurescript-string "(+ counter 3)")
                      ::persistent-db))
 
