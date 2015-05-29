@@ -72,8 +72,6 @@
 
 (reg-sub-key :disabled true)
 
-(reg-sub-key :clojurescript-string "(+ counter 3)")
-
 (reg-sub-key :javascript-string nil)
 
 (reg-sub-key :locals-string "x\ny\nz")

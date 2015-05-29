@@ -3,7 +3,7 @@
                                    dispatch
                                    path]]
             [abra.crmux.handlers :as crmux-handlers]
-            [abra.crmux.websocket :as crmux-websocket]))
+            [abra.crmux.websocket :refer [ws-evaluate]]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
@@ -68,8 +68,8 @@
         (let [js-print-string (str "cljs.core.prn_str.call(null,"
                                    (clojure.string/join 
                                      (drop-last js-expression)) ");")]
-          (crmux-websocket/ws-evaluate db js-print-string call-frame-id 
-                                       #(dispatch [:js-print-string %]))
+          (ws-evaluate db js-print-string call-frame-id 
+                       #(dispatch [:js-print-string %]))
           (.send ipc "get-lein-repl-status")
           (-> db
               (assoc :javascript-string js-expression)
@@ -95,8 +95,8 @@
           value (:value variable-map)
           old_id (get-in locals [local-name :id] (count locals))]
       (assoc scoped-locals scope-id 
-                (assoc locals local-name {:label local-name :id old_id
-                              :value value})))))
+        (assoc locals local-name {:label local-name :id old_id
+                                  :value value})))))
 
 ;; clear the call-frames dictionary
 (defn clear-call-frames
@@ -116,9 +116,49 @@
         (when (= id call-frame-id) 
           (doseq [o objects] 
             (dispatch [:crmux.ws-getProperties o id])))))
+    (dispatch [:reset-local-id])
     (-> db
         (assoc :scoped-locals {})
         (assoc :call-frame-id call-frame-id))))
+
+(defn change-local-id
+  [db [_ local-id]]
+  (let [scope-id (:call-frame-id db)
+        call-frames (:call-frames db)
+        call-frame (first (filter #(= scope-id (:id %)) call-frames))
+        call-frame-id (:call-frame-id call-frame)
+        locals-map (get-in db [:scoped-locals scope-id])
+        local (some #(when (= (:id %) local-id) %) (vals locals-map))
+        name (:label local)
+        expression (str "cljs.core.prn_str(" name ")")]
+    (if name 
+      (ws-evaluate db expression call-frame-id
+                   #(dispatch [:add-scoped-local 
+                               scope-id 
+                               {:id local-id :name name :value %}]))
+      (dispatch [:change-local-id local-id])))
+  (-> db
+      (assoc :local-id local-id)))
+
+(register-handler
+  :change-local-id
+  change-local-id)
+
+(register-handler
+  :reset-local-id
+  (fn [db _]
+    (let [scope-id (:call-frame-id db)
+          locals-map (get-in db [:scoped-locals scope-id])
+          first-id (->> locals-map
+                        vals
+                        (sort-by #(:label %))
+                        first
+                        :id)]
+      (if (nil? locals-map) 
+        (do 
+          (dispatch [:reset-local-id])
+          db)
+        (change-local-id db [_ first-id])))))
 
 ;; refresh the page to be debugged
 (register-handler

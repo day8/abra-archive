@@ -1,4 +1,5 @@
 (ns abra.core
+  (:require-macros [re-com.core :refer [handler-fn]])
   (:require [reagent.core :as reagent]
             [abra.dialog :as dialog]
             [abra.state :as state]    ;; although not used, leave it in here, or else the subscriptions don't get pulled in.
@@ -123,8 +124,7 @@
                        :height "300px"]]]]
                    (when (and (not @disabled) (is-model-in-tab? @call-frame-id @call-frames)) 
                      (when-let [locals-tab (sort-by :label (vals (get @locals @call-frame-id)))]
-                       (let [[local-map] (filter #(= (:id %) @local-id) 
-                                                 locals-tab)]
+                       (let [[local-map] (filter #(= (:id %) @local-id) locals-tab)]
                          [[v-box
                            :children 
                            [[field-label "call-frames" "the active call frames"]
@@ -137,9 +137,7 @@
                                      :model @call-frame-id
                                      :tabs @call-frames
                                      :on-change 
-                                     (fn [id]
-                                       (dispatch [:change-call-frame-id id])
-                                       (dispatch [:local-id 0]))]]]]  
+                                     #(dispatch [:change-call-frame-id %])]]]]  
                           (when (is-model-in-tab? @local-id locals-tab) 
                             [v-box
                              :children 
@@ -152,7 +150,7 @@
                                                :width "250px"}
                                        :model @local-id
                                        :tabs locals-tab
-                                       :on-change #(dispatch [:local-id %])]]]]) 
+                                       :on-change #(dispatch [:change-local-id %])]]]]) 
                           (when (print-str (:value local-map))
                             [v-box
                              :children 
