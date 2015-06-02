@@ -131,14 +131,13 @@
         local (some #(when (= (:id %) local-id) %) (vals locals-map))
         name (:label local)
         expression (str "cljs.core.prn_str(" name ")")]
-    (if name 
-      (ws-evaluate db expression call-frame-id
-                   #(dispatch [:add-scoped-local 
-                               scope-id 
-                               {:id local-id :name name :value %}]))
-      (dispatch [:change-local-id local-id])))
-  (-> db
-      (assoc :local-id local-id)))
+    (when local-id 
+              (ws-evaluate db expression call-frame-id
+                           #(dispatch [:add-scoped-local 
+                                       scope-id 
+                                       {:id local-id :name name :value %}])))
+    (-> db
+        (assoc :local-id local-id))))
 
 (register-handler
   :change-local-id
@@ -147,18 +146,7 @@
 (register-handler
   :reset-local-id
   (fn [db _]
-    (let [scope-id (:call-frame-id db)
-          locals-map (get-in db [:scoped-locals scope-id])
-          first-id (->> locals-map
-                        vals
-                        (sort-by #(:label %))
-                        first
-                        :id)]
-      (if (nil? locals-map) 
-        (do 
-          (dispatch [:reset-local-id])
-          db)
-        (change-local-id db [_ first-id])))))
+      (change-local-id db [_ nil])))
 
 ;; refresh the page to be debugged
 (register-handler

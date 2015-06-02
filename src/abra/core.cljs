@@ -10,7 +10,8 @@
                                  vertical-bar-tabs
                                  v-split
                                  modal-panel
-                                 checkbox]]
+                                 checkbox
+                                 selection-list]]
             [cljs.core.async :refer [<!]]
             [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -98,6 +99,26 @@
   [model tabs]
   (some #(= (:id %) model) tabs))
 
+(defn- label-clicked
+  [selections item-id required?]
+  ; toggle selected item
+  (if (and required? (selections item-id))
+    selections  ;; prevent unselect
+    (if (selections item-id) #{} #{item-id})))
+
+(defn- as-label
+  [item id-fn selections on-change disabled? label-fn required? as-exclusions?]
+  (let [item-id (id-fn item)]
+    [box
+     :class "list-group-item compact"
+     :style (when (selections item-id) {:background-color "#428BCA"}) ; same as dropdown selection
+     :attr {:on-click (handler-fn (when-not disabled?
+                                    (on-change (label-clicked selections item-id required?))))}
+     :child [label
+             ;:disabled? disabled?
+             :style (re-com.selection-list/label-style (selections item-id) as-exclusions? "white")
+             :label (label-fn item)]]))
+
 (defn namespace-locals
   []
   (let [namespace-string (subscribe [:namespace-string])
@@ -131,27 +152,32 @@
                             [scroller
                              :h-scroll :off
                              :height "300px"
-                             :child [vertical-bar-tabs
-                                     :style {:text-align "left"
-                                             :width "250px"}
-                                     :model @call-frame-id
-                                     :tabs @call-frames
+                             :child [selection-list
+                                     :width "250px"
+                                     :model #{@call-frame-id}
+                                     :choices @call-frames
+                                     :label-fn :label
+                                     :item-renderer as-label
+                                     :multi-select? false
+                                     :required? true
                                      :on-change 
-                                     #(dispatch [:change-call-frame-id %])]]]]  
-                          (when (is-model-in-tab? @local-id locals-tab) 
+                                     #(dispatch [:change-call-frame-id (first %)])]]]]  
+                          (when (seq locals-tab) 
                             [v-box
                              :children 
                              [[field-label "locals"]
                               [scroller
                                :h-scroll :off
                                :height "300px"
-                               :child [vertical-bar-tabs
-                                       :style {:text-align "left"
-                                               :width "250px"}
-                                       :model @local-id
-                                       :tabs locals-tab
-                                       :on-change #(dispatch [:change-local-id %])]]]]) 
-                          (when (print-str (:value local-map))
+                               :child [selection-list
+                                       :width "250px"
+                                       :model #{@local-id}
+                                       :label-fn :label
+                                       :item-renderer as-label
+                                       :choices locals-tab
+                                       :multi-select? false
+                                       :on-change #(dispatch [:change-local-id (first %)])]]]]) 
+                          (when @local-id
                             [v-box
                              :children 
                              [[field-label "local value"]
