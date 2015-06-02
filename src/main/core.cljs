@@ -84,7 +84,7 @@ I bootstrap the application and kick off the GUI (Browser Window)."
                  #js {:width 800 :height 600 :x 0 :y 0}))
        (.loadUrl @debug-window debug-url)
        #_(.toggleDevTools @debug-window)
-       (.on @debug-window "closed" #(reset! main-window nil))
+       (.on @debug-window "closed" #(reset! debug-window nil))
        (.focus @main-window)))
 
 (.on ipc "refresh-page"
