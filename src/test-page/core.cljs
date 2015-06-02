@@ -17,7 +17,8 @@
   [ofu-counter]
   (let [five (+ 5 ofu-counter)
         i-am-a-map {:a 1 :b 2}
-        i_am_a_map {:a :b}
+        i_am_a_map {:a :b :c :d :e :f :g :h :i :j :k :l :m :n :o :p :q :r :s :t
+                    :u :v :w :x :y :z}
         hello "hello"]
     (one-second-count (+ five ofu-counter))))
 

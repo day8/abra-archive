@@ -17,7 +17,9 @@
             [re-frame.subs :refer [subscribe]]
             [abra.handlers]
             [abra.keys :as keys]
-            [figwheel.client :as fw]))
+            [figwheel.client :as fw]
+            [cljs.pprint :as pprint]
+            [cljs.reader :refer [read-string]]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
@@ -176,13 +178,18 @@
                                        :item-renderer as-label
                                        :choices locals-tab
                                        :multi-select? false
-                                       :on-change #(dispatch [:change-local-id (first %)])]]]]) 
-                          (when @local-id
+                                       :on-change #(dispatch [:change-local-id 
+                                                              (first %)])]]]]) 
+                          (when (and @local-id (:value local-map))
                             [v-box
                              :children 
                              [[field-label "local value"]
                               [input-textarea
-                               :model (print-str (:value local-map))
+                               :model (pprint/write (read-string 
+                                                      (:value local-map))
+                                                    :stream nil
+                                                    :pretty true
+                                                    :right-margin 35)
                                :on-change #()
                                :height "300px"]]])]))))])))
 
@@ -201,9 +208,12 @@
                                    :model @clojurescript-string
                                    :on-change #(dispatch
                                                  [:clojurescript-string %])
-                                   :attr {:on-input (fn [event]
-                                                      (let [value (.-value (.-target event))]
-                                                        (dispatch [:clojurescript-string value])))
+                                   :attr {:on-input 
+                                          (fn [event]
+                                            (let [value (.-value 
+                                                          (.-target event))]
+                                              (dispatch [:clojurescript-string 
+                                                         value])))
                                           :on-key-press
                                           #(when (= (.-which %) 13)
                                              (dispatch [:translate]))}]]]
