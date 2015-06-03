@@ -106,7 +106,7 @@
   (fn [scoped-locals [_ scope-id variable-map]]
     (let [locals (scoped-locals scope-id {})
           local-name (:name variable-map)
-          value (prn-str (:value variable-map))
+          value (str "INTERMEDIATE::" (prn-str (:value variable-map)))
           old_id (get-in locals [local-name :id] (count locals))]
       (assoc scoped-locals scope-id 
         (assoc locals local-name {:label local-name 
