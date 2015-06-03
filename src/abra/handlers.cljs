@@ -97,7 +97,7 @@
   [string]
   (replace 
     string 
-    #"#\<(function [\s\S]*?\n\})\>" "\"(fn ...)\""))
+    #"#\<(function [\s\S]*?\})\>" "\"(fn ...)\""))
 
 ;; add a scoped local to the db
 (register-handler 
