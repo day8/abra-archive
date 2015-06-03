@@ -5,10 +5,15 @@
             [abra.crmux.handlers :as crmux-handlers]
             [abra.crmux.websocket :refer [ws-evaluate]]
             [cljs.pprint :as pprint]
-            [cljs.reader :refer [read-string]]))
+            [cljs.reader :refer [read-string *default-data-reader-fn*]]
+            [clojure.string :refer [replace]]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
+
+(reset! *default-data-reader-fn* 
+       (fn [tag value]
+         (str tag value)))
 
 (def ipc (js/require "ipc"))
 
@@ -87,6 +92,13 @@
   (path :scoped-locals)
   clear-scoped-locals)
 
+(defn remove-js-functions
+  "remove js functions from a string"
+  [string]
+  (replace 
+    string 
+    #"#\<(function [\s\S]*?\n\})\>" "\"(fn ...)\""))
+
 ;; add a scoped local to the db
 (register-handler 
   :add-scoped-local
@@ -94,17 +106,30 @@
   (fn [scoped-locals [_ scope-id variable-map]]
     (let [locals (scoped-locals scope-id {})
           local-name (:name variable-map)
-          value (:value variable-map)
-          old_id (get-in locals [local-name :id] (count locals))
+          value (prn-str (:value variable-map))
+          old_id (get-in locals [local-name :id] (count locals))]
+      (assoc scoped-locals scope-id 
+        (assoc locals local-name {:label local-name 
+                                  :id old_id
+                                  :value value})))))
+
+;; update a scoped local to the db with a value from the debugger
+(register-handler 
+  :update-scoped-local
+  (path [:scoped-locals])
+  (fn [scoped-locals [_ scope-id old-id local-name value]]
+    (let [locals (scoped-locals scope-id {})
           pprint-value (try 
-                         (pprint/write (read-string value)
-                                     :stream nil
-                                     :pretty true
-                                     :right-margin 35)
+                         (pprint/write (read-string 
+                                         (remove-js-functions value))
+                                       :stream nil
+                                       :pretty true
+                                       :right-margin 35)
                          (catch :default e
+                           (print e)
                            value))]
       (assoc scoped-locals scope-id 
-        (assoc locals local-name {:label local-name :id old_id
+        (assoc locals local-name {:label local-name :id old-id
                                   :value pprint-value})))))
 
 ;; clear the call-frames dictionary
@@ -142,9 +167,8 @@
         expression (str "cljs.core.prn_str(" name ")")]
     (when local-id 
       (ws-evaluate db expression call-frame-id
-                   #(dispatch [:add-scoped-local 
-                               scope-id 
-                               {:id local-id :name name :value %}])))
+                   #(dispatch [:update-scoped-local 
+                               scope-id local-id name %])))
     (-> db
         (assoc :local-id local-id))))
 
