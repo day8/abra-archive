@@ -3,7 +3,9 @@
                                    dispatch
                                    path]]
             [abra.crmux.handlers :as crmux-handlers]
-            [abra.crmux.websocket :refer [ws-evaluate]]))
+            [abra.crmux.websocket :refer [ws-evaluate]]
+            [cljs.pprint :as pprint]
+            [cljs.reader :refer [read-string]]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
@@ -93,10 +95,17 @@
     (let [locals (scoped-locals scope-id {})
           local-name (:name variable-map)
           value (:value variable-map)
-          old_id (get-in locals [local-name :id] (count locals))]
+          old_id (get-in locals [local-name :id] (count locals))
+          pprint-value (try 
+                         (pprint/write (read-string value)
+                                     :stream nil
+                                     :pretty true
+                                     :right-margin 35)
+                         (catch :default e
+                           value))]
       (assoc scoped-locals scope-id 
         (assoc locals local-name {:label local-name :id old_id
-                                  :value value})))))
+                                  :value pprint-value})))))
 
 ;; clear the call-frames dictionary
 (defn clear-call-frames
@@ -132,10 +141,10 @@
         name (:label local)
         expression (str "cljs.core.prn_str(" name ")")]
     (when local-id 
-              (ws-evaluate db expression call-frame-id
-                           #(dispatch [:add-scoped-local 
-                                       scope-id 
-                                       {:id local-id :name name :value %}])))
+      (ws-evaluate db expression call-frame-id
+                   #(dispatch [:add-scoped-local 
+                               scope-id 
+                               {:id local-id :name name :value %}])))
     (-> db
         (assoc :local-id local-id))))
 
@@ -146,7 +155,7 @@
 (register-handler
   :reset-local-id
   (fn [db _]
-      (change-local-id db [_ nil])))
+    (change-local-id db [_ nil])))
 
 ;; refresh the page to be debugged
 (register-handler

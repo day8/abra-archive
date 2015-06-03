@@ -17,9 +17,7 @@
             [re-frame.subs :refer [subscribe]]
             [abra.handlers]
             [abra.keys :as keys]
-            [figwheel.client :as fw]
-            [cljs.pprint :as pprint]
-            [cljs.reader :refer [read-string]]))
+            [figwheel.client :as fw]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
@@ -185,11 +183,7 @@
                              :children 
                              [[field-label "local value"]
                               [input-textarea
-                               :model (pprint/write (read-string 
-                                                      (:value local-map))
-                                                    :stream nil
-                                                    :pretty true
-                                                    :right-margin 35)
+                               :model (:value local-map)
                                :on-change #()
                                :height "300px"]]])]))))])))
 
