@@ -1,8 +1,7 @@
 (ns main.core
   (:require-macros [cljs.core.async.macros :refer [go]]
-                   [main.backend.macros :refer [<?]])  
-  (:require [main.lein-check :as lein-check]
-            [main.backend.nrepl :as nrepl]
+                   [abra.backend.macros :refer [<?]])  
+  (:require [abra.backend.nrepl :as nrepl]
             [main.state :as state]))
 
 "I am the initial js file which atom executes.
@@ -22,8 +21,6 @@ I bootstrap the application and kick off the GUI (Browser Window)."
 (def dialog         (js/require "dialog"))
 (def crmux          (js/require (str js/__dirname "/../crmux/crmux.js")))
 
-;; check that lein exists on the user's machine
-#_(lein-check/run)
 
 ;; must happen before the app "ready" event occurs
 ;; TODO check if this port is actually available

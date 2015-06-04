@@ -16,6 +16,7 @@
             [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
             [abra.handlers]
+            [abra.nrepl-handlers]
             [abra.keys :as keys]
             [figwheel.client :as fw]))
 
@@ -36,24 +37,8 @@
 ;              :load-warninged-code true
 ;              })
 
-(def ipc (js/require "ipc"))
-
 ;; equivalent of:  process.versions['atom-shell']
 (def atom-shell-version (aget (.-versions js/process) "atom-shell"))
-
-;; Make sure that lein exists on this machine.
-;; XXX what if they use boot instead?
-(.send ipc "get-lein-repl-status")
-(.on ipc "lein-repl-status" 
-     (fn [arg]
-       (dispatch [:lein-repl-status (js->clj arg)])
-       (dispatch [:disabled (not (js->clj arg))])))
-
-;;------------------------------------------------------------------------------
-
-(.on ipc "translated-javascript" 
-     (fn [err js-expression]
-       (dispatch [:translated-javascript err js-expression]))) 
 
 ;;------------------------------------------------------------------------------
 
