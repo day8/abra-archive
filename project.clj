@@ -73,7 +73,7 @@
             
             
             {:id "test-node" 
-             :source-paths ["src/main/backend" "test"]
+             :source-paths ["src/abra/backend" "test"]
              ; :notify-command ["node" "run/test/bin/runner-node.js" 
              ;                     "run/js/compiled/test"
              ;                     "run/js/compiled/test_node.js"]
