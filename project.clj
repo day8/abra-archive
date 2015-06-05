@@ -21,7 +21,7 @@
                       [nrepl-client "git+https://github.com/stumitchell/node-nrepl-client.git"]
                       [nrepl.js "~0.0.1"]
                       [portscanner "~1.0.0"]
-                      [atom-shell "1.2.1"]]  
+                      [electron-prebuilt "0.27.2"]]  
   
   :plugins [[lein-cljsbuild "1.0.4"]
             [lein-ancient "0.6.2"]
@@ -34,8 +34,8 @@
   ;;:main "start-atom.js"
   
   :nodejs {:main "js/compiled/main.js"
-           :scripts {:start "node start-atom.js"}} 
- 
+           :scripts {:start "node start-electron.js"}} 
+  
   :profiles {:dev {:plugins [[com.cemerick/clojurescript.test "0.3.1"]]}}
   
   :jvm-opts         ["-Xmx1g" "-XX:+UseConcMarkSweepGC"] ;; cljsbuild eats memory

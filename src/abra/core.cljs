@@ -230,7 +230,8 @@
     (fn []
       [h-box 
        :size "auto"
-       :children [[:iframe.debug-iframe {:src @debug-crmux-url}]]])))
+       :children [[:iframe.debug-iframe {:src @debug-crmux-url
+                                         :seamless "seamless"}]]])))
 
 (defn top-debug-panel
   []
