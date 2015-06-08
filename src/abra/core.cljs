@@ -11,7 +11,8 @@
                                  v-split
                                  modal-panel
                                  checkbox
-                                 selection-list]]
+                                 selection-list
+                                 md-icon-button]]
             [cljs.core.async :refer [<!]]
             [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -22,6 +23,7 @@
 
 ;; redirects any println to console.log
 (enable-console-print!)
+(def clipboard (js/require "clipboard"))
 
 ; (fw/start {
 ;              ;; configure a websocket url if yor are using your own server
@@ -211,15 +213,25 @@
                                            [throbber]]]]
                               (if @javascript-string 
                                 [[v-box
-                                  :children [[field-label "result"]
-                                             [input-textarea
-                                              :model @js-print-string
-                                              :on-change #()]]]
-                                 [v-box
-                                  :children [[field-label "javascript"]
-                                             [input-textarea
-                                              :model @javascript-string
-                                              :on-change #()]]]]
+                                  :children 
+                                  [[h-box 
+                                    :justify :between
+                                    :children 
+                                    [[field-label "result"]
+                                     [h-box 
+                                      :gap "5px"
+                                      :children 
+                                      [[field-label "copy js"]
+                                       [md-icon-button
+                                        :md-icon-name "md-content-copy"
+                                        :disabled? true
+                                        :on-click (fn []
+                                                    (.writeText 
+                                                     clipboard
+                                                     @javascript-string))]]]]]
+                                   [input-textarea
+                                    :model @js-print-string
+                                    :on-change #()]]]]
                                 []))]
         [h-box
          :gap "5px"
