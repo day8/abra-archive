@@ -53,7 +53,7 @@ I bootstrap the application and kick off the GUI (Browser Window)."
   []
   ;; websecurity is removed for figwheel
   (reset! main-window (browser-window. 
-                        #js {:width 1200 :height 800 
+                        #js {:width 1200 :height 900 
                              :web-preferences #js {:web-security false}}))
   (.loadUrl @main-window abra-html)
   ; (.toggleDevTools @main-window)

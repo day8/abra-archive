@@ -187,6 +187,8 @@
                        :children [[field-label "clojurescript"]
                                   [input-textarea
                                    :model @clojurescript-string
+                                   :width "300px"
+                                   :height "100px"
                                    :on-change #(dispatch
                                                  [:clojurescript-string %])
                                    :attr {:on-input 
@@ -231,6 +233,8 @@
                                                      @javascript-string))]]]]]
                                    [input-textarea
                                     :model @js-print-string
+                                    :width "300px"
+                                    :height "100px"
                                     :on-change #()]]]]
                                 []))]
         [h-box
@@ -277,7 +281,7 @@
       [v-box
        :height "100%"
        :children [[v-split
-                   :initial-split "65%"
+                   :initial-split "60%"
                    :panel-1 [top-debug-panel]
                    :panel-2 [abra-debug-panel]]
                   (when @disabled 
