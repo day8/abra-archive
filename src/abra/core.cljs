@@ -12,7 +12,10 @@
                                  modal-panel
                                  checkbox
                                  selection-list
-                                 md-icon-button]]
+                                 md-icon-button
+                                 hyperlink
+                                 popover-anchor-wrapper
+                                 popover-content-wrapper]]
             [cljs.core.async :refer [<!]]
             [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -108,8 +111,7 @@
 
 (defn namespace-locals
   []
-  (let [namespace-string (subscribe [:namespace-string])
-        locals (subscribe [:scoped-locals])
+  (let [locals (subscribe [:scoped-locals])
         call-frames (subscribe [:call-frames])
         call-frame-id (subscribe [:call-frame-id])
         local-id (subscribe [:local-id])
@@ -122,11 +124,11 @@
        :children (concat  
                    [[v-box
                      :children 
-                     [[field-label "namespace" 
-                       "enter the namespace of the file inspected"]
+                     [[field-label "Command history" 
+                       "previous repl commands"]
                       [input-textarea
-                       :model @namespace-string
-                       :on-change #(dispatch [:namespace-string %])
+                       :model "STuff"
+                       :on-change #()
                        :rows "5"
                        :width "300px"
                        :height "300px"]]]]
@@ -180,7 +182,9 @@
         clojurescript-string (subscribe [:clojurescript-string])
         javascript-string (subscribe [:javascript-string])
         js-print-string (subscribe [:js-print-string])
-        show-spinner (subscribe [:show-spinner])]
+        show-spinner (subscribe [:show-spinner])
+        namespace-string (subscribe [:namespace-string])
+        showing-namespace? (reagent/atom false)]
     (fn
       []
       (let [elements [[v-box
@@ -203,6 +207,30 @@
                       [v-box
                        :children [[gap
                                    :size "20px"]
+                                  [popover-anchor-wrapper
+                                   :showing? showing-namespace?
+                                   :position :above-center
+                                   :anchor [hyperlink 
+                                            :label "Namespace"
+                                            :on-click  
+                                            #(swap! showing-namespace? not)]
+                                   :popover 
+                                   [popover-content-wrapper
+                                    :showing? showing-namespace?
+                                    :position :above-center
+                                    :title 
+                                    "Namespace of the file inspected"
+                                    ; :width "300px"
+                                    ; :height "200px"
+                                    :body 
+                                    [(fn [] 
+                                      [input-textarea
+                                       :model @namespace-string
+                                       :on-change #(dispatch 
+                                                     [:namespace-string %])
+                                       :rows "5"
+                                       :width "300px"
+                                       :height "300px"])]]]
                                   [button
                                    :label "Translate"
                                    :class "btn-primary"
@@ -228,8 +256,8 @@
                                         :md-icon-name "md-content-copy"
                                         :on-click (fn []
                                                     (.writeText 
-                                                     clipboard
-                                                     @javascript-string))]]]]]
+                                                      clipboard
+                                                      @javascript-string))]]]]]
                                    [input-textarea
                                     :model @js-print-string
                                     :width "300px"
@@ -283,7 +311,7 @@
                    :initial-split "60%"
                    :panel-1 [top-debug-panel]
                    :panel-2 [abra-debug-panel]]
-                  (when @disabled 
+                  #_(when @disabled 
                     [modal-panel
                      :child [:div "Please wait for nrepl to start"]])]])))
 
