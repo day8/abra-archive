@@ -1,4 +1,4 @@
-var atom = require('atom-shell')
+var atom = require('electron-prebuilt')
 var proc = require('child_process')
 
 // will something similar to print /Users/maf/.../Atom

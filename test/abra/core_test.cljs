@@ -1,9 +1,9 @@
 (ns abra.core-test
   (:require-macros [cemerick.cljs.test :refer (is deftest testing done)]
                    [cljs.core.async.macros :refer [go]]
-                   [main.backend.macros :refer [<?]])
+                   [abra.backend.macros :refer [<?]])
   (:require [cemerick.cljs.test :as test]
-            [main.backend.nrepl :as nrepl]
+            [abra.backend.nrepl :as nrepl]
             [cljs.core.async :refer [<!, chan, put!]]))
 
 (deftest test-tests

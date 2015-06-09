@@ -10,16 +10,20 @@
                                  vertical-bar-tabs
                                  v-split
                                  modal-panel
-                                 checkbox]]
+                                 checkbox
+                                 selection-list
+                                 md-icon-button]]
             [cljs.core.async :refer [<!]]
             [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
             [abra.handlers]
+            [abra.nrepl-handlers]
             [abra.keys :as keys]
             [figwheel.client :as fw]))
 
 ;; redirects any println to console.log
 (enable-console-print!)
+(def clipboard (js/require "clipboard"))
 
 ; (fw/start {
 ;              ;; configure a websocket url if yor are using your own server
@@ -35,24 +39,8 @@
 ;              :load-warninged-code true
 ;              })
 
-(def ipc (js/require "ipc"))
-
 ;; equivalent of:  process.versions['atom-shell']
 (def atom-shell-version (aget (.-versions js/process) "atom-shell"))
-
-;; Make sure that lein exists on this machine.
-;; XXX what if they use boot instead?
-(.send ipc "get-lein-repl-status")
-(.on ipc "lein-repl-status" 
-     (fn [arg]
-       (dispatch [:lein-repl-status (js->clj arg)])
-       (dispatch [:disabled (not (js->clj arg))])))
-
-;;------------------------------------------------------------------------------
-
-(.on ipc "translated-javascript" 
-     (fn [err js-expression]
-       (dispatch [:translated-javascript err js-expression]))) 
 
 ;;------------------------------------------------------------------------------
 
@@ -98,6 +86,26 @@
   [model tabs]
   (some #(= (:id %) model) tabs))
 
+(defn- label-clicked
+  [selections item-id required?]
+  ; toggle selected item
+  (if (and required? (selections item-id))
+    selections  ;; prevent unselect
+    (if (selections item-id) #{} #{item-id})))
+
+(defn- as-label
+  [item id-fn selections on-change disabled? label-fn required? as-exclusions?]
+  (let [item-id (id-fn item)]
+    [box
+     :class "list-group-item compact"
+     :style (when (selections item-id) {:background-color "#428BCA"}) ; same as dropdown selection
+     :attr {:on-click (handler-fn (when-not disabled?
+                                    (on-change (label-clicked selections item-id required?))))}
+     :child [label
+             ;:disabled? disabled?
+             :style (re-com.selection-list/label-style (selections item-id) as-exclusions? "white")
+             :label (label-fn item)]]))
+
 (defn namespace-locals
   []
   (let [namespace-string (subscribe [:namespace-string])
@@ -131,32 +139,38 @@
                             [scroller
                              :h-scroll :off
                              :height "300px"
-                             :child [vertical-bar-tabs
-                                     :style {:text-align "left"
-                                             :width "250px"}
-                                     :model @call-frame-id
-                                     :tabs @call-frames
+                             :child [selection-list
+                                     :width "250px"
+                                     :model #{@call-frame-id}
+                                     :choices @call-frames
+                                     :label-fn :label
+                                     :item-renderer as-label
+                                     :multi-select? false
+                                     :required? true
                                      :on-change 
-                                     #(dispatch [:change-call-frame-id %])]]]]  
-                          (when (is-model-in-tab? @local-id locals-tab) 
+                                     #(dispatch [:change-call-frame-id (first %)])]]]]  
+                          (when (seq locals-tab) 
                             [v-box
                              :children 
                              [[field-label "locals"]
                               [scroller
                                :h-scroll :off
                                :height "300px"
-                               :child [vertical-bar-tabs
-                                       :style {:text-align "left"
-                                               :width "250px"}
-                                       :model @local-id
-                                       :tabs locals-tab
-                                       :on-change #(dispatch [:change-local-id %])]]]]) 
-                          (when (print-str (:value local-map))
+                               :child [selection-list
+                                       :width "250px"
+                                       :model #{@local-id}
+                                       :label-fn :label
+                                       :item-renderer as-label
+                                       :choices locals-tab
+                                       :multi-select? false
+                                       :on-change #(dispatch [:change-local-id 
+                                                              (first %)])]]]]) 
+                          (when (and @local-id (:value local-map))
                             [v-box
                              :children 
                              [[field-label "local value"]
                               [input-textarea
-                               :model (print-str (:value local-map))
+                               :model (:value local-map)
                                :on-change #()
                                :height "300px"]]])]))))])))
 
@@ -175,9 +189,12 @@
                                    :model @clojurescript-string
                                    :on-change #(dispatch
                                                  [:clojurescript-string %])
-                                   :attr {:on-input (fn [event]
-                                                      (let [value (.-value (.-target event))]
-                                                        (dispatch [:clojurescript-string value])))
+                                   :attr {:on-input 
+                                          (fn [event]
+                                            (let [value (.-value 
+                                                          (.-target event))]
+                                              (dispatch [:clojurescript-string 
+                                                         value])))
                                           :on-key-press
                                           #(when (= (.-which %) 13)
                                              (dispatch [:translate]))}]]]
@@ -196,15 +213,25 @@
                                            [throbber]]]]
                               (if @javascript-string 
                                 [[v-box
-                                  :children [[field-label "result"]
-                                             [input-textarea
-                                              :model @js-print-string
-                                              :on-change #()]]]
-                                 [v-box
-                                  :children [[field-label "javascript"]
-                                             [input-textarea
-                                              :model @javascript-string
-                                              :on-change #()]]]]
+                                  :children 
+                                  [[h-box 
+                                    :justify :between
+                                    :children 
+                                    [[field-label "result"]
+                                     [h-box 
+                                      :gap "5px"
+                                      :children 
+                                      [[field-label "copy js"]
+                                       [md-icon-button
+                                        :md-icon-name "md-content-copy"
+                                        :disabled? true
+                                        :on-click (fn []
+                                                    (.writeText 
+                                                     clipboard
+                                                     @javascript-string))]]]]]
+                                   [input-textarea
+                                    :model @js-print-string
+                                    :on-change #()]]]]
                                 []))]
         [h-box
          :gap "5px"
@@ -215,7 +242,8 @@
     (fn []
       [h-box 
        :size "auto"
-       :children [[:iframe.debug-iframe {:src @debug-crmux-url}]]])))
+       :children [[:iframe.debug-iframe {:src @debug-crmux-url
+                                         :seamless "seamless"}]]])))
 
 (defn top-debug-panel
   []

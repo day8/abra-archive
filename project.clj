@@ -1,14 +1,14 @@
-(defproject abra "0.1.4"
+(defproject abra "0.1.5"
   :description "A ClojureScript debugging tool"
   :url "https://github.com/Day8/Abra2/"
   
   
-  :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2913"]
+  :dependencies [[org.clojure/clojure "1.7.0-beta2"]
+                 [org.clojure/clojurescript "0.0-3269"]
                  [org.clojure/core.async    "0.1.346.0-17112a-alpha"]
                  [cljs-ajax "0.3.10"]
                  [reagent "0.5.0"]
-                 [re-com "0.5.4"]
+                 [re-com "0.6.0"]
                  [re-frame "0.4.0"]
                  [cljs-asynchronize "0.1.1-SNAPSHOT"]
                  [figwheel "0.2.2-SNAPSHOT"]
@@ -21,7 +21,7 @@
                       [nrepl-client "git+https://github.com/stumitchell/node-nrepl-client.git"]
                       [nrepl.js "~0.0.1"]
                       [portscanner "~1.0.0"]
-                      [atom-shell "1.2.1"]]  
+                      [electron-prebuilt "0.26.1"]]  
   
   :plugins [[lein-cljsbuild "1.0.4"]
             [lein-ancient "0.6.2"]
@@ -34,8 +34,8 @@
   ;;:main "start-atom.js"
   
   :nodejs {:main "js/compiled/main.js"
-           :scripts {:start "node start-atom.js"}} 
- 
+           :scripts {:start "node start-electron.js"}} 
+  
   :profiles {:dev {:plugins [[com.cemerick/clojurescript.test "0.3.1"]]}}
   
   :jvm-opts         ["-Xmx1g" "-XX:+UseConcMarkSweepGC"] ;; cljsbuild eats memory
@@ -73,7 +73,7 @@
             
             
             {:id "test-node" 
-             :source-paths ["src/main/backend" "test"]
+             :source-paths ["src/abra/backend" "test"]
              ; :notify-command ["node" "run/test/bin/runner-node.js" 
              ;                     "run/js/compiled/test"
              ;                     "run/js/compiled/test_node.js"]
