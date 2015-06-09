@@ -23,7 +23,7 @@
 
 ;; redirects any println to console.log
 (enable-console-print!)
-(def clipboard (js/require "clipboard"))
+(def clipboard (.require (js/require "remote") "clipboard"))
 
 ; (fw/start {
 ;              ;; configure a websocket url if yor are using your own server
@@ -226,7 +226,6 @@
                                       [[field-label "copy js"]
                                        [md-icon-button
                                         :md-icon-name "md-content-copy"
-                                        :disabled? true
                                         :on-click (fn []
                                                     (.writeText 
                                                      clipboard
