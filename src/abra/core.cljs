@@ -109,13 +109,15 @@
              :style (re-com.selection-list/label-style (selections item-id) as-exclusions? "white")
              :label (label-fn item)]]))
 
-(defn namespace-locals
+(defn history-locals
   []
   (let [locals (subscribe [:scoped-locals])
         call-frames (subscribe [:call-frames])
         call-frame-id (subscribe [:call-frame-id])
         local-id (subscribe [:local-id])
-        disabled (subscribe [:disabled])]
+        disabled (subscribe [:disabled])
+        command-history (subscribe [:command-history])
+        command-id (reagent/atom nil)]
     (fn
       []
       [h-box
@@ -126,10 +128,19 @@
                      :children 
                      [[field-label "Command history" 
                        "previous repl commands"]
-                      [input-textarea
-                       :model "STuff"
-                       :on-change #()
-                       :rows "5"
+                      [selection-list
+                       :model #{}
+                       :choices (into [] 
+                                      (for [c @command-history]
+                                        {:id c}))
+                       :label-fn :id
+                       :item-renderer as-label
+                       :on-change (fn [id]
+                                    (let [cljs-string (first id)]
+                                      (dispatch [:clojurescript-string 
+                                                 cljs-string])))
+                       :multi-select? false
+                       :required? false
                        :width "300px"
                        :height "300px"]]]]
                    (when (and (not @disabled) (is-model-in-tab? @call-frame-id @call-frames)) 
@@ -297,7 +308,7 @@
                                   [gap 
                                    :size "40px"]
                                   [nrepl-state-text]]]
-                      [namespace-locals]
+                      [history-locals]
                       [clojurescript-input-output]]]])
 
 (defn debug-view
@@ -311,7 +322,7 @@
                    :initial-split "60%"
                    :panel-1 [top-debug-panel]
                    :panel-2 [abra-debug-panel]]
-                  #_(when @disabled 
+                  (when @disabled 
                     [modal-panel
                      :child [:div "Please wait for nrepl to start"]])]])))
 

@@ -17,7 +17,9 @@
    :initialised true
    :namespace-string ""
    :show-project-form true
-   :clojurescript-string "(+ counter 3)"})
+   :clojurescript-string "(+ counter 3)"
+   :command-history (into [] (for [i (range 15)]
+                               (str "item " i)))})
 
 (def persistent-db (local-storage 
                      (atom {:project-dir "."
@@ -100,11 +102,11 @@
   (fn middleware
     [handler]
     ((path p)
-      (fn new-handler
-        [db v]
-        (let [result (handler db v)]
-          (swap! persistent-db assoc-in p result)
-          result)))))
+     (fn new-handler
+       [db v]
+       (let [result (handler db v)]
+         (swap! persistent-db assoc-in p result)
+         result)))))
 
 (defn register-persistent-sub-key
   [key]
@@ -127,3 +129,5 @@
 (register-persistent-sub-key :namespace-string)
 
 (register-persistent-sub-key :show-project-form)
+
+(register-persistent-sub-key :command-history)
