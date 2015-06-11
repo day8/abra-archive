@@ -211,18 +211,18 @@
                                             (let [value (.-value 
                                                           (.-target event))]
                                               (dispatch [:clojurescript-string 
-                                                         value])))
-                                          :on-key-press
-                                          #(when (= (.-which %) 13)
-                                             (dispatch [:translate]))}]]]
+                                                         value])))}]]]
                       [v-box
-                       :children [[gap
-                                   :size "20px"]
+                       :align :center
+                       :children [[:div {:class "md-forward rc-icon-larger"
+                                          :style {:color "lightgrey"}}]
+                                  [gap 
+                                   :size "5px"]
                                   [popover-anchor-wrapper
                                    :showing? showing-namespace?
                                    :position :above-center
                                    :anchor [hyperlink 
-                                            :label "Namespace"
+                                            :label "(ns ...)"
                                             :on-click  
                                             #(swap! showing-namespace? not)]
                                    :popover 
@@ -237,13 +237,15 @@
                                     [(fn [] 
                                       [input-textarea
                                        :model @namespace-string
+                                       :placeholder 
+                                       "(ns my.namespace\n  (:require [my.require]))"
                                        :on-change #(dispatch 
                                                      [:namespace-string %])
                                        :rows "5"
-                                       :width "300px"
+                                       :width "350px"
                                        :height "300px"])]]]
                                   [button
-                                   :label "Translate"
+                                   :label "eval"
                                    :class "btn-primary"
                                    :on-click #(dispatch [:translate])
                                    :disabled? (not @lein-repl-status)]]]]
@@ -252,7 +254,6 @@
                                 :children [[gap
                                             :size "20px"]
                                            [throbber]]]]
-                              (if @javascript-string 
                                 [[v-box
                                   :children 
                                   [[h-box 
@@ -274,9 +275,9 @@
                                     :width "300px"
                                     :height "100px"
                                     :on-change #()]]]]
-                                []))]
+                                [])]
         [h-box
-         :gap "5px"
+         :gap "10px"
          :children (concat elements result-elements)]))))
 
 (defn abra-debug-panel []
