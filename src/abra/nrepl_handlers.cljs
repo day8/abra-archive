@@ -91,7 +91,8 @@
         namespace-string (:namespace-string db)
         call-frame-id (:call-frame-id db)
         locals-map (get-in db [:scoped-locals call-frame-id])
-        locals (clj->js (keys locals-map))]
+        locals (clj->js (keys locals-map))
+        command-history (:command-history db)]
     (go
       (try 
         (let [result (<? (nrepl/cljs->js 
@@ -102,6 +103,9 @@
         (catch js/Error e
           (dispatch [:translated-javascript "Clojurescript error" nil]) 
           e)))
+    (dispatch [:command-history (vec (take-last 
+                                       15 
+                                       (conj command-history statement)))])
     (assoc db :show-spinner true)))
 
 (register-handler 

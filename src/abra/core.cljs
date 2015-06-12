@@ -12,7 +12,10 @@
                                  modal-panel
                                  checkbox
                                  selection-list
-                                 md-icon-button]]
+                                 md-icon-button
+                                 hyperlink
+                                 popover-anchor-wrapper
+                                 popover-content-wrapper]]
             [cljs.core.async :refer [<!]]
             [re-frame.core :refer [dispatch]]
             [re-frame.subs :refer [subscribe]]
@@ -106,14 +109,15 @@
              :style (re-com.selection-list/label-style (selections item-id) as-exclusions? "white")
              :label (label-fn item)]]))
 
-(defn namespace-locals
+(defn history-locals
   []
-  (let [namespace-string (subscribe [:namespace-string])
-        locals (subscribe [:scoped-locals])
+  (let [locals (subscribe [:scoped-locals])
         call-frames (subscribe [:call-frames])
         call-frame-id (subscribe [:call-frame-id])
         local-id (subscribe [:local-id])
-        disabled (subscribe [:disabled])]
+        disabled (subscribe [:disabled])
+        command-history (subscribe [:command-history])
+        command-id (reagent/atom nil)]
     (fn
       []
       [h-box
@@ -122,12 +126,21 @@
        :children (concat  
                    [[v-box
                      :children 
-                     [[field-label "namespace" 
-                       "enter the namespace of the file inspected"]
-                      [input-textarea
-                       :model @namespace-string
-                       :on-change #(dispatch [:namespace-string %])
-                       :rows "5"
+                     [[field-label "Command history" 
+                       "previous repl commands"]
+                      [selection-list
+                       :model #{}
+                       :choices (into [] 
+                                      (for [c @command-history]
+                                        {:id c}))
+                       :label-fn :id
+                       :item-renderer as-label
+                       :on-change (fn [id]
+                                    (let [cljs-string (first id)]
+                                      (dispatch [:clojurescript-string 
+                                                 cljs-string])))
+                       :multi-select? false
+                       :required? false
                        :width "300px"
                        :height "300px"]]]]
                    (when (and (not @disabled) (is-model-in-tab? @call-frame-id @call-frames)) 
@@ -180,7 +193,9 @@
         clojurescript-string (subscribe [:clojurescript-string])
         javascript-string (subscribe [:javascript-string])
         js-print-string (subscribe [:js-print-string])
-        show-spinner (subscribe [:show-spinner])]
+        show-spinner (subscribe [:show-spinner])
+        namespace-string (subscribe [:namespace-string])
+        showing-namespace? (reagent/atom false)]
     (fn
       []
       (let [elements [[v-box
@@ -196,15 +211,41 @@
                                             (let [value (.-value 
                                                           (.-target event))]
                                               (dispatch [:clojurescript-string 
-                                                         value])))
-                                          :on-key-press
-                                          #(when (= (.-which %) 13)
-                                             (dispatch [:translate]))}]]]
+                                                         value])))}]]]
                       [v-box
-                       :children [[gap
-                                   :size "20px"]
+                       :align :center
+                       :children [[:div {:class "md-forward rc-icon-larger"
+                                          :style {:color "lightgrey"}}]
+                                  [gap 
+                                   :size "5px"]
+                                  [popover-anchor-wrapper
+                                   :showing? showing-namespace?
+                                   :position :above-center
+                                   :anchor [hyperlink 
+                                            :label "(ns ...)"
+                                            :on-click  
+                                            #(swap! showing-namespace? not)]
+                                   :popover 
+                                   [popover-content-wrapper
+                                    :showing? showing-namespace?
+                                    :position :above-center
+                                    :title 
+                                    "Namespace of the file inspected"
+                                    ; :width "300px"
+                                    ; :height "200px"
+                                    :body 
+                                    [(fn [] 
+                                      [input-textarea
+                                       :model @namespace-string
+                                       :placeholder 
+                                       "(ns my.namespace\n  (:require [my.require]))"
+                                       :on-change #(dispatch 
+                                                     [:namespace-string %])
+                                       :rows "5"
+                                       :width "350px"
+                                       :height "300px"])]]]
                                   [button
-                                   :label "Translate"
+                                   :label "eval"
                                    :class "btn-primary"
                                    :on-click #(dispatch [:translate])
                                    :disabled? (not @lein-repl-status)]]]]
@@ -213,7 +254,6 @@
                                 :children [[gap
                                             :size "20px"]
                                            [throbber]]]]
-                              (if @javascript-string 
                                 [[v-box
                                   :children 
                                   [[h-box 
@@ -228,16 +268,16 @@
                                         :md-icon-name "md-content-copy"
                                         :on-click (fn []
                                                     (.writeText 
-                                                     clipboard
-                                                     @javascript-string))]]]]]
+                                                      clipboard
+                                                      @javascript-string))]]]]]
                                    [input-textarea
                                     :model @js-print-string
                                     :width "300px"
                                     :height "100px"
                                     :on-change #()]]]]
-                                []))]
+                                [])]
         [h-box
-         :gap "5px"
+         :gap "10px"
          :children (concat elements result-elements)]))))
 
 (defn abra-debug-panel []
@@ -269,7 +309,7 @@
                                   [gap 
                                    :size "40px"]
                                   [nrepl-state-text]]]
-                      [namespace-locals]
+                      [history-locals]
                       [clojurescript-input-output]]]])
 
 (defn debug-view
