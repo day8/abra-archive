@@ -95,6 +95,8 @@
 
 (reg-sub-key :show-spinner false)
 
+(reg-sub-key :lein-repl-starting? false)
+
 (defn persistent-path
   "This middleware will persist the changes in the handler into
   local-storage"

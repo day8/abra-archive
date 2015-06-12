@@ -21,7 +21,7 @@
                       [nrepl-client "git+https://github.com/stumitchell/node-nrepl-client.git"]
                       [nrepl.js "~0.0.1"]
                       [portscanner "~1.0.0"]
-                      [electron-prebuilt "0.26.1"]]  
+                      [electron-prebuilt "~0.26.1"]]  
   
   :plugins [[lein-cljsbuild "1.0.4"]
             [lein-ancient "0.6.2"]
