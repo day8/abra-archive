@@ -18,6 +18,7 @@
       (let [port (<? (nrepl/start-lein-repl 
                        {:project-path project-path}))
             open? (:nrepl @nrepl/state)]
+        (dispatch [:lein-repl-starting? false])
         (dispatch [:lein-repl-status open?])
         (dispatch [:disabled (not open?)])))))
 
@@ -29,7 +30,9 @@
     (.send ipc "open-url" url)
     (start-lein-repl (:project-dir db))
     (crmux-handlers/get-debug-window-info debug-host url)
-    (assoc db :debugging? true)))
+    (-> db
+        (assoc :lein-repl-starting? true)
+        (assoc :debugging? true))))
 
 (register-handler 
   :start-debugging
@@ -45,12 +48,41 @@
             open? (:nrepl @nrepl/state)]
         (dispatch [:lein-repl-status open?]))))
   (.send ipc "close-url")
-  (assoc db :debugging? false))
+  (-> db 
+      (assoc :debugging? false)
+      (assoc :disabled true)))
 
 (register-handler 
   :stop-debugging
   stop-debugging)
 
+(defn shut-down
+  "shutdown all windows and lien processes"
+  [db _]
+  (if (:lein-repl-starting? db)
+    ;;do nothing
+    (do 
+      (print "Abandon shutdown because of repl status")
+      db)
+    (do 
+      (if (:lein-repl-status db)
+          ;; ask for lein to stop a repl
+          (go
+            (let [result (<? (nrepl/stop-lein-repl))
+                  open? (:nrepl @nrepl/state)]
+              (dispatch [:lein-repl-status open?])
+              (.send ipc "shutdown-for-real")))
+          (.send ipc "shutdown-for-real"))
+      (.send ipc "close-url")
+      (assoc db :debugging? false))))
+
+(register-handler 
+  :shut-down
+  shut-down)
+
+(.on ipc "shutdown-attempt"
+     (fn []
+       (dispatch [:shut-down])))
 
 (defn translate 
   "translates the clojurescript on this page"
@@ -90,7 +122,7 @@
         (let [js-print-string (str "cljs.core.prn_str.call(null,"
                                    (clojure.string/join 
                                      (drop-last js-expression)) ");")
-            open? (:nrepl @nrepl/state)]
+              open? (:nrepl @nrepl/state)]
           (ws-evaluate db js-print-string call-frame-id 
                        #(dispatch [:js-print-string %]))
           (dispatch [:lein-repl-status open?])
