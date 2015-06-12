@@ -5,7 +5,7 @@
                    [cljs-asynchronize.macros :refer [asynchronize]]
                    [abra.backend.macros :refer [<?]])  
   (:require [cljs.reader :as reader]
-            [clojure.string :as string]
+            [clojure.string :as string :refer [split-lines split trim]]
             [goog.string :as gstring] 
             [goog.string.format]
             [cljs.core.async :refer [put!, chan, <!, >!]]))
@@ -20,6 +20,9 @@
 ; "nrepl.js": "~0.0.1",
 (def ^:private port-scanner (js/require "portscanner"))
 ; "portscanner": "~1.0.0"
+(def ^:private child-proc (js/require "child_process"))
+(def ^:private js-exec (aget child-proc "exec"))
+(def ^:private js-spawn (aget child-proc "spawn"))
 
 (defn port-open?
   "Asynchronously determines if a port is open for connections, 
@@ -179,6 +182,46 @@
        (local-eval "(+ 1 1)")
        port))))
 
+(defn- convert-ps-line [l]
+  (let [l-arr (split (trim l) #"\s+")
+        ;; NOTE: This is dependent upon the order of the options passed to
+        ;; the -o flag of ps in kill-auto-on-unix
+        pid  (-> l-arr first int)
+        ppid (-> l-arr second int)]
+    [pid ppid]))
+
+(defn- kill-on-unix2 [ppid output callback-fn]
+  (let [lines1 (split-lines output)
+        lines2 (map convert-ps-line lines1)
+        pid-to-kill (ffirst (filter #(= ppid (second %)) lines2))]
+    ;; sanity check to make sure the pid exists
+    (print "kill-on-unix2" ppid pid-to-kill)
+    (when (pos? pid-to-kill)
+      (js-exec (str "kill " pid-to-kill) callback-fn))))
+
+;; I fought with this for hours re: trying to kill the process from node.js
+;; this feels hacky, but it works fine
+;; TODO: write a general-purpose "js-exec" function that returns a core.async
+;; channel; would prefer that to using callbacks here
+(defn- kill-on-unix [pid callback-fn]
+  (let [child (js-spawn "ps" (array "-eo" "pid,ppid"))]
+    (.setEncoding (.-stdout child) "utf8")
+    (.on (.-stdout child) "data" #(kill-on-unix2 pid % callback-fn))))
+
+(def on-windows?
+  (.test #"^win" js/process.platform))
+
+(defn stop
+  ;; translated from nrepl-client
+  [serverState callback-fn] 
+  (if (.-exited serverState) 
+    (callback-fn)
+    (let [pid (.-pid (.-proc serverState))]
+      (print "stopping nREPL " pid)
+      (if on-windows?
+        (js-exec (str "taskkill /pid " pid " /T /F") callback-fn)
+        (kill-on-unix pid callback-fn)))))
+
 (defn stop-lein-repl 
  "Asynchronously stops a lein repl that had previously been started by 
  start-lein-repl
@@ -189,7 +232,7 @@
   ;; can't use asynchronise as the callback is not the correct interface
   (let [result (chan)
         server-state (:server-state @state)]
-    (.stop node-server server-state
+    (stop server-state
            (fn [] 
              (swap! state assoc :nrepl false)
              (put! result true)))

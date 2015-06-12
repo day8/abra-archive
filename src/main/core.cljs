@@ -49,11 +49,58 @@ I bootstrap the application and kick off the GUI (Browser Window)."
                                             :buttons #js ["Close"]})
   (.close @main-window))
 
+(def shutdownForRealHasHappened (atom false))
+
+(defn shutdownForReal
+  [] 
+  (print "starting to shut down for real")
+  
+  ; ;; save current window information
+  ; windowInformation.maximized = mainWindow.isMaximized();
+  ; windowInformation.position = mainWindow.getPosition();
+  ; windowInformation.size = mainWindow.getSize();
+  
+  ; // it's not super-important that this succeeds
+  ; // https://github.com/oakmac/cuttle/issues/74
+  ; try {
+  ;   winston.info("saving window information", windowInformationFile);
+  ;   fs.writeFileSync(windowInformationFile, JSON.stringify(windowInformation));
+  ; }
+  ; catch (e) {
+  ;   // do nothing
+  ;   winston.warn("couldn't save window information");
+  ; }
+  
+  ;; toggle the shutdown for real flag and close the window
+  (reset! shutdownForRealHasHappened true)
+  (.close @main-window))
+
+(.on ipc "shutdown-for-real" shutdownForReal)
+
+;; NOTE: copied this directly from the atom-shell docs
+;; is this really necessary?
+(defn onWindowClosed
+  [] 
+  ;; dereference the window object
+  (reset! main-window nil))
+
+(defn onWindowClose
+  [evt] 
+  (print "window trying to close")
+  
+  ;; prevent window close if we have not shut down for real
+  (when (not @shutdownForRealHasHappened) 
+    (.preventDefault evt)
+    
+    ;; send shutdown signal to the window
+    (print "sending client shutdown attempt")
+    (.send (.-webContents @main-window) "shutdown-attempt")))
+
 (defn init-browser
   []
   ;; websecurity is removed for figwheel
   (reset! main-window (browser-window. 
-                        #js {:width 1200 :height 800 
+                        #js {:width 1200 :height 900 
                              :web-preferences #js {:web-security false}}))
   (.loadUrl @main-window abra-html)
   ; (.toggleDevTools @main-window)
@@ -64,7 +111,8 @@ I bootstrap the application and kick off the GUI (Browser Window)."
         (show-message-exit 
           "The crmux port is in use, Abra may be running in another window")
         (.start_crmux_server crmux))))
-  (.on @main-window "closed" #(reset! main-window nil)))
+  (.on @main-window "close" onWindowClose)
+  (.on @main-window "closed" onWindowClosed))
 
 
 (.start crash-reporter)
@@ -90,8 +138,9 @@ I bootstrap the application and kick off the GUI (Browser Window)."
 
 (.on ipc "close-url"
      (fn [event]
-       (print "Closing the debug window")
-       (.close @debug-window)))
+       (when @debug-window 
+         (print "Closing the debug window")
+         (.close @debug-window))))
 
 (.on ipc "toggle-dev-tools"
      (fn [event]
