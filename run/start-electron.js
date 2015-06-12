@@ -1,4 +1,4 @@
-var atom = require('electron-prebuilt')
+var election = require('electron-prebuilt')
 var proc = require('child_process')
 
 // will something similar to print /Users/maf/.../Atom
@@ -7,7 +7,7 @@ var spawn = require('child_process').spawn,
 
 console.log(process.cwd());
 
-child = spawn(atom, ['.']);
+child = spawn(election, ['.']);
 
 child.stdout.on('data', function (data) {
   console.log('stdout: ' + data);});

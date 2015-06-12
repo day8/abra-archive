@@ -87,6 +87,9 @@ html, body {
   margin-bottom: 0px;
 }
 
+textarea {
+  resize: none;
+}
 /*
    Popovers have an arrow. When this arrow is adjacent to the title area
    the popover arrow should be grey (to match the title area).  Otherwise it should
