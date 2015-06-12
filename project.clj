@@ -1,4 +1,4 @@
-(defproject abra "0.1.6"
+(defproject abra "0.1.7-SNAPSHOT"
   :description "A ClojureScript debugging tool"
   :url "https://github.com/Day8/Abra2/"
   

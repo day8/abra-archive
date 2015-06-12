@@ -9,8 +9,8 @@ ToDO:
   * add a spinner after translate
   * if Abra is already running, produce an error for the user  (chrome remote debugging port is already locked)
   * What can we do about the first translate taking so long?
+  * Pressing "Stop" doesn't really stop
   - Verify that the project directory contains a "project.clj" or a ".boot".
-  - Pressing "Stop" doesn't really stop
   - Tried to `lein run` got this
     D:\Day8-git\Abra2>lein run
     Your project already has a package.json file.  Please remove it.
@@ -115,13 +115,6 @@ To install Abra:
     lein build
     ```
 
-1. You are now ready to run the app.  If later you run into problems, try a re-compile:
-
-    ```sh
-    lein clean
-    lein build
-    ```
-
 XXX trouble shooting -- how to run the tests??
 
 ## Run Abra
@@ -135,25 +128,6 @@ XXX trouble shooting -- how to run the tests??
 1. When Abra starts ... XXXXXX
 
 
-Building with figwheel
-----------------------
-
-We are using figwheel to help development.
-
-As only the ui build needs figwheel we have a Procfile that will start the auto
-compilation for the main (browser) ui (client) and test-page build
-
-Use [honcho](https://github.com/nickstenning/honcho) if you have python already
-on your system use pip to install honcho
-
-```
-$pip install honcho
-```
-Then in the root directory
-```
-$honcho start
-```
-
 
 Dependencies
 ------------
@@ -163,7 +137,7 @@ Abra makes use of the following tools, libraries and technologies:
  * [node.js](http://nodejs.org)
      - "a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications."
      - This must be installed on your system, although we only use the npm command from this.
- * [atom-shell] (https://github.com/atom/atom-shell)
+ * [electron] (https://github.com/atom/electron)
      - Basically a custom browser that will deliver your stand alone application
      - This must be installed on your system.
 	 -The terminology used in the Atom Shell documentation can be confusing. When talking about "where code lives" they talk about "browser" and "client".  What they means by "browser" is the nodejs context i.e. it is the browser process that can access the file system etc. And "client" is the HTML world - the webpage which is sandboxed. 
