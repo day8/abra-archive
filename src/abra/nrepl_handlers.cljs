@@ -101,7 +101,8 @@
                            :locals locals))]
           (dispatch [:translated-javascript nil result]))
         (catch js/Error e
-          (dispatch [:translated-javascript "Clojurescript error" nil]) 
+          (dispatch [:translated-javascript 
+                     (str "Clojurescript error: " (print-str e)) nil]) 
           e)))
     (dispatch [:command-history (vec (take-last 
                                        15 
@@ -121,8 +122,9 @@
           call-frame-id (:call-frame-id call-frame)]
       (if err 
         (-> db
-            (assoc :javascript-string (print-str err))
-            (assoc :js-print-string ""))
+            (assoc :javascript-string "")
+            (assoc :js-print-string (print-str err))
+            (assoc :show-spinner false))
         (let [js-print-string (str "cljs.core.prn_str.call(null,"
                                    (clojure.string/join 
                                      (drop-last js-expression)) ");")
