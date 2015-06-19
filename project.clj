@@ -90,7 +90,8 @@
                         :source-map "test-page/js/test-page.js.map"
                         :output-dir "test-page/js"
                         :optimizations :none
-                        :pretty-print true}}]
+                        :pretty-print true
+                        }}]
    
    ; node run/test/bin/runner-node.js run/js/compiled/test run/js/compiled/test_node.js
    :test-commands {"node-tests" ["node" "run/test/bin/runner-node.js" 
@@ -112,4 +113,5 @@
   
   :clean-targets ^{:protect false} ["run/js/compiled"
                                     "run/compiled"  
-                                    "resources/public/js/compiled"])
+                                    "resources/public/js/compiled"
+                                    "test-page/js"])
