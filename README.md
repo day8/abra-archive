@@ -5,7 +5,7 @@ Sorta works.  But it is stuck at the proof of concept stage.
 Somehow we've never seemed to adopt it in our daily practice as developers.  So we're not pushing in with it.  Waiting instead for tech like dev-tools and dirac to mature.  And for Colin to do something better in Cursive. 
 
 
-# Abra [![Build Status](https://magnum.travis-ci.com/Day8/Abra.svg?token=ZxqzShvq5GKw1TUp9DLf&branch=master)](https://magnum.travis-ci.com/Day8/Abra)
+[![Build Status](https://magnum.travis-ci.com/Day8/Abra.svg?token=ZxqzShvq5GKw1TUp9DLf&branch=master)](https://magnum.travis-ci.com/Day8/Abra)
 
 # Description 
 
@@ -112,7 +112,7 @@ XXX trouble shooting -- how to run the tests??
 1. When Abra starts ... XXXXXX
 
 
-ToDO:
+# Todo:
 
   * fix the - and _ issue (doesn't handle mixed case)
   * after you press "Debug" the debug window comes up exactly over the Session window.
