@@ -1,31 +1,13 @@
 # Status
 
-Soorta works.  But it is stuck at the proof of concept stage.  
+Sorta works.  But it is stuck at the proof of concept stage.  
 
 Somehow we've never seemed to adopt it in our daily practice as developers.  So we're not pushing in with it.  Waiting instead for tech like dev-tools and dirac to mature.  And for Colin to do something better in Cursive. 
 
-ToDO:
-  * fix the - and _ issue (doesn't handle mixed case)
-  * after you press "Debug" the debug window comes up exactly over the Session window.
-  * In the Session Details, remember the values put in last time.  In fact save the last few values. 
-  * add a spinner after translate
-  * if Abra is already running, produce an error for the user  (chrome remote debugging port is already locked)
-  * What can we do about the first translate taking so long?
-  * Pressing "Stop" doesn't really stop
-  - Verify that the project directory contains a "project.clj" or a ".boot".
-  - Tried to `lein run` got this
-    D:\Day8-git\Abra2>lein run
-    Your project already has a package.json file.  Please remove it.
-    -attempt to delete
-  - fix the - and _ issue for the mixed case
-  - change code to use https://github.com/clojure/clojurescript/blob/master/src/clj/cljs/repl.clj#L397
-     to load namespaces
-     look at can't set *cljs-ns* variable error in analyzer/parse
-  - look at the ability to run macros in the nrepl
-
-
 
 # Abra [![Build Status](https://magnum.travis-ci.com/Day8/Abra.svg?token=ZxqzShvq5GKw1TUp9DLf&branch=master)](https://magnum.travis-ci.com/Day8/Abra)
+
+# Description 
 
 Abra is a proof of concept ClojureScript debugger.
 
@@ -129,3 +111,23 @@ XXX trouble shooting -- how to run the tests??
 
 1. When Abra starts ... XXXXXX
 
+
+ToDO:
+
+  * fix the - and _ issue (doesn't handle mixed case)
+  * after you press "Debug" the debug window comes up exactly over the Session window.
+  * In the Session Details, remember the values put in last time.  In fact save the last few values. 
+  * add a spinner after translate
+  * if Abra is already running, produce an error for the user  (chrome remote debugging port is already locked)
+  * What can we do about the first translate taking so long?
+  * Pressing "Stop" doesn't really stop
+  - Verify that the project directory contains a "project.clj" or a ".boot".
+  - Tried to `lein run` got this
+    D:\Day8-git\Abra2>lein run
+    Your project already has a package.json file.  Please remove it.
+    -attempt to delete
+  - fix the - and _ issue for the mixed case
+  - change code to use https://github.com/clojure/clojurescript/blob/master/src/clj/cljs/repl.clj#L397
+     to load namespaces
+     look at can't set *cljs-ns* variable error in analyzer/parse
+  - look at the ability to run macros in the nrepl
