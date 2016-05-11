@@ -1,6 +1,8 @@
 # Status
 
-Unpublished - but getting close
+Soorta works.  But it is stuck at the proof of concept stage.  
+
+Somehow we've never seemed to adopt it in our daily practice as developers.  So we're not pushing in with it.  Waiting instead for tech like dev-tools and dirac to mature.  And for Colin to do something better in Cursive. 
 
 ToDO:
   * fix the - and _ issue (doesn't handle mixed case)
@@ -23,38 +25,38 @@ ToDO:
 
 
 
-
-
 # Abra [![Build Status](https://magnum.travis-ci.com/Day8/Abra.svg?token=ZxqzShvq5GKw1TUp9DLf&branch=master)](https://magnum.travis-ci.com/Day8/Abra)
 
 Abra is a proof of concept ClojureScript debugger.
 
-It works!!  It does the stuff you can't do via a bRepl.
+It works!!  It does the stuff you can't do via a normal repl. 
 
 You can set breakpoints and, when they are hit, you can:
  - inspect the value of ClojureScript variables in the call stack
  - evaluate arbitrary cljs code, referencing locals on the stack.
 
-In the future, we hope to evolve Abra towards being
+In the future, Abra may evolve towards being
 a [Time Traveling Debugger] and perhaps include some effortless,
 optional [tracing](https://github.com/spellhouse/clairvoyant) facilities.
 
 We think designing a good debugger is a data visualization
 problem. Not that we really know what that means, just yet ,except to say that
-ClojureScript has a unique set of properties which should allow for
-something quite special to be done.
+ClojureScript, being a lisp, has a  set of properties which should allow for
+a really nice debugging story.
 
 # The Bad News
+
+This is clunky and ugly. 
 
 It is especially fruitless to tell people to "never judge a book by its cover". Everyone
 does and there is absolutely nothing you can say to make them not do it.
 
-But really, you shouldn't judge Abra by its current poor cover. That worked, right?
+But really, you shouldn't judge Abra by its current poor cover. 
+
+That worked, right?
 
 Our goal until now has been to simply prove the concept, not
-to create something lovely to use.
-
-As a result, you will be confronted with a user interface which is
+to create something lovely to use. As a result, you will be confronted with a user interface which is
 basic and clunky.
 
 Oh, and along the same lines, and please don't judge Abra badly for its lack of documentation and
@@ -127,51 +129,3 @@ XXX trouble shooting -- how to run the tests??
 
 1. When Abra starts ... XXXXXX
 
-
-
-Dependencies
-------------
-
-Abra makes use of the following tools, libraries and technologies:
-
- * [node.js](http://nodejs.org)
-     - "a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications."
-     - This must be installed on your system, although we only use the npm command from this.
- * [electron] (https://github.com/atom/electron)
-     - Basically a custom browser that will deliver your stand alone application
-     - This must be installed on your system.
-	 -The terminology used in the Atom Shell documentation can be confusing. When talking about "where code lives" they talk about "browser" and "client".  What they means by "browser" is the nodejs context i.e. it is the browser process that can access the file system etc. And "client" is the HTML world - the webpage which is sandboxed. 
- * [crmux](https://github.com/sidorares/crmux)
-     - "Chrome developer tools remote protocol multiplexer."
-     - This doesn't have to be installed as it's included in the Abra source code.
-     - Crmux depends on the following libraries (installed using `npm install`, see Getting Started): 
-         - [ws](http://einaros.github.io/ws): "a node.js websocket implementation"
-         - [bl](https://github.com/rvagg/bl): "Buffer List: collect buffers and access with a standard readable Buffer interface" 
-         - [colors](https://github.com/Marak/colors.js): "get colors in your node.js console like what."
- * [Lieningen](http://leiningen.org/)
-     - This must be installed on your system.
-     - The following Leiningen plugins are required but will be installed with the `lein deps` command (see Getting Started).     
-         - [lein-cljsbuild v1.0.2](https://github.com/emezeske/lein-cljsbuild): "Leiningen plugin to make ClojureScript development easy."
-         - [lein-git-deps v0.0.1](https://github.com/tobyhede/lein-git-deps): "git dependencies for leiningen."
- * [Java](http://TODO.com)
- * Clojure/ClojureScript libraries & Tools:
-     - These will be installed with the `lein deps` command (see Getting Started).
-         - [org.clojure/clojure v1.5.1](https://github.com/clojure/clojure): TODO: Check for latest version.
-         - [org.clojure/clojurescript v0.0-2173](https://github.com/clojure/clojurescript): TODO: Check for latest version.
-         - [cljs-ajax v0.2.4](https://github.com/JulianBirch/cljs-ajax): "simple Ajax client for ClojureScript". Latest version is 0.2.6.
-         - [reagent v0.4.2](http://holmsand.github.io/reagent): "Minimalistic [React](http://facebook.github.io/react) for ClojureScript."
-     - This will be installed with a shortcut in the checkouts directory (see Getting Started).
-         - [reagent-components v0.1.0](https://github.com/Day8/reagent-components): Our very own Day8 UI library. Note even though changes in your local re-com will be picked up by the 
-         build you will still need to run ```lein install``` once to get your local maven repository to pick it up.
- * Other JavaScript/CSS libraries:
-     - [bootstrap.css v3](http://getbootstrap.com): "HTML, CSS, and JS framework". We're only interested in the css.
-     - [React.js v0.9.0](http://facebook.github.io/react): "A JavaScript library for building user interfaces"
-     - [Google Closure v?](https://developers.google.com/closure): Google JavaScript Tools and libraries, including a compiler which 
-       optimises JavaScript.
-
-
-
-[Leiningen]:http://leiningen.org
-[Node.js]:http://nodejs.org
-[Atom Shell]:https://github.com/atom/atom-shell
-[Time Traveling Debugger]:http://debug.elm-lang.org/
