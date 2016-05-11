@@ -27,7 +27,7 @@ a really nice debugging story.
 
 # The Bad News
 
-This is clunky and ugly. 
+This is clunky and ugly.
 
 It is especially fruitless to tell people to "never judge a book by its cover". Everyone
 does and there is absolutely nothing you can say to make them not do it.
@@ -68,7 +68,9 @@ Should you look behind the curtain, we can neither confirm nor deny that you'd f
   - [Chrome Remote debugging protocol](https://developer.chrome.com/devtools/docs/debugger-protocol)
   - [crmux](https://github.com/sidorares/crmux)
 
-Crmux is a bit of secret source. That's the way you can run two debuggers (consoles) off the one VM:  traditional dev-tools and something extra (that Abra provides).  
+Crmux is a true secret source. That's the way you can run two debuggers (repls) off the one VM: 
+  1. a traditional dev-tools and 
+  2. something extra that Abra provides.
 
 ## SetUp
 
