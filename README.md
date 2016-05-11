@@ -1,9 +1,8 @@
 # Status
 
-Sorta works.  But it is stuck at the proof of concept stage.  
+Works!  But it is stuck at a proof of concept stage.  
 
-Somehow we've never seemed to adopt it in our daily practice as developers.  So we're not pushing in with it.  Waiting instead for tech like dev-tools and dirac to mature.  And for Colin to do something better in Cursive. 
-
+Somehow we've never seemed to adopt it in our daily practice as developers. Somehow println/cljs-devtools/figwheel seemed to win.  So we're not pushing on with it.  Waiting instead for tech like cljs-devtools and dirac to mature.  And for Colin to do something better in Cursive - hurry up Colin, we're paying customers now :-)
 
 [![Build Status](https://magnum.travis-ci.com/Day8/Abra.svg?token=ZxqzShvq5GKw1TUp9DLf&branch=master)](https://magnum.travis-ci.com/Day8/Abra)
 
@@ -69,6 +68,7 @@ Should you look behind the curtain, we can neither confirm nor deny that you'd f
   - [Chrome Remote debugging protocol](https://developer.chrome.com/devtools/docs/debugger-protocol)
   - [crmux](https://github.com/sidorares/crmux)
 
+Crmux is a bit of secret source. That's the way you can run two debuggers (consoles) off the one VM:  traditional dev-tools and something extra (that Abra provides).  
 
 ## SetUp
 
